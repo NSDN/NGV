@@ -390,7 +390,7 @@ int _nsasm_fun_in(NSASM_Instance* inst, Register* dst, Register* src) {
 			fscan(buf, "%d", &(dst->data.vInt));
 			break;
 		case RegPtr:
-			fscan(buf, "%s", &(dst->data.vPtr));
+			fscan(buf, "%s", dst->data.vPtr);
 			break;
 	}
 	return OK;
@@ -513,6 +513,7 @@ int __calc__(Register* dst, Register* src, char fun) {
 				case RegPtr:
 					return ERR;
 			}
+			break;
 		case RegFloat:
 			switch (src->type) {
 				case RegChar:
@@ -524,6 +525,7 @@ int __calc__(Register* dst, Register* src, char fun) {
 				case RegPtr:
 					return ERR;
 			}
+			break;
 		case RegInt:
 			switch (src->type) {
 				case RegChar:
@@ -535,6 +537,7 @@ int __calc__(Register* dst, Register* src, char fun) {
 				case RegPtr:
 					return ERR;
 			}
+			break;
 		case RegPtr:
 			switch (src->type) {
 				case RegChar:
@@ -547,6 +550,7 @@ int __calc__(Register* dst, Register* src, char fun) {
 					return ERR;
 			}
 	}
+	return OK;
 }
 int _nsasm_fun_add(NSASM_Instance* inst, Register* dst, Register* src) {
 	if (src == 0) return ERR;
@@ -912,7 +916,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 }
 
 void NSASM_console() {
-	print("Now in console mode.\n");
+	print("Now in console mode.\n\n");
 	char buf[IOBUF]; int lines = 1, result = 0;
 	NSASM_Instance* instance = NSASM_NewInstance(16, 32);
 
