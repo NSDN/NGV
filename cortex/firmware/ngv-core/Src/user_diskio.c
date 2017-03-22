@@ -62,8 +62,9 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-
+//extern Flash* flash;
 /* Private variables ---------------------------------------------------------*/
+
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
 
@@ -106,7 +107,11 @@ DSTATUS USER_initialize (
 )
 {
   /* USER CODE BEGIN INIT */
-    Stat = STA_NOINIT;
+	/*if (flash->begin(flash->p)) {
+		Stat = RES_OK;
+	} else {
+		Stat = STA_NOINIT;
+	}*/
     return Stat;
   /* USER CODE END INIT */
 }
@@ -121,7 +126,7 @@ DSTATUS USER_status (
 )
 {
   /* USER CODE BEGIN STATUS */
-    Stat = STA_NOINIT;
+    //Stat = STA_NOINIT;
     return Stat;
   /* USER CODE END STATUS */
 }
@@ -142,6 +147,7 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
+	//flash->read(flash->p, sector, buff, count);
     return RES_OK;
   /* USER CODE END READ */
 }
@@ -164,6 +170,8 @@ DRESULT USER_write (
 { 
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
+	//flash->writePage(flash->p, sector, buff);
+	//flash->writePage(flash->p, sector, buff + 256);
     return RES_OK;
   /* USER CODE END WRITE */
 }
@@ -184,7 +192,7 @@ DRESULT USER_ioctl (
 )
 {
   /* USER CODE BEGIN IOCTL */
-    DRESULT res = RES_ERROR;
+    DRESULT res = RES_OK;
     return res;
   /* USER CODE END IOCTL */
 }

@@ -341,7 +341,7 @@ void _flash_eraseSector(pFlash* p, uint32_t addr_start) {
     _flash_transfer(p, addr_start >> 8);
     _flash_transfer(p, addr_start);
     _flash_deselect(p);
-	while (_flash_busy(p));
+    while (_flash_busy(p));
 	_flash_setWriteEnable(p, 0);
 }
 

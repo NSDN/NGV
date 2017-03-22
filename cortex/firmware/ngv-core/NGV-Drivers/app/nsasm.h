@@ -246,6 +246,8 @@ int _nsasm_fun_end(NSASM_Instance* inst, Register* dst, Register* src);
 int _nsasm_fun_nop(NSASM_Instance* inst, Register* dst, Register* src);
 int _nsasm_fun_rst(NSASM_Instance* inst, Register* dst, Register* src);
 
+int _nsasm_fun_prt(NSASM_Instance* inst, Register* dst, Register* src);
+
 typedef struct {
 	char name[8];
 	int (*fun)(NSASM_Instance* inst, Register* dst, Register* src);
@@ -289,6 +291,8 @@ static NSASM_Function NSASM_funList[] = {
 	{ "shr", &_nsasm_fun_shr },
 	{ "run", &_nsasm_fun_run },
 	{ "call", &_nsasm_fun_call },
+
+	{ "prt", &_nsasm_fun_prt },
 
 	{ "\0", 0 }
 };
@@ -373,6 +377,22 @@ int _nsasm_fun_pop(NSASM_Instance* inst, Register* dst, Register* src) {
 	return inst->mm->pop(inst->mm->p, dst);
 }
 int _nsasm_fun_in(NSASM_Instance* inst, Register* dst, Register* src) {
+	if (dst->readOnly) return ERR;
+	char buf[IOBUF] = "";
+	switch (dst->type) {
+		case RegChar:
+			fscan(buf, "%c", &(dst->data.vChar));
+			break;
+		case RegFloat:
+			fscan(buf, "%f", &(dst->data.vFloat));
+			break;
+		case RegInt:
+			fscan(buf, "%d", &(dst->data.vInt));
+			break;
+		case RegPtr:
+			fscan(buf, "%s", &(dst->data.vPtr));
+			break;
+	}
 	return OK;
 }
 int _nsasm_fun_out(NSASM_Instance* inst, Register* dst, Register* src) {
@@ -677,6 +697,25 @@ int _nsasm_fun_rst(NSASM_Instance* inst, Register* dst, Register* src) {
  	return OK;
 }
 
+int _nsasm_fun_prt(NSASM_Instance* inst, Register* dst, Register* src) {
+	switch (dst->type) {
+		case RegChar:
+			print("%c", dst->data.vChar);
+			break;
+		case RegFloat:
+			print("%f", dst->data.vFloat);
+			break;
+		case RegInt:
+			print("%d", dst->data.vInt);
+			break;
+		case RegPtr:
+			print("%s", dst->data.vPtr);
+			break;
+	}
+	print("\n");
+	return OK;
+}
+
 /* -------------------------------- */
 
 int NSASM_getSymbolIndex(NSASM_Function list[], char* var) {
@@ -795,7 +834,9 @@ int getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 				return ETC;
 			}
 		} else {
-			Register* r = inst->mm->get(inst->mm->p, var);
+			char tmp[strlen(var)];
+			sscanf(var, "%[^ \t]s", tmp);
+			Register* r = inst->mm->get(inst->mm->p, tmp);
 			if (r == 0) return ERR;
 			*ptr = r;
 			return OK;
@@ -823,7 +864,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 			free(sr);
 		} else return ERR;
 	} else if (type == 'c') {
-		sscanf(var, "%s %[^ \t,] %*[, \t]%[^\n]", head, dst, src);
+		sscanf(var, "%s %[^,] %*[, \t]%[^\n]", head, dst, src);
 		int index = NSASM_getSymbolIndex(NSASM_funList, head);
 		if (index == ETC) {
 			return NSASM_verifyTag(head);
@@ -876,7 +917,7 @@ void NSASM_console() {
 	NSASM_Instance* instance = NSASM_NewInstance(16, 32);
 
 	while (1) {
-		print("\n%d >>> ", lines);
+		print("%d >>> ", lines);
 		scan(buf);
 		if (strlen(buf) == 0) {
 			lines += 1;

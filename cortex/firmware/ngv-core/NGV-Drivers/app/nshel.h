@@ -16,8 +16,12 @@ int _nshel_fun_reset(int argc, char* argv[]);
 int _nshel_fun_colorb(int argc, char* argv[]);
 int _nshel_fun_colorf(int argc, char* argv[]);
 int _nshel_fun_font(int argc, char* argv[]);
+int _nshel_fun_style(int argc, char* argv[]);
 
 int _nshel_fun_read(int argc, char* argv[]);
+int _nshel_fun_reads(int argc, char* argv[]);
+int _nshel_fun_write(int argc, char* argv[]);
+int _nshel_fun_erase(int argc, char* argv[]);
 
 int _nshel_fun_nshel(int argc, char* argv[]);
 int _nshel_fun_nsasm(int argc, char* argv[]);
@@ -38,8 +42,12 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "colorb", &_nshel_fun_colorb },
 	{ "colorf", &_nshel_fun_colorf },
 	{ "font", &_nshel_fun_font },
+	{ "style", &_nshel_fun_style },
 
 	{ "read", &_nshel_fun_read },
+	{ "reads", &_nshel_fun_reads },
+	{ "write", &_nshel_fun_write },
+	{ "erase", &_nshel_fun_erase },
 
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
@@ -101,6 +109,7 @@ int _nshel_fun_logo(int argc, char* argv[]) {
 	uint8_t buf = 0;
 	while (HAL_UART_Receive(&HUART, &buf, 1, 1) != HAL_OK);
 	lcd->clear(lcd->p);
+	return OK;
 }
 int _nshel_fun_ver(int argc, char* argv[]) {
 	print("NSHEL %1.2f\n", NSHEL_VERSION);
@@ -118,37 +127,41 @@ int __get_color__(uint16_t color) {
 			((tmp & 0x07E0) << 5) |
 			((tmp & 0x001F) << 3);
 }
+int __getvar__(char* var, int* num) {
+	if (strchr(strlwr(var), 'x') > 0 || strchr(strlwr(var), 'h') > 0) {
+		if (sscanf(var, "%x", num) <= 0) {
+			return ERR;
+		}
+	} else {
+		if (sscanf(var, "%d", num) <= 0) {
+			return ERR;
+		}
+	}
+	return OK;
+}
 int _nshel_fun_colorb(int argc, char* argv[]) {
 	if (argc == 1) {
-		print("Back Color: %06X\n", __get_color__(lcd->p->backColor));
+		print("Back color: %06X\n", __get_color__(lcd->p->backColor));
 	} else {
 		int color = 0;
-		if (sscanf(argv[1], "%x", &color) <= 0) {
-			if (sscanf(argv[1], "%d", &color) <= 0) {
-				return ERR;
-			}
-		}
+		if (__getvar__(argv[1], &color) == ERR) return ERR;
 		lcd->colorb(lcd->p, color);
 	}
 	return OK;
 }
 int _nshel_fun_colorf(int argc, char* argv[]) {
 	if (argc == 1) {
-		print("Fore Color: %06X\n", __get_color__(lcd->p->foreColor));
+		print("Fore color: %06X\n", __get_color__(lcd->p->foreColor));
 	} else {
 		int color = 0;
-		if (sscanf(argv[1], "%x", &color) <= 0) {
-			if (sscanf(argv[1], "%d", &color) <= 0) {
-				return ERR;
-			}
-		}
+		if (__getvar__(argv[1], &color) == ERR) return ERR;
 		lcd->colorf(lcd->p, color);
 	}
 	return OK;
 }
 int _nshel_fun_font(int argc, char* argv[]) {
 	if (argc == 1) {
-		print("Font Size: %s\n", lcd->p->Font == Big ? "Big" : "Small");
+		print("Font size: %s\n", lcd->p->Font == Big ? "Big" : "Small");
 	} else {
 		if (strcmp(strlwr(argv[1]), "big") == 0) {
 			lcd->font(lcd->p, Big);
@@ -162,37 +175,101 @@ int _nshel_fun_font(int argc, char* argv[]) {
 	}
 	return OK;
 }
+int _nshel_fun_style(int argc, char* argv[]) {
+	if (argc == 1) {
+		print("You can choose: black, white, orange, green, amber, bonus\n");
+	} else if (argc == 2) {
+		if (strcmp(strlwr(argv[1]), "black") == 0) {
+			lcd->colorf(lcd->p, 0xFFFFFF);
+			lcd->colorb(lcd->p, 0x000000);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "white") == 0) {
+			lcd->colorf(lcd->p, 0x000000);
+			lcd->colorb(lcd->p, 0xFFFFFF);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "orange") == 0) {
+			lcd->colorf(lcd->p, 0xFFFFFF);
+			lcd->colorb(lcd->p, 0xE65100);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "green") == 0) {
+			lcd->colorf(lcd->p, 0x259B24);
+			lcd->colorb(lcd->p, 0x000000);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "amber") == 0) {
+			lcd->colorf(lcd->p, 0xFCB326);
+			lcd->colorb(lcd->p, 0x000000);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "bonus") == 0) {
+			lcd->colorf(lcd->p, 0x455A64);
+			lcd->colorb(lcd->p, 0x78909C);
+			lcd->clear(lcd->p);
+		} else {
+			print("You can choose: black, white, orange, green, amber, bonus\n");
+		}
+	} else return ERR;
+	return OK;
+}
 
 int _nshel_fun_read(int argc, char* argv[]) {
 	if (argc == 2) {
 		int addr = 0;
-		if (sscanf(argv[1], "%x", &addr) <= 0) {
-			if (sscanf(argv[1], "%d", &addr) <= 0) {
-				return ERR;
-			}
-		}
+		if (__getvar__(argv[1], &addr) == ERR) return ERR;
 		uint8_t buf = 0;
 		flash->read(flash->p, addr, &buf, 1);
 		print("Read: %02X\n", buf);
 	} else if (argc == 3) {
 		int addr = 0;
-		if (sscanf(argv[1], "%x", &addr) <= 0) {
-			if (sscanf(argv[1], "%d", &addr) <= 0) {
-				return ERR;
-			}
-		}
+		if (__getvar__(argv[1], &addr) == ERR) return ERR;
 		int size = 1;
-		if (sscanf(argv[2], "%x", &size) <= 0) {
-			if (sscanf(argv[2], "%d", &size) <= 0) {
-				return ERR;
-			}
-		}
+		if (__getvar__(argv[2], &size) == ERR) return ERR;
 		uint8_t buf[size]; memset(buf, 0, sizeof(uint8_t) * size);
 		flash->read(flash->p, addr, buf, size);
 		print("Read: ");
 		for (uint16_t i = 0; i < size; i++)
 			print("%02X ", buf[i]);
 		print("\n");
+	} else return ERR;
+	return OK;
+}
+int _nshel_fun_reads(int argc, char* argv[]) {
+	if (argc == 2) {
+		int addr = 0;
+		if (__getvar__(argv[1], &addr) == ERR) return ERR;
+		uint8_t buf = 0;
+		flash->read(flash->p, addr, &buf, 1);
+		print("Read: %02X\n", buf);
+	} else if (argc == 3) {
+		int addr = 0;
+		if (__getvar__(argv[1], &addr) == ERR) return ERR;
+		int size = 1;
+		if (__getvar__(argv[2], &size) == ERR) return ERR;
+		uint8_t buf[size]; memset(buf, 0, sizeof(uint8_t) * size);
+		flash->read(flash->p, addr, buf, size);
+		print("Read: ");
+		for (uint16_t i = 0; i < size; i++)
+			print("%c", buf[i]);
+		print("\n");
+	} else return ERR;
+	return OK;
+}
+int _nshel_fun_write(int argc, char* argv[]) {
+	if (argc == 3) {
+		int addr = 0;
+		if (__getvar__(argv[1], &addr) == ERR) return ERR;
+		char buf[256];
+		memset(buf, 0, 256);
+		strcpy(buf, argv[2]);
+		flash->writePage(flash->p, addr, (uint8_t*)buf);
+		print("Write finished.\n");
+	} else return ERR;
+	return OK;
+}
+int _nshel_fun_erase(int argc, char* argv[]) {
+	if (argc == 2) {
+		int addr = 0;
+		if (__getvar__(argv[1], &addr) == ERR) return ERR;
+		flash->eraseSector(flash->p, addr);
+		print("Erase finished.\n");
 	} else return ERR;
 	return OK;
 }

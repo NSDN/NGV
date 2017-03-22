@@ -46,7 +46,7 @@
 #include "fatfs.h"
 
 /* USER CODE BEGIN Includes */
-#define NGV_CORE_VERSION "170322"
+#define NGV_CORE_VERSION "170323"
 
 #include <setjmp.h>
 
@@ -77,6 +77,7 @@ pIO data[8] = {
 	{ LCD_D6_GPIO_Port, LCD_D6_Pin }, { LCD_D7_GPIO_Port, LCD_D7_Pin }
 };
 jmp_buf rstPos;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
