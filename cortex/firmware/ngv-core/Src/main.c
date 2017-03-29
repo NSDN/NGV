@@ -45,9 +45,10 @@
 #include "stm32f7xx_hal.h"
 #include "fatfs.h"
 #include "lwip.h"
+#include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-#define NGV_CORE_VERSION "170326"
+#define NGV_CORE_VERSION "170329"
 
 #include <setjmp.h>
 
@@ -57,6 +58,11 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+
+DMA2D_HandleTypeDef hdma2d;
+
+SD_HandleTypeDef hsd1;
+HAL_SD_CardInfoTypedef SDCardInfo1;
 
 SPI_HandleTypeDef hspi6;
 
@@ -79,6 +85,12 @@ pIO data[8] = {
 };
 jmp_buf rstPos;
 
+FATFS fileSystem;
+FIL testFile;
+uint8_t testBuffer[16] = "Hello Gensokyo!\0";
+UINT testBytes;
+FRESULT res;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -87,6 +99,8 @@ void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI6_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_DMA2D_Init(void);
+static void MX_SDMMC1_SD_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -124,10 +138,14 @@ int main(void)
   MX_SPI6_Init();
   MX_USART2_UART_Init();
   MX_FATFS_Init();
+  MX_DMA2D_Init();
+  MX_SDMMC1_SD_Init();
   MX_LWIP_Init();
+  MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 2 */
 	setjmp(rstPos);
+	USBD_Stop(&hUsbDeviceFS);
 
   	lcd->init(lcd->p);
   	lcd->rotate(lcd->p, LCD_LANDSCAPE);
@@ -145,8 +163,34 @@ int main(void)
   	lcd->printfa(lcd->p, "Version: %s\n\n", NGV_CORE_VERSION);
 
   	/* Initialize device */
-  	uint8_t result = flash->begin(flash->p);
-	lcd->printfa(lcd->p, "Init flash... %s\n",  result ? "OK" : "ERR");
+  	uint8_t result = 0;
+  	if (HAL_GPIO_ReadPin(SD_STATE_GPIO_Port, SD_STATE_Pin) == GPIO_PIN_RESET) {
+  		lcd->printfa(lcd->p, "Init SD card... OK\n");
+		HAL_SD_Init(&hsd1, &SDCardInfo1);
+	} else {
+		lcd->printfa(lcd->p, "Init SD card... ERR\n");
+		HAL_SD_DeInit(&hsd1);
+	}
+  	lcd->printfa(lcd->p, "Mount SD card...\n");
+  	f_mount(&fileSystem, SD_Path, 1);
+  	result = f_mount(&fileSystem, SD_Path, 1);
+	if(result == FR_OK) {
+		uint8_t path[13] = "NYA_GAME.TXT";
+		path[12] = '\0';
+		res = f_open(&testFile, (char*)path, FA_WRITE | FA_CREATE_ALWAYS);
+		res = f_write(&testFile, testBuffer, 16, &testBytes);
+		res = f_close(&testFile);
+		lcd->printfa(lcd->p, "Test SD card... OK\n");
+	} else {
+		lcd->printfa(lcd->p, "Test SD card... ERR: %02X\n", result);
+	}
+
+	lcd->printfa(lcd->p, "Init USB Mass Storage...\n");
+	USBD_Start(&hUsbDeviceFS);
+
+  	result = 0;
+  	result = flash->begin(flash->p);
+	lcd->printfa(lcd->p, "Init flash... %s\n", result ? "OK" : "ERR");
 	/* Initialize end */
 
 	lcd->printfa(lcd->p, "\n");
@@ -231,19 +275,32 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK)
   {
     Error_Handler();
   }
 
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_SDMMC1
+                              |RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
+  PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
+  PeriphClkInitStruct.PLLSAI.PLLSAIQ = 2;
+  PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV4;
+  PeriphClkInitStruct.PLLSAIDivQ = 1;
+  PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;
   PeriphClkInitStruct.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLLSAIP;
+  PeriphClkInitStruct.Sdmmc1ClockSelection = RCC_SDMMC1CLKSOURCE_CLK48;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
+
+    /**Enables the Clock Security System 
+    */
+  HAL_RCC_EnableCSS();
 
     /**Configure the Systick interrupt time 
     */
@@ -255,6 +312,46 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/* DMA2D init function */
+static void MX_DMA2D_Init(void)
+{
+
+  hdma2d.Instance = DMA2D;
+  hdma2d.Init.Mode = DMA2D_M2M;
+  hdma2d.Init.ColorMode = DMA2D_OUTPUT_RGB565;
+  hdma2d.Init.OutputOffset = 0;
+  hdma2d.LayerCfg[1].InputOffset = 0;
+  hdma2d.LayerCfg[1].InputColorMode = DMA2D_INPUT_RGB565;
+  hdma2d.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hdma2d.LayerCfg[1].InputAlpha = 0;
+  hdma2d.LayerCfg[1].AlphaInverted = DMA2D_REGULAR_ALPHA;
+  hdma2d.LayerCfg[1].RedBlueSwap = DMA2D_RB_SWAP;
+  if (HAL_DMA2D_Init(&hdma2d) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  if (HAL_DMA2D_ConfigLayer(&hdma2d, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
+/* SDMMC1 init function */
+static void MX_SDMMC1_SD_Init(void)
+{
+
+  hsd1.Instance = SDMMC1;
+  hsd1.Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
+  hsd1.Init.ClockBypass = SDMMC_CLOCK_BYPASS_DISABLE;
+  hsd1.Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
+  hsd1.Init.BusWide = SDMMC_BUS_WIDE_1B;
+  hsd1.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
+  hsd1.Init.ClockDiv = 9;
+
 }
 
 /* SPI6 init function */
@@ -274,7 +371,7 @@ static void MX_SPI6_Init(void)
   hspi6.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi6.Init.CRCPolynomial = 7;
   hspi6.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi6.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi6.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   if (HAL_SPI_Init(&hspi6) != HAL_OK)
   {
     Error_Handler();
@@ -311,11 +408,6 @@ static void MX_USART2_UART_Init(void)
         * EXTI
      PD8   ------> USART3_TX
      PD9   ------> USART3_RX
-     PA8   ------> USB_OTG_FS_SOF
-     PA9   ------> USB_OTG_FS_VBUS
-     PA10   ------> USB_OTG_FS_ID
-     PA11   ------> USB_OTG_FS_DM
-     PA12   ------> USB_OTG_FS_DP
 */
 static void MX_GPIO_Init(void)
 {
@@ -390,6 +482,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : SD_STATE_Pin */
+  GPIO_InitStruct.Pin = SD_STATE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(SD_STATE_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : USB_PowerSwitchOn_Pin */
   GPIO_InitStruct.Pin = USB_PowerSwitchOn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -402,20 +500,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : USB_SOF_Pin USB_ID_Pin USB_DM_Pin USB_DP_Pin */
-  GPIO_InitStruct.Pin = USB_SOF_Pin|USB_ID_Pin|USB_DM_Pin|USB_DP_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOF, LCD_CS_Pin|LCD_RST_Pin, GPIO_PIN_SET);

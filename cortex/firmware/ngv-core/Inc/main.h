@@ -105,6 +105,8 @@
 #define SD_CS_GPIO_Port GPIOD
 #define LCD_D1_Pin GPIO_PIN_15
 #define LCD_D1_GPIO_Port GPIOD
+#define SD_STATE_Pin GPIO_PIN_2
+#define SD_STATE_GPIO_Port GPIOG
 #define USB_PowerSwitchOn_Pin GPIO_PIN_6
 #define USB_PowerSwitchOn_GPIO_Port GPIOG
 #define USB_OverCurrent_Pin GPIO_PIN_7
