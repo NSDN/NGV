@@ -48,7 +48,7 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "usbd_core.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
