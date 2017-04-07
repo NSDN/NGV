@@ -1,4 +1,5 @@
-`define CNT 32'd24000000
+`timescale 1ns/10ps
+`define CNT 32'd12000000
 
 module ngv_test(
 	clk, rst,
