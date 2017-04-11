@@ -1,9 +1,9 @@
-`define CNT 32'd12000000
-
 module Blink(
 	clk, rst,
 	r, g, b
 );
+	parameter CNT = 32'd12000000;
+	
 	input clk, rst;
 	output r, g, b;
 	reg[31:0] cnt;
@@ -20,7 +20,7 @@ module Blink(
 			step <= 3'b1;
 		end else begin
 		
-			if (cnt < `CNT) cnt <= cnt + 32'b1;
+			if (cnt < CNT) cnt <= cnt + 32'b1;
 			else begin
 				cnt <= 32'b0;
 				if (step == 3'b100) step <= 3'b1;

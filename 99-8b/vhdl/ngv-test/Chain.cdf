@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EP4CE10F17) Path("E:/Works/NyaGameVita/99-8b/vhdl/ngv-test/output_files/") File("ngv-test.sof") MfrSpec(OpMask(1));
+		Device PartName(EP4CE10) Path("E:/Works/NGV/99-8b/vhdl/ngv-test/output_files/") File("ngv-test.jic") MfrSpec(OpMask(1) SEC_Device(EPCS16) Child_OpMask(1 1));
 
 ChainEnd;
 
