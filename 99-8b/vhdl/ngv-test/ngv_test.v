@@ -3,20 +3,28 @@
 module ngv_test(
 	pclk, prst,
 	r, g, b,
-	blk, cs, rs, wr, rd, rst, data
+	
+	sblk, scs, srs, swr, srd, srst, sdata,
+	blk, cs, rs, wr, rd, rst, data,
+	
+	stx, srx,
+	tx, rx
 );
 	input pclk, prst;
 	output r, g, b;
+	Blink blink1(pclk, prst, r, g, b);
 	
-	output reg blk, cs, rs, wr, rd, rst;
+	input sblk, scs, srs, swr, srd, srst;
+	input[15:0] sdata;
+	output blk, cs, rs, wr, rd, rst;
 	output[15:0] data;
+	LCD lcd1(
+		sblk, scs, srs, swr, srd, srst, sdata,
+		blk, cs, rs, wr, rd, rst, data
+	);
 	
-	blink blink1(pclk, prst, r, g, b);
-	//lcd lcd1(blk, cs, rs, wr, rd, rst, data);
-	
-	always @(prst) begin
-		blk <= 1'b1;
-		rst <= prst;
-	end
+	input stx, rx;
+	output srx, tx;
+	USART usart1(stx, srx, tx, rx);
 	
 endmodule

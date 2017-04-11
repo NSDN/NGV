@@ -44,19 +44,51 @@
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "fatfs.h"
-#include "lwip.h"
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
+#define NGV_SYS_VERSION "170411"
+
 #include "usbd_core.h"
+#include <setjmp.h>
+
+#include "../NGV-Drivers/lcd.h"
+#include "../NGV-Drivers/app/inc.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
 
+SPI_HandleTypeDef hspi1;
+
+UART_HandleTypeDef huart3;
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+LCD* lcd;
+pIO rd = { LCD_RD_GPIO_Port, LCD_RD_Pin },
+	wr = { LCD_WR_GPIO_Port, LCD_WR_Pin },
+	rs = { LCD_RS_GPIO_Port, LCD_RS_Pin },
+	cs = { LCD_CS_GPIO_Port, LCD_CS_Pin },
+	rst = { LCD_RST_GPIO_Port, LCD_RST_Pin };
+pIO data[16] = {
+	{ LCD_D0_GPIO_Port, LCD_D0_Pin }, { LCD_D1_GPIO_Port, LCD_D1_Pin },
+	{ LCD_D2_GPIO_Port, LCD_D2_Pin }, { LCD_D3_GPIO_Port, LCD_D3_Pin },
+	{ LCD_D4_GPIO_Port, LCD_D4_Pin }, { LCD_D5_GPIO_Port, LCD_D5_Pin },
+	{ LCD_D6_GPIO_Port, LCD_D6_Pin }, { LCD_D7_GPIO_Port, LCD_D7_Pin },
+	{ LCD_D8_GPIO_Port, LCD_D8_Pin }, { LCD_D9_GPIO_Port, LCD_D9_Pin },
+	{ LCD_D10_GPIO_Port, LCD_D10_Pin }, { LCD_D11_GPIO_Port, LCD_D11_Pin },
+	{ LCD_D12_GPIO_Port, LCD_D12_Pin }, { LCD_D13_GPIO_Port, LCD_D13_Pin },
+	{ LCD_D14_GPIO_Port, LCD_D14_Pin }, { LCD_D15_GPIO_Port, LCD_D15_Pin }
+};
+jmp_buf rstPos;
+
+FATFS fileSystem;
+FIL testFile;
+uint8_t testBuffer[16] = "Hello Gensokyo!\0";
+UINT testBytes;
+FRESULT res;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,6 +96,8 @@ void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_SDIO_SD_Init(void);
+static void MX_SPI1_Init(void);
+static void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -78,7 +112,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	lcd = LCDInit(&rd, &wr, &rs, &cs, &rst, data);
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -93,19 +127,81 @@ int main(void)
   MX_GPIO_Init();
   MX_SDIO_SD_Init();
   MX_FATFS_Init();
-  MX_LWIP_Init();
   MX_USB_DEVICE_Init();
+  MX_SPI1_Init();
+  MX_USART3_UART_Init();
 
   /* USER CODE BEGIN 2 */
+	setjmp(rstPos);
 	USBD_Stop(&hUsbDeviceHS);
-	HAL_SD_Init(&hsd, &SDCardInfo);
+
+	lcd->init(lcd->p);
+	lcd->rotate(lcd->p, LCD_PORTRAIT);
+	lcd->font(lcd->p, Small);
+	lcd->colorb(lcd->p, 0xFFFFFF);
+	lcd->colorf(lcd->p, 0x000000);
+	lcd->clear(lcd->p);
+
+	lcd->bitmapsc(lcd->p, 120, 140, 64, 64, __NYAGAME_LOGO_);
+	lcd->printfc(lcd->p, 180, "nyagame vita");
+	HAL_Delay(1000);
+	lcd->clear(lcd->p);
+
+	lcd->printfa(lcd->p, "NyaGame Vita Factory System\n");
+	lcd->printfa(lcd->p, "Version: %s\n\n", NGV_SYS_VERSION);
+
+	/* Initialize device */
+	uint8_t result = 0;
+	if (HAL_SD_Init(&hsd, &SDCardInfo) == SD_OK) {
+		lcd->printfa(lcd->p, "Init SD card... OK\n");
+	} else {
+		lcd->printfa(lcd->p, "Init SD card... ERR\n");
+	}
+
+	lcd->printfa(lcd->p, "Mount SD card...\n");
+	f_mount(&fileSystem, SD_Path, 1);
+	result = f_mount(&fileSystem, SD_Path, 1);
+	if(result == FR_OK) {
+		uint8_t path[13] = "NYA_GAME.TXT";
+		path[12] = '\0';
+		res = f_open(&testFile, (char*)path, FA_WRITE | FA_CREATE_ALWAYS);
+		res = f_write(&testFile, testBuffer, 16, &testBytes);
+		res = f_close(&testFile);
+		lcd->printfa(lcd->p, "Test SD card... OK\n");
+	} else {
+		lcd->printfa(lcd->p, "Test SD card... ERR: %02X\n", result);
+	}
+
+	lcd->printfa(lcd->p, "Init USB Mass Storage...\n");
 	USBD_Start(&hUsbDeviceHS);
+	/* Initialize end */
+
+	lcd->printfa(lcd->p, "\n");
+	NSHEL_console();
+	lcd->printfa(lcd->p, "\n");
+
+	HAL_Delay(500);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+	lcd->colorb(lcd->p, 0xFF0000);
+	lcd->clear(lcd->p);
+	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+	lcd->colorb(lcd->p, 0x00FF00);
+	lcd->clear(lcd->p);
+	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+	lcd->colorb(lcd->p, 0x0000FF);
+	lcd->clear(lcd->p);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -188,6 +284,48 @@ static void MX_SDIO_SD_Init(void)
 
 }
 
+/* SPI1 init function */
+static void MX_SPI1_Init(void)
+{
+
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
+/* USART3 init function */
+static void MX_USART3_UART_Init(void)
+{
+
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 9600;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
 /** Configure pins as 
         * Analog 
         * Input 
@@ -198,6 +336,8 @@ static void MX_SDIO_SD_Init(void)
 static void MX_GPIO_Init(void)
 {
 
+  GPIO_InitTypeDef GPIO_InitStruct;
+
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -207,6 +347,67 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, LCD_D2_Pin|LCD_D3_Pin|LCD_D4_Pin|LCD_D5_Pin 
+                          |LCD_D6_Pin|LCD_D7_Pin|LCD_D8_Pin|LCD_D9_Pin 
+                          |LCD_D10_Pin|LCD_D11_Pin|LCD_D12_Pin|LCD_D13_Pin 
+                          |LCD_D14_Pin|LCD_D15_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, LCD_RST_Pin|LCD_BL_Pin|LCD_CS_Pin|LCD_RS_Pin 
+                          |LCD_WR_Pin|LCD_RD_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LAN_CS_GPIO_Port, LAN_CS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, LCD_D0_Pin|LCD_D1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOI, LD1_Pin|LD2_Pin|LD3_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pins : LCD_D2_Pin LCD_D3_Pin LCD_D4_Pin LCD_D5_Pin 
+                           LCD_D6_Pin LCD_D7_Pin LCD_D8_Pin LCD_D9_Pin 
+                           LCD_D10_Pin LCD_D11_Pin LCD_D12_Pin LCD_D13_Pin 
+                           LCD_D14_Pin LCD_D15_Pin */
+  GPIO_InitStruct.Pin = LCD_D2_Pin|LCD_D3_Pin|LCD_D4_Pin|LCD_D5_Pin 
+                          |LCD_D6_Pin|LCD_D7_Pin|LCD_D8_Pin|LCD_D9_Pin 
+                          |LCD_D10_Pin|LCD_D11_Pin|LCD_D12_Pin|LCD_D13_Pin 
+                          |LCD_D14_Pin|LCD_D15_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LCD_RST_Pin LCD_D0_Pin LCD_D1_Pin LCD_BL_Pin 
+                           LCD_CS_Pin LCD_RS_Pin LCD_WR_Pin LCD_RD_Pin */
+  GPIO_InitStruct.Pin = LCD_RST_Pin|LCD_D0_Pin|LCD_D1_Pin|LCD_BL_Pin 
+                          |LCD_CS_Pin|LCD_RS_Pin|LCD_WR_Pin|LCD_RD_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LAN_INT_Pin */
+  GPIO_InitStruct.Pin = LAN_INT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(LAN_INT_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LAN_CS_Pin */
+  GPIO_InitStruct.Pin = LAN_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(LAN_CS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LD1_Pin LD2_Pin LD3_Pin */
+  GPIO_InitStruct.Pin = LD1_Pin|LD2_Pin|LD3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);
 
 }
 

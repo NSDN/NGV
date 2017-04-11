@@ -1,6 +1,6 @@
 `define CNT 32'd12000000
 
-module blink(
+module Blink(
 	clk, rst,
 	r, g, b
 );
