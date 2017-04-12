@@ -249,9 +249,10 @@ void _lcd_init(pLCD* p) {
 	_lcd_reset(p);
 	
 	uint32_t i = 0;
+	uint8_t r = 0, len = 0, x = 0;
 	while(i < sizeof(_regValues)) {
-		uint8_t r = _regValues[i++];
-		uint8_t len = _regValues[i++];
+		r = _regValues[i++];
+		len = _regValues[i++];
 		if(r == TFTLCD_DELAY) {
 			HAL_Delay(len);
 		} else {
@@ -263,7 +264,7 @@ void _lcd_init(pLCD* p) {
 			HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
 			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
 			for (uint8_t d = 0; d < len; d++) {
-				uint8_t x = _regValues[i++];
+				x = _regValues[i++];
 				_write_(p, x);
 			}
 			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);

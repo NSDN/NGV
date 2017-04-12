@@ -91,8 +91,6 @@ typedef struct {
 } LCD;
 
 void _write_(pLCD* p, uint16_t v) {
-	//p->data[0].port->ODR &= (0xFFFC | (v & 0x0003));
-	//p->data[15].port->ODR &= (0x0003 | (v & 0xFFFC));
 	p->data[0].port->BSRR = ((v & 0x0003) | ((~v & 0x0003) << 16));
 	p->data[15].port->BSRR = ((v & 0xFFFC) | ((~v & 0xFFFC) << 16));
 	
@@ -137,7 +135,8 @@ void _lcd_writeReg16(pLCD* p, uint8_t cmd, uint16_t data) {
 	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
 	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data);
+	_write_(p, data >> 8);
+	_write_(p, data & 0xFF);
 	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
 }
 
@@ -149,8 +148,10 @@ void _lcd_writeReg32(pLCD* p, uint8_t cmd, uint32_t data) {
 	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
 	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, (data >> 16) & 0xFFFF);
-	_write_(p, (data      ) & 0xFFFF);
+	_write_(p, (data >> 24) & 0xFF);
+	_write_(p, (data >> 16) & 0xFF);
+	_write_(p, (data >> 8 ) & 0xFF);
+	_write_(p, (data      ) & 0xFF);
 	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
 }
 
@@ -210,17 +211,17 @@ void _lcd_rotate(pLCD* p, uint8_t r) {
 	p->rotate = r;
 	switch (r) {
 		case LCD_PORTRAIT:
-			t = ILI9341_MADCTL_MX | ILI9341_MADCTL_BGR;
+			t = ILI9341_MADCTL_BGR;
 			break;
 		case LCD_LANDSCAPE:
-			t = ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
+			t = ILI9341_MADCTL_MX | ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
 			tmp = p->width; p->width = p->height; p->height = tmp;
 			break;
 		case LCD_PORTRAIT_ANTI:
-			t = ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR;
+			t = ILI9341_MADCTL_MX | ILI9341_MADCTL_MY | ILI9341_MADCTL_BGR;
 			break;
 		case LCD_LANDSCAPE_ANTI:
-			t = ILI9341_MADCTL_MX | ILI9341_MADCTL_MY | ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
+			t = ILI9341_MADCTL_MY | ILI9341_MADCTL_MV | ILI9341_MADCTL_BGR;
 			tmp = p->width; p->width = p->height; p->height = tmp;
 			break;
 	}
@@ -231,8 +232,8 @@ void _lcd_rotate(pLCD* p, uint8_t r) {
 void _lcd_init(pLCD* p) {
 	_lcd_reset(p);
 	
-	/*uint32_t i = 0;
-	uint8_t r = 0, len = 0;
+	uint32_t i = 0;
+	uint8_t r = 0, len = 0, x = 0;
 	while(i < sizeof(_regValues)) {
 		r = _regValues[i++];
 		len = _regValues[i++];
@@ -244,111 +245,17 @@ void _lcd_init(pLCD* p) {
 			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
 			_write_(p, r);
 			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+			if (len == 0) continue;
 			HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
 			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
 			for (uint8_t d = 0; d < len; d++) {
-				uint8_t x = _regValues[i++];
+				x = _regValues[i++];
 				_write_(p, x);
 			}
 			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
 		}
-	}*/
+	}
 
-	#define LCD_WR_REG(v) _lcd_writeCommand(p, v)
-	#define LCD_WR_DATA(v) _lcd_writeData(p, v)
-	LCD_WR_REG(0xCF);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0xC1);
-	LCD_WR_DATA(0X30);
-	LCD_WR_REG(0xED);
-	LCD_WR_DATA(0x64);
-	LCD_WR_DATA(0x03);
-	LCD_WR_DATA(0X12);
-	LCD_WR_DATA(0X81);
-	LCD_WR_REG(0xE8);
-	LCD_WR_DATA(0x85);
-	LCD_WR_DATA(0x10);
-	LCD_WR_DATA(0x7A);
-	LCD_WR_REG(0xCB);
-	LCD_WR_DATA(0x39);
-	LCD_WR_DATA(0x2C);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x34);
-	LCD_WR_DATA(0x02);
-	LCD_WR_REG(0xF7);
-	LCD_WR_DATA(0x20);
-	LCD_WR_REG(0xEA);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x00);
-	LCD_WR_REG(0xC0);    //Power control
-	LCD_WR_DATA(0x1B);   //VRH[5:0]
-	LCD_WR_REG(0xC1);    //Power control
-	LCD_WR_DATA(0x01);   //SAP[2:0];BT[3:0]
-	LCD_WR_REG(0xC5);    //VCM control
-	LCD_WR_DATA(0x30); 	 //3F
-	LCD_WR_DATA(0x30); 	 //3C
-	LCD_WR_REG(0xC7);    //VCM control2
-	LCD_WR_DATA(0XB7);
-	LCD_WR_REG(0x36);    // Memory Access Control
-	LCD_WR_DATA(0x48);
-	LCD_WR_REG(0x3A);
-	LCD_WR_DATA(0x55);
-	LCD_WR_REG(0xB1);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x1A);
-	LCD_WR_REG(0xB6);    // Display Function Control
-	LCD_WR_DATA(0x0A);
-	LCD_WR_DATA(0xA2);
-	LCD_WR_REG(0xF2);    // 3Gamma Function Disable
-	LCD_WR_DATA(0x00);
-	LCD_WR_REG(0x26);    //Gamma curve selected
-	LCD_WR_DATA(0x01);
-	LCD_WR_REG(0xE0);    //Set Gamma
-	LCD_WR_DATA(0x0F);
-	LCD_WR_DATA(0x2A);
-	LCD_WR_DATA(0x28);
-	LCD_WR_DATA(0x08);
-	LCD_WR_DATA(0x0E);
-	LCD_WR_DATA(0x08);
-	LCD_WR_DATA(0x54);
-	LCD_WR_DATA(0XA9);
-	LCD_WR_DATA(0x43);
-	LCD_WR_DATA(0x0A);
-	LCD_WR_DATA(0x0F);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x00);
-	LCD_WR_REG(0XE1);    //Set Gamma
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x15);
-	LCD_WR_DATA(0x17);
-	LCD_WR_DATA(0x07);
-	LCD_WR_DATA(0x11);
-	LCD_WR_DATA(0x06);
-	LCD_WR_DATA(0x2B);
-	LCD_WR_DATA(0x56);
-	LCD_WR_DATA(0x3C);
-	LCD_WR_DATA(0x05);
-	LCD_WR_DATA(0x10);
-	LCD_WR_DATA(0x0F);
-	LCD_WR_DATA(0x3F);
-	LCD_WR_DATA(0x3F);
-	LCD_WR_DATA(0x0F);
-	LCD_WR_REG(0x2B);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x01);
-	LCD_WR_DATA(0x3f);
-	LCD_WR_REG(0x2A);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0xef);
-	LCD_WR_REG(0x11); //Exit Sleep
-	HAL_Delay(120);
-	LCD_WR_REG(0x29); //display on
-	
 	_lcd_rotate(p, p->rotate);
 }
 

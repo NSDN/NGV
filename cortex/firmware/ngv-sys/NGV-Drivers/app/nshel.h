@@ -1,4 +1,4 @@
-#define NSHEL_VERSION 0.01
+#define NSHEL_VERSION 0.02
 
 #define NSHEL_HED_LEN 32
 #define NSHEL_ARG_LEN 64
@@ -6,6 +6,7 @@
 
 /* -------------------------------- */
 
+int _nshel_fun_help(int argc, char* argv[]);
 int _nshel_fun_exit(int argc, char* argv[]);
 int _nshel_fun_print(int argc, char* argv[]);
 int _nshel_fun_clear(int argc, char* argv[]);
@@ -17,6 +18,7 @@ int _nshel_fun_colorb(int argc, char* argv[]);
 int _nshel_fun_colorf(int argc, char* argv[]);
 int _nshel_fun_font(int argc, char* argv[]);
 int _nshel_fun_style(int argc, char* argv[]);
+int _nshel_fun_rotate(int argc, char* argv[]);
 
 int _nshel_fun_read(int argc, char* argv[]);
 int _nshel_fun_reads(int argc, char* argv[]);
@@ -32,6 +34,7 @@ typedef struct {
 } NSHEL_Function;
 
 static NSHEL_Function NSHEL_funList[] = {
+	{ "help", &_nshel_fun_help },
 	{ "exit", &_nshel_fun_exit },
 	{ "print", &_nshel_fun_print },
 	{ "clear", &_nshel_fun_clear },
@@ -43,6 +46,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "colorf", &_nshel_fun_colorf },
 	{ "font", &_nshel_fun_font },
 	{ "style", &_nshel_fun_style },
+	{ "rotate", &_nshel_fun_rotate },
 
 	{ "read", &_nshel_fun_read },
 	{ "reads", &_nshel_fun_reads },
@@ -81,6 +85,14 @@ int nshel(int argc, char* argv[]) {
 
 /* -------------------------------- */
 
+int _nshel_fun_help(int argc, char* argv[]) {
+	print("You can use these commands:\n");
+	for (int i = 0; NSHEL_funList[i].name[0] != '\0'; i++) {
+		print("%s ", NSHEL_funList[i].name);
+	}
+	print("\n");
+	return OK;
+}
 int _nshel_fun_exit(int argc, char* argv[]) {
 	return ETC;
 }
@@ -102,7 +114,7 @@ int _nshel_fun_logo(int argc, char* argv[]) {
 	lcd->colorf(lcd->p, 0x000000);
 	lcd->clear(lcd->p);
 
-	lcd->bitmapsc(lcd->p, 120, 140, 64, 64, __NYAGAME_LOGO_);
+	lcd->bitmapsc(lcd->p, lcd->p->width / 2, 140, 64, 64, __NYAGAME_LOGO_);
 	lcd->printfc(lcd->p, 180, "nyagame vita");
 	lcd->printfc(lcd->p, 200, "this is a factory system");
 	HAL_Delay(1000);
@@ -205,6 +217,36 @@ int _nshel_fun_style(int argc, char* argv[]) {
 			lcd->clear(lcd->p);
 		} else {
 			print("You can choose: black, white, orange, green, amber, bonus\n");
+		}
+	} else return ERR;
+	return OK;
+}
+int _nshel_fun_rotate(int argc, char* argv[]) {
+	if (argc == 1) {
+		print("You can choose:\n");
+		print("    p (as portrait)\n");
+		print("    l (as landscape)\n");
+		print("    pa (as portrait-anti)\n");
+		print("    la (as landscape-anti)\n");
+	} else if (argc == 2) {
+		if (strcmp(strlwr(argv[1]), "p") == 0) {
+			lcd->rotate(lcd->p, LCD_PORTRAIT);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "l") == 0) {
+			lcd->rotate(lcd->p, LCD_LANDSCAPE);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "pa") == 0) {
+			lcd->rotate(lcd->p, LCD_PORTRAIT_ANTI);
+			lcd->clear(lcd->p);
+		} else if (strcmp(strlwr(argv[1]), "la") == 0) {
+			lcd->rotate(lcd->p, LCD_LANDSCAPE_ANTI);
+			lcd->clear(lcd->p);
+		} else {
+			print("You can choose:\n");
+			print("    p (as portrait)\n");
+			print("    l (as landscape)\n");
+			print("    pa (as portrait-anti)\n");
+			print("    la (as landscape-anti)\n");
 		}
 	} else return ERR;
 	return OK;
@@ -336,6 +378,7 @@ void NSHEL_console() {
 	while (1) {
 		print("NGV:/> ");
 		scan(buf);
+		if (strlen(buf) == 0) continue;
 		result = NSHEL_execute(buf);
 		if (result == ERR) {
 			print("\nNSHEL running error!\n");

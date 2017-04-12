@@ -47,7 +47,7 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-#define NGV_SYS_VERSION "170411"
+#define NGV_SYS_VERSION "170412"
 
 #include "usbd_core.h"
 #include <setjmp.h>
@@ -142,7 +142,7 @@ int main(void)
 	lcd->colorf(lcd->p, 0x000000);
 	lcd->clear(lcd->p);
 
-	lcd->bitmapsc(lcd->p, 120, 140, 64, 64, __NYAGAME_LOGO_);
+	lcd->bitmapsc(lcd->p, lcd->p->width / 2, 140, 64, 64, __NYAGAME_LOGO_);
 	lcd->printfc(lcd->p, 180, "nyagame vita");
 	HAL_Delay(1000);
 	lcd->clear(lcd->p);
