@@ -2,6 +2,8 @@ extern UART_HandleTypeDef huart2;
 extern LCD* lcd;
 extern Flash* flash;
 extern jmp_buf rstPos;
+extern FATFS fileSystem;
+extern uint8_t FS_OK;
 
 #include <stdio.h>
 #include <string.h>
@@ -66,39 +68,41 @@ int fscan(char* buffer, const char* format, ...) {
 	return result;
 }
 
-#define OK 0
-#define ERR 1
-#define ETC -1
-
 char* read(char* path) {
-	FILE* f = fopen(path, "r");
-	if (f == 0) {
+	if (FS_OK == 0) {
+		print("File system error.\n");
+		return OK;
+	}
+	FRESULT res; FIL f;
+	res = f_open(&f, path, FA_READ);
+	if (res != FR_OK) {
 		print("File open failed.\n");
 		print("At file: %s\n\n", path);
 		return OK;
 	}
-	int length = 0; char tmp;
-	while (feof(f) == 0) {
-		tmp = fgetc(f);
-		if (tmp != '\r')
+	int length = 0; char tmp[2];
+	while (f_eof(&f) == 0) {
+		f_gets(tmp, 2, &f);
+		if (tmp[0] != '\r')
 			length += 1;
 	}
-	fclose(f);
-	f = fopen(path, "r");
-	if (f == 0) {
+	f_close(&f);
+	res = f_open(&f, path, FA_READ);
+	if (res != FR_OK) {
 		print("File open failed.\n");
 		print("At file: %s\n\n", path);
 		return OK;
 	}
 	char* data = malloc(sizeof(char) * (length + 1));
 	length = 0;
-	while (feof(f) == 0) {
-		tmp = fgetc(f);
-		if (tmp != '\r') {
-			data[length] = tmp;
+	while (f_eof(&f) == 0) {
+		f_gets(tmp, 2, &f);
+		if (tmp[0] != '\r') {
+			data[length] = tmp[0];
 			length += 1;
 		}
 	}
+	f_close(&f);
 	data[length] = '\0';
 	return data;
 }

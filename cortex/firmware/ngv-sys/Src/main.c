@@ -47,7 +47,7 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-#define NGV_SYS_VERSION "170412"
+#define NGV_SYS_VERSION "170414"
 
 #include "usbd_core.h"
 #include <setjmp.h>
@@ -83,12 +83,8 @@ pIO data[16] = {
 	{ LCD_D14_GPIO_Port, LCD_D14_Pin }, { LCD_D15_GPIO_Port, LCD_D15_Pin }
 };
 jmp_buf rstPos;
-
 FATFS fileSystem;
-FIL testFile;
-uint8_t testBuffer[16] = "Hello Gensokyo!\0";
-UINT testBytes;
-FRESULT res;
+uint8_t FS_OK = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -162,14 +158,18 @@ int main(void)
 	f_mount(&fileSystem, SD_Path, 1);
 	result = f_mount(&fileSystem, SD_Path, 1);
 	if(result == FR_OK) {
-		uint8_t path[13] = "NYA_GAME.TXT";
-		path[12] = '\0';
-		res = f_open(&testFile, (char*)path, FA_WRITE | FA_CREATE_ALWAYS);
-		res = f_write(&testFile, testBuffer, 16, &testBytes);
-		res = f_close(&testFile);
+		char path[] = "NGV_INFO.TXT";
+		FIL boardInfo;
+		f_open(&boardInfo, path, FA_WRITE | FA_CREATE_ALWAYS);
+		f_printf(&boardInfo, "NyaGame Vita Factory Edition with STM32F407\n");
+		f_printf(&boardInfo, "by NyaSama Developer Network\n");
+		f_printf(&boardInfo, "Firmware Version: %s\n", NGV_SYS_VERSION);
+		f_close(&boardInfo);
 		lcd->printfa(lcd->p, "Test SD card... OK\n");
+		FS_OK = 1;
 	} else {
 		lcd->printfa(lcd->p, "Test SD card... ERR: %02X\n", result);
+		FS_OK = 0;
 	}
 
 	lcd->printfa(lcd->p, "Init USB Mass Storage...\n");
@@ -177,7 +177,11 @@ int main(void)
 	/* Initialize end */
 
 	lcd->printfa(lcd->p, "\n");
-	NSHEL_console();
+	char* args[2] = {
+			"nshel",
+			"init.d"
+	};
+	nshel(2, args);
 	lcd->printfa(lcd->p, "\n");
 
 	HAL_Delay(500);

@@ -14,6 +14,7 @@ int _nshel_fun_logo(int argc, char* argv[]);
 int _nshel_fun_ver(int argc, char* argv[]);
 
 int _nshel_fun_reset(int argc, char* argv[]);
+int _nshel_fun_delay(int argc, char* argv[]);
 int _nshel_fun_colorb(int argc, char* argv[]);
 int _nshel_fun_colorf(int argc, char* argv[]);
 int _nshel_fun_font(int argc, char* argv[]);
@@ -42,6 +43,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "ver", &_nshel_fun_ver },
 
 	{ "reset", &_nshel_fun_reset },
+	{ "delay", &_nshel_fun_delay },
 	{ "colorb", &_nshel_fun_colorb },
 	{ "colorf", &_nshel_fun_colorf },
 	{ "font", &_nshel_fun_font },
@@ -98,8 +100,8 @@ int _nshel_fun_exit(int argc, char* argv[]) {
 }
 int _nshel_fun_print(int argc, char* argv[]) {
 	if (argc > 1) {
-		print("%d args\n", argc);
-		for (int i = 0; i < argc; i++)
+		//print("%d args\n", argc);
+		for (int i = 1; i < argc; i++)
 			print("%s ", argv[i]);
 	}
 	print("\n");
@@ -148,6 +150,16 @@ int __getvar__(char* var, int* num) {
 		if (sscanf(var, "%d", num) <= 0) {
 			return ERR;
 		}
+	}
+	return OK;
+}
+int _nshel_fun_delay(int argc, char* argv[]) {
+	if (argc < 2) {
+		print("delay [ms]\n");
+	} else {
+		int time = 0;
+		if (__getvar__(argv[1], &time) == ERR) return ERR;
+		HAL_Delay(time);
 	}
 	return OK;
 }
