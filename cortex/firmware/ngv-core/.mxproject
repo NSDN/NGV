@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=E:/Works/NyaGameVita/cortex/firmware/ngv-core/Inc
+HeaderPath=E:/Works/NGV/cortex/firmware/ngv-core/Inc
 HeaderFiles=ffconf.h;user_diskio.h;fatfs.h;stm32f7xx_it.h;stm32f7xx_hal_conf.h;main.h;lwip.h;lwipopts.h;ethernetif.h;bsp_driver_sd.h;fatfs_platform.h;usb_device.h;usbd_conf.h;usbd_desc.h;usbd_storage_if.h;
-SourcePath=E:/Works/NyaGameVita/cortex/firmware/ngv-core/Src
+SourcePath=E:/Works/NGV/cortex/firmware/ngv-core/Src
 SourceFiles=ffconf.h;user_diskio.h;fatfs.h;stm32f7xx_it.h;stm32f7xx_hal_conf.h;main.h;user_diskio.c;fatfs.c;stm32f7xx_it.c;stm32f7xx_hal_msp.c;main.c;lwip.h;lwipopts.h;ethernetif.h;lwip.c;ethernetif.c;bsp_driver_sd.h;fatfs_platform.h;bsp_driver_sd.c;fatfs_platform.c;usb_device.h;usbd_conf.h;usbd_desc.h;usbd_storage_if.h;usb_device.c;usbd_conf.c;usbd_desc.c;usbd_storage_if.c;
 
 [PreviousLibFiles]
