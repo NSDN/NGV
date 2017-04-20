@@ -112,7 +112,7 @@
 #define LD3_Pin GPIO_PIN_7
 #define LD3_GPIO_Port GPIOI
 /* USER CODE BEGIN Private defines */
-
+void greenScreen(char* head);
 /* USER CODE END Private defines */
 
 /**

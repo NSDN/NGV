@@ -95,7 +95,6 @@ void _write_(pLCD* p, uint16_t v) {
 	p->data[15].port->BSRR = ((v & 0xFFFC) | ((~v & 0xFFFC) << 16));
 	
 	p->wr.port->BSRR = (uint32_t) p->wr.pin << 16; // always @(negedge wr) begin "Lock" end
-	asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop"); // delay 20ns
 	p->wr.port->BSRR = p->wr.pin;
 }
 

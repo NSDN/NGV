@@ -47,7 +47,7 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-#define NGV_SYS_VERSION "170414"
+#define NGV_SYS_VERSION "170420"
 
 #include "usbd_core.h"
 #include <setjmp.h>
@@ -97,7 +97,20 @@ static void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+void greenScreen(char* head) {
+	lcd->colorb(lcd->p, 0x007F00);
+	lcd->colorf(lcd->p, 0xFFFFFF);
+	lcd->font(lcd->p, Small);
+	lcd->clear(lcd->p);
+	lcd->printfc(lcd->p, 64, "%s", head);
+	lcd->printfc(lcd->p, 100, "WE DO NOT KNOW");
+	lcd->printfc(lcd->p, 110, "WHAT HAD HAPPENED");
+	for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 250; j++)
+			for (int k = 0; k < 168000; k++)
+				asm("nop");
+	NVIC_SystemReset();
+}
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -428,9 +441,10 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler */
   /* User can add his own implementation to report the HAL error return state */
-  while(1) 
-  {
-  }
+	greenScreen("FATAL ERROR");
+	while(1)
+	{
+	}
   /* USER CODE END Error_Handler */ 
 }
 
