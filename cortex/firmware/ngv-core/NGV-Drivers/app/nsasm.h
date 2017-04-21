@@ -803,9 +803,9 @@ int getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 					(*ptr)->data.vPtr[0] = '\0';
 					for (int i = 0; i < repeat; i++) {
 						strcat((*ptr)->data.vPtr, buf);
-						free(buf);
 					}
 				} else return ERR;
+				free(buf);
 			}
 			(*ptr)->type = RegPtr;
 			(*ptr)->readOnly = 1;
