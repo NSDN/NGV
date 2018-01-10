@@ -55,6 +55,8 @@
 #define User_Blue_Button_GPIO_Port GPIOC
 #define LCD_CS_Pin GPIO_PIN_3
 #define LCD_CS_GPIO_Port GPIOF
+#define ADC_IN_Pin GPIO_PIN_4
+#define ADC_IN_GPIO_Port GPIOF
 #define LCD_RST_Pin GPIO_PIN_5
 #define LCD_RST_GPIO_Port GPIOF
 #define MCO_Pin GPIO_PIN_0

@@ -316,9 +316,11 @@ void _lcd_line(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
 		float k = (float)(y2 - y1) / (float)(x2 - x1), absX = _lcd_abs(x2 - x1);
 		float sig = (x2 - x1) / absX;
 		for (float dx = 0, dy = 0; _lcd_abs(dx) <= absX; dx += sig, dy += k) {
-			_lcd_setPosition(p, x1 + dx, y1 + dy, x1 + dx, y1 + dy);
-			_lcd_writeCommand(p, 0x2C);
-			_lcd_writeData16(p, p->foreColor);
+			for (float dk = 0; _lcd_abs(dk) <= _lcd_abs(k); dk += (k > 0 ? 1 : -1)) {
+				_lcd_setPosition(p, x1 + dx, y1 + dy + dk, x1 + dx, y1 + dy + dk);
+				_lcd_writeCommand(p, 0x2C);
+				_lcd_writeData16(p, p->foreColor);
+			}
 		}
 	}
 }

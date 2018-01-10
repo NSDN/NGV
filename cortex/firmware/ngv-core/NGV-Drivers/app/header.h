@@ -1,4 +1,5 @@
 extern UART_HandleTypeDef huart2;
+extern ADC_HandleTypeDef hadc3;
 extern LCD* lcd;
 extern Flash* flash;
 extern jmp_buf rstPos;

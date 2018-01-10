@@ -26,6 +26,8 @@ int _nshel_fun_reads(int argc, char* argv[]);
 int _nshel_fun_write(int argc, char* argv[]);
 int _nshel_fun_erase(int argc, char* argv[]);
 
+int _nshel_fun_graph(int argc, char* argv[]);
+
 int _nshel_fun_nshel(int argc, char* argv[]);
 int _nshel_fun_nsasm(int argc, char* argv[]);
 
@@ -54,6 +56,8 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "reads", &_nshel_fun_reads },
 	{ "write", &_nshel_fun_write },
 	{ "erase", &_nshel_fun_erase },
+
+	{ "graph", &_nshel_fun_graph },
 
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
@@ -325,6 +329,30 @@ int _nshel_fun_erase(int argc, char* argv[]) {
 		flash->eraseSector(flash->p, addr);
 		print("Erase finished.\n");
 	} else return ERR;
+	return OK;
+}
+
+int _nshel_fun_graph(int argc, char* argv[]) {
+	lcd->clear(lcd->p);
+	HAL_Delay(1000);
+	uint8_t buf = 0; uint16_t data = 0, prev = 0;
+	uint16_t time = 1;
+	while (HAL_UART_Receive(&HUART, &buf, 1, 1) != HAL_OK) {
+		prev = data;
+		HAL_ADC_Start(&hadc3);
+		HAL_ADC_PollForConversion(&hadc3, 5);
+		data = HAL_ADC_GetValue(&hadc3);
+		HAL_ADC_Stop(&hadc3);
+		data = data * lcd->p->height / 4095;
+		lcd->line(lcd->p, time - 1, prev, time, data);
+		time += 1;
+		if (time > lcd->p->width - 1) {
+			time = 1;
+			lcd->clear(lcd->p);
+		}
+		HAL_Delay(5);
+	}
+	lcd->clear(lcd->p);
 	return OK;
 }
 
