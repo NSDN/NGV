@@ -221,21 +221,21 @@ int main(void)
   	result = 0;
   	lcd->printfa(lcd->p, "Mount SD card...\n");
   	f_mount(&fileSystem, USERPath, 1);
-  		result = f_mount(&fileSystem, USERPath, 1);
-  		if(result == FR_OK) {
-  			char path[] = "NGV_INFO.TXT";
-  			FIL boardInfo;
-  			f_open(&boardInfo, path, FA_WRITE | FA_CREATE_ALWAYS);
-  			f_printf(&boardInfo, "NyaGame Vita Factory Edition with STM32F767\n");
-  			f_printf(&boardInfo, "by NyaSama Developer Network\n");
-  			f_printf(&boardInfo, "Firmware Version: %s\n", NGV_CORE_VERSION);
-  			f_close(&boardInfo);
-  			lcd->printfa(lcd->p, "Test SD card... OK\n");
-  			FS_OK = 1;
-  		} else {
-  			lcd->printfa(lcd->p, "Test SD card... ERR: %02X\n", result);
-  			FS_OK = 0;
-  		}
+	result = f_mount(&fileSystem, USERPath, 1);
+	if(result == FR_OK) {
+		char path[] = "NGV_INFO.TXT";
+		FIL boardInfo;
+		f_open(&boardInfo, path, FA_WRITE | FA_CREATE_ALWAYS);
+		f_printf(&boardInfo, "NyaGame Vita Factory Edition with STM32F767\n");
+		f_printf(&boardInfo, "by NyaSama Developer Network\n");
+		f_printf(&boardInfo, "Firmware Version: %s\n", NGV_CORE_VERSION);
+		f_close(&boardInfo);
+		lcd->printfa(lcd->p, "Test SD card... OK\n");
+		FS_OK = 1;
+	} else {
+		lcd->printfa(lcd->p, "Test SD card... ERR: %02X\n", result);
+		FS_OK = 0;
+	}
 
 	lcd->printfa(lcd->p, "Init USB Mass Storage...\n");
 	USBD_Start(&hUsbDeviceFS);
