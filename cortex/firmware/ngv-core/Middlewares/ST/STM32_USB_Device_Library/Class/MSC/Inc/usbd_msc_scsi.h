@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    usbd_msc_scsi.h
   * @author  MCD Application Team
-  * @version V2.4.2
-  * @date    11-December-2015
   * @brief   Header for the usbd_msc_scsi.c file
   ******************************************************************************
   * @attention

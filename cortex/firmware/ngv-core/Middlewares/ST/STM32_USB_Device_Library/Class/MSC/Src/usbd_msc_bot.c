@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    usbd_msc_bot.c
   * @author  MCD Application Team
-  * @version V2.4.2
-  * @date    11-December-2015
   * @brief   This file provides all the BOT protocol core functions.
   ******************************************************************************
   * @attention
@@ -24,6 +22,12 @@
   *
   ******************************************************************************
   */ 
+
+  /* BSPDependencies
+  - "stm32xxxxx_{eval}{discovery}{nucleo_144}.c"
+  - "stm32xxxxx_{eval}{discovery}_io.c"
+  - "stm32xxxxx_{eval}{discovery}{adafruit}_sd.c"
+  EndBSPDependencies */
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_msc_bot.h"
