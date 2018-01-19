@@ -59,62 +59,94 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_location_assignment PIN_F14 -to r
 set_location_assignment PIN_F13 -to g
 set_location_assignment PIN_E11 -to b
-set_location_assignment PIN_D14 -to rst
+set_location_assignment PIN_K15 -to rst
 set_global_assignment -name VERILOG_FILE blink.v
 set_global_assignment -name VERILOG_FILE lcd.v
-set_location_assignment PIN_L16 -to blk
-set_location_assignment PIN_G15 -to cs
+set_location_assignment PIN_F15 -to blk
 set_location_assignment PIN_E15 -to pclk
 set_location_assignment PIN_C2 -to prst
-set_location_assignment PIN_D12 -to rd
-set_location_assignment PIN_G16 -to rs
-set_location_assignment PIN_C14 -to wr
-set_location_assignment PIN_K16 -to data[15]
-set_location_assignment PIN_J14 -to data[12]
-set_location_assignment PIN_J15 -to data[14]
-set_location_assignment PIN_J16 -to data[13]
-set_location_assignment PIN_L12 -to data[11]
-set_location_assignment PIN_J12 -to data[10]
-set_location_assignment PIN_J13 -to data[9]
-set_location_assignment PIN_J11 -to data[8]
-set_location_assignment PIN_K12 -to data[7]
-set_location_assignment PIN_K10 -to data[6]
-set_location_assignment PIN_F10 -to data[5]
-set_location_assignment PIN_G11 -to data[4]
-set_location_assignment PIN_F11 -to data[3]
-set_location_assignment PIN_L14 -to data[2]
-set_location_assignment PIN_L11 -to data[1]
-set_location_assignment PIN_L13 -to data[0]
-set_location_assignment PIN_B7 -to sblk
-set_location_assignment PIN_A7 -to scs
-set_location_assignment PIN_E8 -to sdata[15]
-set_location_assignment PIN_F8 -to sdata[14]
-set_location_assignment PIN_F9 -to sdata[13]
-set_location_assignment PIN_E9 -to sdata[12]
-set_location_assignment PIN_C9 -to sdata[11]
-set_location_assignment PIN_D9 -to sdata[10]
-set_location_assignment PIN_E10 -to sdata[9]
-set_location_assignment PIN_C11 -to sdata[8]
-set_location_assignment PIN_D11 -to sdata[7]
-set_location_assignment PIN_B12 -to sdata[6]
-set_location_assignment PIN_A12 -to sdata[5]
-set_location_assignment PIN_B11 -to sdata[4]
-set_location_assignment PIN_A11 -to sdata[3]
-set_location_assignment PIN_B10 -to sdata[2]
-set_location_assignment PIN_A6 -to sdata[1]
-set_location_assignment PIN_B6 -to sdata[0]
-set_location_assignment PIN_C8 -to srd
-set_location_assignment PIN_B8 -to srs
-set_location_assignment PIN_E7 -to srst
-set_location_assignment PIN_A8 -to swr
-set_global_assignment -name VERILOG_FILE usart.v
-set_location_assignment PIN_F7 -to srx
-set_location_assignment PIN_C16 -to rx
-set_location_assignment PIN_D8 -to stx
-set_location_assignment PIN_D15 -to tx
+set_location_assignment PIN_L16 -to rd
+set_location_assignment PIN_L15 -to wr
+set_location_assignment PIN_F16 -to data[15]
+set_location_assignment PIN_F11 -to data[12]
+set_location_assignment PIN_D14 -to data[14]
+set_location_assignment PIN_D12 -to data[13]
+set_location_assignment PIN_G11 -to data[11]
+set_location_assignment PIN_F10 -to data[10]
+set_location_assignment PIN_K10 -to data[9]
+set_location_assignment PIN_K12 -to data[8]
+set_location_assignment PIN_J11 -to data[7]
+set_location_assignment PIN_J13 -to data[6]
+set_location_assignment PIN_J12 -to data[5]
+set_location_assignment PIN_L12 -to data[4]
+set_location_assignment PIN_J14 -to data[3]
+set_location_assignment PIN_J16 -to data[2]
+set_location_assignment PIN_J15 -to data[1]
+set_location_assignment PIN_K16 -to data[0]
 
-set_location_assignment PIN_N16 -to unused[2]
-set_location_assignment PIN_N15 -to unused[1]
-set_location_assignment PIN_L15 -to unused[0]
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER g -section_id blink
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER pclk -section_id blink
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER prst -section_id blink
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER r -section_id blink
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER b -section_id blink
+set_location_assignment PIN_T14 -to data[23]
+set_location_assignment PIN_R14 -to data[22]
+set_location_assignment PIN_T15 -to data[21]
+set_location_assignment PIN_R16 -to data[20]
+set_location_assignment PIN_P15 -to data[19]
+set_location_assignment PIN_P16 -to data[18]
+set_location_assignment PIN_N15 -to data[17]
+set_location_assignment PIN_N16 -to data[16]
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER cs -section_id control
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER rd -section_id control
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER rs -section_id control
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER rst -section_id control
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER wr -section_id control
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER swr -section_id scontrol
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER srst -section_id scontrol
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER srs -section_id scontrol
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER srd -section_id scontrol
+set_global_assignment -name ASSIGNMENT_GROUP_MEMBER scs -section_id scontrol
+set_location_assignment PIN_T3 -to cs
+set_location_assignment PIN_R3 -to rs
+set_location_assignment PIN_A10 -to sblk
+set_location_assignment PIN_B6 -to scs
+set_location_assignment PIN_B4 -to sdata[23]
+set_location_assignment PIN_A4 -to sdata[22]
+set_location_assignment PIN_B5 -to sdata[21]
+set_location_assignment PIN_A5 -to sdata[20]
+set_location_assignment PIN_C6 -to sdata[19]
+set_location_assignment PIN_E7 -to sdata[18]
+set_location_assignment PIN_F7 -to sdata[17]
+set_location_assignment PIN_D8 -to sdata[16]
+set_location_assignment PIN_C8 -to sdata[15]
+set_location_assignment PIN_A8 -to sdata[14]
+set_location_assignment PIN_B8 -to sdata[13]
+set_location_assignment PIN_A7 -to sdata[12]
+set_location_assignment PIN_E8 -to sdata[11]
+set_location_assignment PIN_F8 -to sdata[10]
+set_location_assignment PIN_F9 -to sdata[9]
+set_location_assignment PIN_E9 -to sdata[8]
+set_location_assignment PIN_C9 -to sdata[7]
+set_location_assignment PIN_D9 -to sdata[6]
+set_location_assignment PIN_E10 -to sdata[5]
+set_location_assignment PIN_C11 -to sdata[4]
+set_location_assignment PIN_D11 -to sdata[3]
+set_location_assignment PIN_B12 -to sdata[2]
+set_location_assignment PIN_A12 -to sdata[1]
+set_location_assignment PIN_B11 -to sdata[0]
+set_location_assignment PIN_B10 -to srd
+set_location_assignment PIN_A6 -to srs
+set_location_assignment PIN_A11 -to srst
+set_location_assignment PIN_B7 -to swr
+set_global_assignment -name ENABLE_OCT_DONE OFF
+set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "PASSIVE SERIAL"
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name CDF_FILE Chain.cdf
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

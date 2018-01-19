@@ -1,38 +1,21 @@
-#define NSHEL_VERSION 0.02
+#include "./Include/nsio.h"
+#include "./Include/nshel.h"
+#include "./Include/nsasm.h"
 
-#define NSHEL_HED_LEN 32
-#define NSHEL_ARG_LEN 64
-#define NSHEL_ARG_MAX 8
+#include "./Include/lcd.h"
+#include "./Include/logo.h"
+#include "./Include/flash.h"
 
-/* -------------------------------- */
+#include <malloc.h>
+#include <string.h>
 
-int _nshel_fun_help(int argc, char* argv[]);
-int _nshel_fun_exit(int argc, char* argv[]);
-int _nshel_fun_print(int argc, char* argv[]);
-int _nshel_fun_clear(int argc, char* argv[]);
-int _nshel_fun_logo(int argc, char* argv[]);
-int _nshel_fun_ver(int argc, char* argv[]);
-
-int _nshel_fun_reset(int argc, char* argv[]);
-int _nshel_fun_delay(int argc, char* argv[]);
-int _nshel_fun_colorb(int argc, char* argv[]);
-int _nshel_fun_colorf(int argc, char* argv[]);
-int _nshel_fun_font(int argc, char* argv[]);
-int _nshel_fun_style(int argc, char* argv[]);
-int _nshel_fun_rotate(int argc, char* argv[]);
-
-int _nshel_fun_read(int argc, char* argv[]);
-int _nshel_fun_reads(int argc, char* argv[]);
-int _nshel_fun_write(int argc, char* argv[]);
-int _nshel_fun_erase(int argc, char* argv[]);
-
-int _nshel_fun_nshel(int argc, char* argv[]);
-int _nshel_fun_nsasm(int argc, char* argv[]);
-
-typedef struct {
-	char name[NSHEL_HED_LEN];
-	int (*fun)(int argc, char* argv[]);
-} NSHEL_Function;
+extern LCD* lcd;
+#ifdef USE_FLASH
+extern Flash* flash;
+#endif
+#ifdef USE_GRAPH
+extern ADC_HandleTypeDef hadc3;
+#endif
 
 static NSHEL_Function NSHEL_funList[] = {
 	{ "help", &_nshel_fun_help },
@@ -49,28 +32,20 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "font", &_nshel_fun_font },
 	{ "style", &_nshel_fun_style },
 	{ "rotate", &_nshel_fun_rotate },
-
+#ifdef USE_FLASH
 	{ "read", &_nshel_fun_read },
 	{ "reads", &_nshel_fun_reads },
 	{ "write", &_nshel_fun_write },
 	{ "erase", &_nshel_fun_erase },
-
+#endif
+#ifdef USE_GRAPH
+	{ "graph", &_nshel_fun_graph },
+#endif
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
 
 	{ "\0", 0 }
 };
-
-int NSHEL_getSymbolIndex(NSHEL_Function list[], char* var);
-int NSHEL_getArgs(char* arg, char* argv[]);
-
-/* -------------------------------- */
-
-int NSHEL_execute(char* var);
-void NSHEL_console();
-void NSHEL_run(char* var);
-
-/* -------------------------------- */
 
 int nshel(int argc, char* argv[]) {
 	print("NyaSama Hardware Environment Language\n");
@@ -84,8 +59,6 @@ int nshel(int argc, char* argv[]) {
 		return OK;
 	}
 }
-
-/* -------------------------------- */
 
 int _nshel_fun_help(int argc, char* argv[]) {
 	print("You can use these commands:\n");
@@ -108,7 +81,7 @@ int _nshel_fun_print(int argc, char* argv[]) {
 	return OK;
 }
 int _nshel_fun_clear(int argc, char* argv[]) {
-	clearScreen();
+	lcd->clear(lcd->p);
 	return OK;
 }
 int _nshel_fun_logo(int argc, char* argv[]) {
@@ -116,7 +89,7 @@ int _nshel_fun_logo(int argc, char* argv[]) {
 	lcd->colorf(lcd->p, 0x000000);
 	lcd->clear(lcd->p);
 
-	lcd->bitmapsc(lcd->p, lcd->p->width / 2, 140, 64, 64, __NYAGAME_LOGO_);
+	lcd->bitmapsc(lcd->p, 240, 140, 64, 64, getLogo());
 	lcd->printfc(lcd->p, 180, "nyagame vita");
 	lcd->printfc(lcd->p, 200, "this is a factory system");
 	HAL_Delay(1000);
@@ -263,13 +236,13 @@ int _nshel_fun_rotate(int argc, char* argv[]) {
 	} else return ERR;
 	return OK;
 }
-
+#ifdef USE_FLASH
 int _nshel_fun_read(int argc, char* argv[]) {
 	if (argc == 2) {
 		int addr = 0;
 		if (__getvar__(argv[1], &addr) == ERR) return ERR;
 		uint8_t buf = 0;
-		//flash->read(flash->p, addr, &buf, 1);
+		flash->read(flash->p, addr, &buf, 1);
 		print("Read: %02X\n", buf);
 	} else if (argc == 3) {
 		int addr = 0;
@@ -277,7 +250,7 @@ int _nshel_fun_read(int argc, char* argv[]) {
 		int size = 1;
 		if (__getvar__(argv[2], &size) == ERR) return ERR;
 		uint8_t buf[size]; memset(buf, 0, sizeof(uint8_t) * size);
-		//flash->read(flash->p, addr, buf, size);
+		flash->read(flash->p, addr, buf, size);
 		print("Read: ");
 		for (uint16_t i = 0; i < size; i++)
 			print("%02X ", buf[i]);
@@ -290,7 +263,7 @@ int _nshel_fun_reads(int argc, char* argv[]) {
 		int addr = 0;
 		if (__getvar__(argv[1], &addr) == ERR) return ERR;
 		uint8_t buf = 0;
-		//flash->read(flash->p, addr, &buf, 1);
+		flash->read(flash->p, addr, &buf, 1);
 		print("Read: %02X\n", buf);
 	} else if (argc == 3) {
 		int addr = 0;
@@ -298,7 +271,7 @@ int _nshel_fun_reads(int argc, char* argv[]) {
 		int size = 1;
 		if (__getvar__(argv[2], &size) == ERR) return ERR;
 		uint8_t buf[size]; memset(buf, 0, sizeof(uint8_t) * size);
-		//flash->read(flash->p, addr, buf, size);
+		flash->read(flash->p, addr, buf, size);
 		print("Read: ");
 		for (uint16_t i = 0; i < size; i++)
 			print("%c", buf[i]);
@@ -313,7 +286,7 @@ int _nshel_fun_write(int argc, char* argv[]) {
 		char buf[256];
 		memset(buf, 0, 256);
 		strcpy(buf, argv[2]);
-		//flash->writePage(flash->p, addr, (uint8_t*)buf);
+		flash->writePage(flash->p, addr, (uint8_t*)buf);
 		print("Write finished.\n");
 	} else return ERR;
 	return OK;
@@ -322,12 +295,37 @@ int _nshel_fun_erase(int argc, char* argv[]) {
 	if (argc == 2) {
 		int addr = 0;
 		if (__getvar__(argv[1], &addr) == ERR) return ERR;
-		//flash->eraseSector(flash->p, addr);
+		flash->eraseSector(flash->p, addr);
 		print("Erase finished.\n");
 	} else return ERR;
 	return OK;
 }
-
+#endif
+#ifdef USE_GRAPH
+int _nshel_fun_graph(int argc, char* argv[]) {
+	lcd->clear(lcd->p);
+	HAL_Delay(1000);
+	uint8_t buf = 0; uint16_t data = 0, prev = 0;
+	uint16_t time = 1;
+	while (HAL_UART_Receive(&HUART, &buf, 1, 1) != HAL_OK) {
+		prev = data;
+		HAL_ADC_Start(&hadc3);
+		HAL_ADC_PollForConversion(&hadc3, 5);
+		data = HAL_ADC_GetValue(&hadc3);
+		HAL_ADC_Stop(&hadc3);
+		data = data * lcd->p->height / 4095;
+		lcd->line(lcd->p, time - 1, prev, time, data);
+		time += 1;
+		if (time > lcd->p->width - 1) {
+			time = 1;
+			lcd->clear(lcd->p);
+		}
+		HAL_Delay(5);
+	}
+	lcd->clear(lcd->p);
+	return OK;
+}
+#endif
 int _nshel_fun_nshel(int argc, char* argv[]) {
 	return nshel(argc, argv);
 }
@@ -420,3 +418,4 @@ void NSHEL_run(char* var) {
 
 	print("\nNSHEL running finished.\n\n");
 }
+

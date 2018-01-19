@@ -3,8 +3,13 @@
   * @file   fatfs.h
   * @brief  Header for fatfs applications
   ******************************************************************************
+  * This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -57,7 +62,9 @@
 /* USER CODE END Includes */
 
 extern uint8_t retSD; /* Return value for SD */
-extern char SD_Path[4]; /* SD logical drive path */
+extern char SDPath[4]; /* SD logical drive path */
+extern FATFS SDFatFS; /* File system object for SD logical drive */
+extern FIL SDFile; /* File object for SD */
 
 void MX_FATFS_Init(void);
 

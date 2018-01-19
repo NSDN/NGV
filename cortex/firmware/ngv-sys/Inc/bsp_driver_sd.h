@@ -1,11 +1,16 @@
 /**
  ******************************************************************************
-  * @file    bsp_driver_sd.h (based on stm324x9i_eval_sd.h)
+  * @file    bsp_driver_sd.h for F4 (based on stm324x9i_eval_sd.h)
   * @brief   This file contains the common defines and functions prototypes for 
   *          the bsp_driver_sd.c driver.
   ******************************************************************************
+  * This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -43,8 +48,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F4XX_SD_H
-#define __STM32F4XX_SD_H
+#ifndef __STM32F4_SD_H
+#define __STM32F4_SD_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -53,28 +58,31 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-/* Exported constants --------------------------------------------------------*/ 
-
+/* Exported types --------------------------------------------------------*/ 
 /** 
   * @brief SD Card information structure 
   */
-#ifndef SD_CardInfo
-  #define SD_CardInfo HAL_SD_CardInfoTypedef
-#endif  
+#define BSP_SD_CardInfo HAL_SD_CardInfoTypeDef
 
-/**  
+/* Exported constants --------------------------------------------------------*/ 
+/**
   * @brief  SD status structure definition  
   */     
 #define   MSD_OK                        ((uint8_t)0x00)
 #define   MSD_ERROR                     ((uint8_t)0x01)
-   
-/** @defgroup STM324x9I_EVAL_SD_Exported_Constants STM324x9I EVAL SD Exported Constants
-  * @{
-  */ 
+
+/** 
+  * @brief  SD transfer state definition  
+  */     
+#define   SD_TRANSFER_OK                ((uint8_t)0x00)
+#define   SD_TRANSFER_BUSY              ((uint8_t)0x01)
+
 #define SD_PRESENT               ((uint8_t)0x01)
-#define SD_NOT_PRESENT           ((uint8_t)0x00) 
+#define SD_NOT_PRESENT           ((uint8_t)0x00)
 #define SD_DATATIMEOUT           ((uint32_t)100000000)
 
+#ifdef OLD_API
+/* kept to avoid issue when migrating old projects. */
 /* USER CODE BEGIN 0 */
 
 /* DMA definitions for SD DMA transfer */
@@ -109,11 +117,31 @@ void BSP_SD_GetCardInfo(HAL_SD_CardInfoTypedef *CardInfo);
 uint8_t BSP_SD_IsDetected(void);
 
 /* USER CODE END 0 */ 
-
+#else
+/* USER CODE BEGIN BSP_H_CODE */
+/* Exported functions --------------------------------------------------------*/   
+uint8_t BSP_SD_Init(void);
+uint8_t BSP_SD_ITConfig(void);
+void    BSP_SD_DetectIT(void);
+void    BSP_SD_DetectCallback(void);
+uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks, uint32_t Timeout);
+uint8_t BSP_SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks, uint32_t Timeout);
+uint8_t BSP_SD_ReadBlocks_DMA(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
+uint8_t BSP_SD_WriteBlocks_DMA(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
+uint8_t BSP_SD_Erase(uint32_t StartAddr, uint32_t EndAddr);
+void BSP_SD_IRQHandler(void);
+void BSP_SD_DMA_Tx_IRQHandler(void);
+void BSP_SD_DMA_Rx_IRQHandler(void);
+uint8_t BSP_SD_GetCardState(void);
+void    BSP_SD_GetCardInfo(HAL_SD_CardInfoTypeDef *CardInfo);
+uint8_t BSP_SD_IsDetected(void);
+/* USER CODE END BSP_H_CODE */
+#endif
+   
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F4XX_SD_H */
+#endif /* __STM32F4_SD_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

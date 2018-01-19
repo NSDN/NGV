@@ -5,11 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <malloc.h>
 
 #include "./Include/lcd.h"
 
 extern LCD* lcd;
-extern FATFS fileSystem;
+extern uint8_t FS_OK;
 
 char* strlwr(char* s) {
 	char* str;
@@ -68,6 +69,10 @@ int fscan(char* buffer, const char* format, ...) {
 }
 
 char* read(char* path) {
+	if (FS_OK == 0) {
+		print("File system error.\n");
+		return OK;
+	}
 	FRESULT res; FIL f;
 	res = f_open(&f, path, FA_READ);
 	if (res != FR_OK) {

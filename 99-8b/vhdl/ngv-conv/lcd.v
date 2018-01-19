@@ -3,9 +3,9 @@ module LCD(
 	blk, cs, rs, wr, rd, rst, data
 );
 	input sblk, scs, srs, swr, srd, srst;
-	input[15:0] sdata;
+	input[23:0] sdata;
 	output blk, cs, rs, wr, rd, rst;
-	output[15:0] data;
+	output[23:0] data;
 	
 	assign blk = sblk;
 	assign cs = scs;

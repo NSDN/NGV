@@ -1,49 +1,8 @@
-#define NSASM_VERSION 0.2
+#include "./Include/nsio.h"
+#include "./Include/nsasm.h"
 
-typedef enum {
-	RegInt,
-	RegFloat,
-	RegChar,
-	RegPtr
-} RegType;
-
-typedef struct {
-	char readOnly;
-	RegType type;
-	union {
-		char vChar;
-		int vInt;
-		float vFloat;
-		char* vPtr;
-	} data;
-} Register;
-
-typedef Register MMBlock;
-typedef struct _mmtype {
-	MMBlock var;
-	char* name;
-	struct _mmtype* prev;
-	struct _mmtype* next;
-} MMType;
-
-typedef struct {
-	int stackSiz;
-	int heapSiz;
-	int stackCnt;
-	int heapCnt;
-	MMType* stackTop;
-	MMType* heapStart;
-	MMType* heapEnd;
-} pMM;
-
-typedef struct {
-	pMM* p;
-	int (*push)(pMM* p, MMBlock* blk);
-	int (*pop)(pMM* p, MMBlock* blk);
-	int (*join)(pMM* p, char* name, MMBlock* blk);
-	MMBlock* (*get)(pMM* p, char* name);
-	int (*exit)(pMM* p, char* name);
-} MemoryManager;
+#include <malloc.h>
+#include <string.h>
 
 int _mm_push(pMM* p, MMBlock* blk) {
 	if (p->stackTop == 0) {
@@ -183,76 +142,6 @@ void DisposeMemoryManager(MemoryManager* ptr) {
 
 /* -------------------------------- */
 
-#define REG_CNT 8
-typedef struct {
-	MemoryManager* mm;
-	Register reg[REG_CNT];
-	Register state;
-	char tag[32];
-	int cnt;
-} NSASM_Instance;
-
-NSASM_Instance* NSASM_NewInstance(int stackSiz, int heapSiz) {
-	NSASM_Instance* ptr = malloc(sizeof(NSASM_Instance));
-	ptr->mm = InitMemoryManager(stackSiz, heapSiz);
-	memset(ptr->reg, 0, sizeof(Register) * REG_CNT);
-	memset(&ptr->state, 0, sizeof(Register));
-	ptr->tag[0] = '\0';
-	ptr->cnt = 0;
-	return ptr;
-}
-
-void NSASM_FreeInstance(NSASM_Instance* ptr) {
-	DisposeMemoryManager(ptr->mm);
-	free(ptr);
-}
-
-/* -------------------------------- */
-
-int _nsasm_rem_rem(NSASM_Instance* inst, Register* dst, Register* src);
-
-int _nsasm_dat_var(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_dat_int(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_dat_char(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_dat_float(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_dat_str(NSASM_Instance* inst, Register* dst, Register* src);
-
-int _nsasm_fun_mov(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_push(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_pop(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_in(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_out(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_add(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_inc(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_sub(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_dec(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_mul(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_div(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_cmp(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_jmp(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_jz(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_jnz(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_jg(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_jl(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_and(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_or(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_xor(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_not(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_shl(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_shr(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_run(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_call(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_end(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_nop(NSASM_Instance* inst, Register* dst, Register* src);
-int _nsasm_fun_rst(NSASM_Instance* inst, Register* dst, Register* src);
-
-int _nsasm_fun_prt(NSASM_Instance* inst, Register* dst, Register* src);
-
-typedef struct {
-	char name[8];
-	int (*fun)(NSASM_Instance* inst, Register* dst, Register* src);
-} NSASM_Function;
-
 #define NSASM_FUN_NO_OPER_CNT 4
 static NSASM_Function NSASM_funList[] = {
 	{ "rem", &_nsasm_rem_rem },
@@ -297,19 +186,20 @@ static NSASM_Function NSASM_funList[] = {
 	{ "\0", 0 }
 };
 
-int NSASM_getSymbolIndex(NSASM_Function list[], char* var);
-int NSASM_verifyVarName(char* var);
-int NSASM_verifyTag(char* var);
-int getRegister(NSASM_Instance* inst, char* var, Register** ptr);
+NSASM_Instance* NSASM_NewInstance(int stackSiz, int heapSiz) {
+	NSASM_Instance* ptr = malloc(sizeof(NSASM_Instance));
+	ptr->mm = InitMemoryManager(stackSiz, heapSiz);
+	memset(ptr->reg, 0, sizeof(Register) * REG_CNT);
+	memset(&ptr->state, 0, sizeof(Register));
+	ptr->tag[0] = '\0';
+	ptr->cnt = 0;
+	return ptr;
+}
 
-/* -------------------------------- */
-
-int NSASM_execute(NSASM_Instance* inst, char* var, char type);
-void NSASM_console();
-void NSASM_run(char* var);
-void NSASM_call(char* var, NSASM_Instance* prev);
-
-/* -------------------------------- */
+void NSASM_FreeInstance(NSASM_Instance* ptr) {
+	DisposeMemoryManager(ptr->mm);
+	free(ptr);
+}
 
 int nsasm(int argc, char* argv[]) {
 	print("NyaSama Assembly Script Module\n");
@@ -332,8 +222,6 @@ int nsasm(int argc, char* argv[]) {
 		return OK;
 	}
 }
-
-/* -------------------------------- */
 
 int _nsasm_rem_rem(NSASM_Instance* inst, Register* dst, Register* src) {
 	return OK;
@@ -748,7 +636,7 @@ int NSASM_verifyTag(char* var) {
 	return ERR;
 }
 
-int getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
+int NSASM_getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 	if (var[0] == 'r' || var[0] == 'R') {
 		int srn = -1;
 		sscanf(var, "%*[rR]%d", &srn);
@@ -861,7 +749,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 		dr.type = RegPtr;
 		strcpy(dr.data.vPtr, dst);
 		Register* sr;
-		if (getRegister(inst, src, &sr) == ETC) {
+		if (NSASM_getRegister(inst, src, &sr) == ETC) {
 			if (NSASM_funList[index].fun(inst, &dr, sr)) {
 				return ERR;
 			}
@@ -875,7 +763,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 			return NSASM_verifyTag(head);
 		}
 		Register* dr = 0; Register* sr = 0; int dresult = 0, sresult = 0;
-		dresult = getRegister(inst, dst, &dr);
+		dresult = NSASM_getRegister(inst, dst, &dr);
 		if (dresult != OK) {
 			if (dresult == ETC) {
 				dr->readOnly = 1;
@@ -891,7 +779,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 				} else return ERR;
 			}
 		}
-		sresult = getRegister(inst, src, &sr);
+		sresult = NSASM_getRegister(inst, src, &sr);
 		//if (sresult) return ERR;
 		int result = NSASM_funList[index].fun(inst, dr, sr);
 		if (result == ERR) return ERR;
@@ -1147,3 +1035,4 @@ void NSASM_call(char* var, NSASM_Instance* prev) {
 	NSASM_FreeInstance(instance);
 	free(conf); free(data); free(code);
 }
+

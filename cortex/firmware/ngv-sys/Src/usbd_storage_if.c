@@ -3,8 +3,13 @@
   * @file           : usbd_storage_if.c
   * @brief          : Memory management layer
   ******************************************************************************
+  * This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -124,7 +129,8 @@ const int8_t  STORAGE_Inquirydata_HS[] = {/* 36 */
   extern USBD_HandleTypeDef hUsbDeviceHS;  
 /* USER CODE BEGIN EXPORTED_VARIABLES */
 	extern SD_HandleTypeDef hsd;
-	extern HAL_SD_CardInfoTypedef SDCardInfo;
+	extern HAL_SD_CardInfoTypeDef cardInfo;
+	extern uint8_t FS_OK;
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -182,6 +188,7 @@ USBD_StorageTypeDef USBD_Storage_Interface_fops_HS =
 int8_t STORAGE_Init_HS (uint8_t lun)
 {
   /* USER CODE BEGIN 9 */ 
+	if (FS_OK == 0) return USBD_FAIL;
   return (USBD_OK);
   /* USER CODE END 9 */ 
 }
@@ -196,9 +203,9 @@ int8_t STORAGE_Init_HS (uint8_t lun)
 int8_t STORAGE_GetCapacity_HS (uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 10 */   
-	HAL_SD_Get_CardInfo(&hsd, &SDCardInfo);
-	*block_num  = SDCardInfo.CardCapacity / STORAGE_BLK_SIZ;
-	*block_size = STORAGE_BLK_SIZ;
+	if (FS_OK == 0) return USBD_FAIL;
+	*block_num  = cardInfo.BlockNbr;
+	*block_size = cardInfo.BlockSize;
 	return (USBD_OK);
   /* USER CODE END 10 */ 
 }
@@ -213,6 +220,7 @@ int8_t STORAGE_GetCapacity_HS (uint8_t lun, uint32_t *block_num, uint16_t *block
 int8_t  STORAGE_IsReady_HS (uint8_t lun)
 {
   /* USER CODE BEGIN 11 */ 
+	if (FS_OK == 0) return USBD_FAIL;
   return (USBD_OK);
   /* USER CODE END 11 */ 
 }
@@ -244,7 +252,8 @@ int8_t STORAGE_Read_HS (uint8_t lun,
                         uint16_t blk_len)
 {
   /* USER CODE BEGIN 13 */ 
-	HAL_SD_ReadBlocks(&hsd, (uint32_t*)buf, (uint64_t)(blk_addr * STORAGE_BLK_SIZ), STORAGE_BLK_SIZ, blk_len);
+	if (FS_OK == 0) return USBD_FAIL;
+	HAL_SD_ReadBlocks(&hsd, buf, blk_addr, blk_len, 1000);
 	return (USBD_OK);
   /* USER CODE END 13 */ 
 }
@@ -262,7 +271,8 @@ int8_t STORAGE_Write_HS (uint8_t lun,
                          uint16_t blk_len)
 {
   /* USER CODE BEGIN 14 */ 
-	HAL_SD_WriteBlocks(&hsd, (uint32_t*)buf, (uint64_t)(blk_addr * STORAGE_BLK_SIZ), STORAGE_BLK_SIZ, blk_len);
+	if (FS_OK == 0) return USBD_FAIL;
+	HAL_SD_WriteBlocks(&hsd, buf, blk_addr, blk_len, 1000);
 	return (USBD_OK);
   /* USER CODE END 14 */ 
 }

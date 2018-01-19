@@ -4,8 +4,13 @@
   * @version        : v1.0_Cube
   * @brief          : This file implements the board support package for the USB device library
   ******************************************************************************
+  * This notice applies to any and all portions of this file
+  * that are not between comment pairs USER CODE BEGIN and
+  * USER CODE END. Other portions of this file, whether 
+  * inserted by the user or by software development tools
+  * are owned by their respective copyright owners.
   *
-  * Copyright (c) 2017 STMicroelectronics International N.V. 
+  * Copyright (c) 2018 STMicroelectronics International N.V. 
   * All rights reserved.
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -48,7 +53,7 @@
 #include "usbd_core.h"
 
 PCD_HandleTypeDef hpcd_USB_OTG_HS;
-void Error_Handler(void);
+void _Error_Handler(char * file, int line);
 
 /* External functions --------------------------------------------------------*/
 void SystemClock_Config(void);
@@ -370,7 +375,7 @@ USBD_StatusTypeDef  USBD_LL_Init (USBD_HandleTypeDef *pdev)
   hpcd_USB_OTG_HS.Init.use_external_vbus = DISABLE;
   if (HAL_PCD_Init(&hpcd_USB_OTG_HS) != HAL_OK)
   {
-    Error_Handler();
+    _Error_Handler(__FILE__, __LINE__);
   }
 
   HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_HS, 0x200);

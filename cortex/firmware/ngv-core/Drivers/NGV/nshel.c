@@ -10,8 +10,12 @@
 #include <string.h>
 
 extern LCD* lcd;
+#ifdef USE_FLASH
 extern Flash* flash;
+#endif
+#ifdef USE_GRAPH
 extern ADC_HandleTypeDef hadc3;
+#endif
 
 static NSHEL_Function NSHEL_funList[] = {
 	{ "help", &_nshel_fun_help },
@@ -28,14 +32,15 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "font", &_nshel_fun_font },
 	{ "style", &_nshel_fun_style },
 	{ "rotate", &_nshel_fun_rotate },
-
+#ifdef USE_FLASH
 	{ "read", &_nshel_fun_read },
 	{ "reads", &_nshel_fun_reads },
 	{ "write", &_nshel_fun_write },
 	{ "erase", &_nshel_fun_erase },
-
+#endif
+#ifdef USE_GRAPH
 	{ "graph", &_nshel_fun_graph },
-
+#endif
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
 
@@ -231,7 +236,7 @@ int _nshel_fun_rotate(int argc, char* argv[]) {
 	} else return ERR;
 	return OK;
 }
-
+#ifdef USE_FLASH
 int _nshel_fun_read(int argc, char* argv[]) {
 	if (argc == 2) {
 		int addr = 0;
@@ -295,7 +300,8 @@ int _nshel_fun_erase(int argc, char* argv[]) {
 	} else return ERR;
 	return OK;
 }
-
+#endif
+#ifdef USE_GRAPH
 int _nshel_fun_graph(int argc, char* argv[]) {
 	lcd->clear(lcd->p);
 	HAL_Delay(1000);
@@ -319,7 +325,7 @@ int _nshel_fun_graph(int argc, char* argv[]) {
 	lcd->clear(lcd->p);
 	return OK;
 }
-
+#endif
 int _nshel_fun_nshel(int argc, char* argv[]) {
 	return nshel(argc, argv);
 }

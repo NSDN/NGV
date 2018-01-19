@@ -92,7 +92,6 @@ pIO data[8] = {
 jmp_buf rstPos;
 FATFS fileSystem;
 uint8_t FS_OK = 0;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

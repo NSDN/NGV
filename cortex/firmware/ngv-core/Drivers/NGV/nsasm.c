@@ -636,7 +636,7 @@ int NSASM_verifyTag(char* var) {
 	return ERR;
 }
 
-int getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
+int NSASM_getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 	if (var[0] == 'r' || var[0] == 'R') {
 		int srn = -1;
 		sscanf(var, "%*[rR]%d", &srn);
@@ -749,7 +749,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 		dr.type = RegPtr;
 		strcpy(dr.data.vPtr, dst);
 		Register* sr;
-		if (getRegister(inst, src, &sr) == ETC) {
+		if (NSASM_getRegister(inst, src, &sr) == ETC) {
 			if (NSASM_funList[index].fun(inst, &dr, sr)) {
 				return ERR;
 			}
@@ -763,7 +763,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 			return NSASM_verifyTag(head);
 		}
 		Register* dr = 0; Register* sr = 0; int dresult = 0, sresult = 0;
-		dresult = getRegister(inst, dst, &dr);
+		dresult = NSASM_getRegister(inst, dst, &dr);
 		if (dresult != OK) {
 			if (dresult == ETC) {
 				dr->readOnly = 1;
@@ -779,7 +779,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 				} else return ERR;
 			}
 		}
-		sresult = getRegister(inst, src, &sr);
+		sresult = NSASM_getRegister(inst, src, &sr);
 		//if (sresult) return ERR;
 		int result = NSASM_funList[index].fun(inst, dr, sr);
 		if (result == ERR) return ERR;

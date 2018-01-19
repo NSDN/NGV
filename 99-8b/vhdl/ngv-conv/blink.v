@@ -2,7 +2,7 @@ module Blink(
 	clk, rst,
 	r, g, b
 );
-	parameter CNT = 32'd12000000;
+	parameter CNT = 32'd6000000;
 	
 	input clk, rst;
 	output r, g, b;

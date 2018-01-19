@@ -1,11 +1,16 @@
-extern UART_HandleTypeDef huart3;
-extern LCD* lcd;
-extern jmp_buf rstPos;
-extern FATFS fileSystem;
-extern uint8_t FS_OK;
+#include "./Include/nsio.h"
+#include "fatfs.h"
+
 
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+#include <malloc.h>
+
+#include "./Include/lcd.h"
+
+extern LCD* lcd;
+extern uint8_t FS_OK;
 
 char* strlwr(char* s) {
 	char* str;
@@ -19,11 +24,7 @@ char* strlwr(char* s) {
 	return s;
 }
 
-#include <stdarg.h>
-#define HUART huart3
 #define __print(buf) lcd->printfa(lcd->p, buf)
-#define clearScreen() lcd->clear(lcd->p)
-#define IOBUF 128
 int print(const char* format, ...) {
 	char* iobuf = malloc(sizeof(char) * IOBUF);
 	va_list args;
@@ -235,3 +236,4 @@ char* cut(char* src, const char* head) {
 	}
 	return OK;
 }
+
