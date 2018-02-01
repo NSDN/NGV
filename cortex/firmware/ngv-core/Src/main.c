@@ -53,7 +53,7 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-#define NGV_CORE_VERSION "180117"
+#define NGV_CORE_VERSION "180201"
 
 #include "usbd_core.h"
 #include <setjmp.h>
@@ -63,7 +63,6 @@
 #include "logo.h"
 #include "flash.h"
 #include "nshel.h"
-#include "nsasmpp.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -256,9 +255,6 @@ int main(void)
   	lcd->printfa(lcd->p, "\n");
 
   	HAL_Delay(500);
-
-  	char* arg[2] = { "local", "c" };
-  	nsasmpp(2, arg);
 
   	lcd->printfa(lcd->p, "Push blue button to flash.\n\n");
   	while (HAL_GPIO_ReadPin(User_Blue_Button_GPIO_Port, User_Blue_Button_Pin) != GPIO_PIN_SET);
@@ -465,7 +461,7 @@ static void MX_USART3_UART_Init(void)
 {
 
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200;
+  huart3.Init.BaudRate = 9600;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;
