@@ -53,7 +53,7 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-#define NGV_SYS_VERSION "180118"
+#define NGV_SYS_VERSION "180119"
 
 #include "usbd_core.h"
 #include <setjmp.h>

@@ -36,7 +36,7 @@ int print(const char* format, ...) {
 	return result;
 }
 int scan(char* buffer) {
-	char count = 0, tmp = '\0';
+	unsigned char count = 0, tmp = '\0';
 	while (1) {
 		if (HAL_UART_Receive(&HUART, &tmp, 1, 1) == HAL_OK) {
 			if (tmp == '\n') {
@@ -58,6 +58,7 @@ int scan(char* buffer) {
 	}
 	buffer[count] = '\0';
 	print("\n");
+	return count;
 }
 int fscan(char* buffer, const char* format, ...) {
 	scan(buffer);

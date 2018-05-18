@@ -6,6 +6,8 @@
 #include "./Include/logo.h"
 #include "./Include/flash.h"
 
+#include "nsasmpp.h"
+
 #include <malloc.h>
 #include <string.h>
 
@@ -43,6 +45,7 @@ static NSHEL_Function NSHEL_funList[] = {
 #endif
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
+	{ "nsasm++", &_nshel_fun_nsasmpp },
 
 	{ "\0", 0 }
 };
@@ -331,6 +334,9 @@ int _nshel_fun_nshel(int argc, char* argv[]) {
 }
 int _nshel_fun_nsasm(int argc, char* argv[]) {
 	return nsasm(argc, argv);
+}
+int _nshel_fun_nsasmpp(int argc, char* argv[]) {
+	return nsasmpp(argc, argv);
 }
 
 /* -------------------------------- */

@@ -2,6 +2,10 @@
 #define __NSIO_H_
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "halinc.h"
 #include "conf.h"
 
@@ -27,6 +31,10 @@ int lines(char* src);
 char* line(char* src, int index);
 char* cut(char* src, const char* head);
 char* get(char* src, int start, char* buf, int size);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

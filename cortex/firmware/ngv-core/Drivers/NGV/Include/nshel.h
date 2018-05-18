@@ -33,6 +33,7 @@ int _nshel_fun_graph(int argc, char* argv[]);
 #endif
 int _nshel_fun_nshel(int argc, char* argv[]);
 int _nshel_fun_nsasm(int argc, char* argv[]);
+int _nshel_fun_nsasmpp(int argc, char* argv[]);
 
 typedef struct {
 	char name[NSHEL_HED_LEN];
