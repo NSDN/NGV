@@ -589,6 +589,7 @@ int _lcd_printfa(pLCD* p, const char* format, ...) {
 	int result = vsprintf(iobuf, format, args);
 	va_end(args);
 	_lcd_printa_(p, iobuf);
+	free(iobuf);
 	return result;
 }
 
