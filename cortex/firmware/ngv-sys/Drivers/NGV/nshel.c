@@ -3,8 +3,11 @@
 #include "./Include/nsasm.h"
 
 #include "./Include/lcd.h"
+#include "./Include/bmp.h"
 #include "./Include/logo.h"
 #include "./Include/flash.h"
+
+#include "nsasmpp.h"
 
 #include <malloc.h>
 #include <string.h>
@@ -43,6 +46,9 @@ static NSHEL_Function NSHEL_funList[] = {
 #endif
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
+	{ "nsasm++", &_nshel_fun_nsasmpp },
+
+	{ "bmp", &_nshel_fun_bmp },
 
 	{ "\0", 0 }
 };
@@ -89,7 +95,7 @@ int _nshel_fun_logo(int argc, char* argv[]) {
 	lcd->colorf(lcd->p, 0x000000);
 	lcd->clear(lcd->p);
 
-	lcd->bitmapsc(lcd->p, 240, 140, 64, 64, getLogo());
+	lcd->bitmapsc(lcd->p, lcd->p->width / 2, 140, 64, 64, getLogo());
 	lcd->printfc(lcd->p, 180, "nyagame vita");
 	lcd->printfc(lcd->p, 200, "this is a factory system");
 	HAL_Delay(1000);
@@ -331,6 +337,13 @@ int _nshel_fun_nshel(int argc, char* argv[]) {
 }
 int _nshel_fun_nsasm(int argc, char* argv[]) {
 	return nsasm(argc, argv);
+}
+int _nshel_fun_nsasmpp(int argc, char* argv[]) {
+	return nsasmpp(argc, argv);
+}
+
+int _nshel_fun_bmp(int argc, char* argv[]) {
+	return bmp_main(argc, argv);
 }
 
 /* -------------------------------- */

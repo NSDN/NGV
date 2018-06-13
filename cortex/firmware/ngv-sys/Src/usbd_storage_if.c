@@ -1,7 +1,8 @@
 /**
   ******************************************************************************
   * @file           : usbd_storage_if.c
-  * @brief          : Memory management layer
+  * @version        : v1.0_Cube
+  * @brief          : Memory management layer.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -44,56 +45,75 @@
   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-*/
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_storage_if.h"
+
 /* USER CODE BEGIN INCLUDE */
 /* USER CODE END INCLUDE */
 
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE END PV */
+
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
+  * @brief Usb device.
   * @{
   */
 
-/** @defgroup USBD_STORAGE 
-  * @brief usbd core module
+/** @defgroup USBD_STORAGE
+  * @brief Usb mass storage device module
   * @{
-  */ 
+  */
 
 /** @defgroup USBD_STORAGE_Private_TypesDefinitions
+  * @brief Private types.
   * @{
-  */ 
+  */
+
 /* USER CODE BEGIN PRIVATE_TYPES */
-/* USER CODE END PRIVATE_TYPES */ 
+/* USER CODE END PRIVATE_TYPES */
+
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup USBD_STORAGE_Private_Defines
+  * @brief Private defines.
   * @{
-  */ 
-#define STORAGE_LUN_NBR                  1  
-#define STORAGE_BLK_NBR                  0x10000  
+  */
+
+#define STORAGE_LUN_NBR                  1
+#define STORAGE_BLK_NBR                  0x10000
 #define STORAGE_BLK_SIZ                  0x200
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 /* USER CODE END PRIVATE_DEFINES */
-  
+
 /**
   * @}
-  */ 
+  */
 
 /** @defgroup USBD_STORAGE_Private_Macros
+  * @brief Private macros.
   * @{
-  */ 
+  */
+
 /* USER CODE BEGIN PRIVATE_MACRO */
 /* USER CODE END PRIVATE_MACRO */
 
 /**
   * @}
-  */ 
+  */
 
-/** @defgroup USBD_STORAGE_IF_Private_Variables
+/** @defgroup USBD_STORAGE_Private_Variables
+  * @brief Private variables.
   * @{
   */
 
@@ -115,18 +135,22 @@ const int8_t  STORAGE_Inquirydata_HS[] = {/* 36 */
   'V', 'i', 't', 'a', ' ', ' ', ' ', ' ',
   '0', '.', '1' ,'5',                     /* Version      : 4 Bytes */
 }; 
-/* USER CODE END INQUIRY_DATA_HS */ 
+/* USER CODE END INQUIRY_DATA_HS */
+
 /* USER CODE BEGIN PRIVATE_VARIABLES */
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
   * @}
-  */ 
- 
-/** @defgroup USBD_STORAGE_IF_Exported_Variables
+  */
+
+/** @defgroup USBD_STORAGE_Exported_Variables
+  * @brief Public variables.
   * @{
-  */ 
-  extern USBD_HandleTypeDef hUsbDeviceHS;  
+  */
+
+extern USBD_HandleTypeDef hUsbDeviceHS;
+
 /* USER CODE BEGIN EXPORTED_VARIABLES */
 	extern SD_HandleTypeDef hsd;
 	extern HAL_SD_CardInfoTypeDef cardInfo;
@@ -135,34 +159,27 @@ const int8_t  STORAGE_Inquirydata_HS[] = {/* 36 */
 
 /**
   * @}
-  */ 
-  
+  */
+
 /** @defgroup USBD_STORAGE_Private_FunctionPrototypes
+  * @brief Private functions declaration.
   * @{
   */
 
-static int8_t STORAGE_Init_HS (uint8_t lun);
-static int8_t STORAGE_GetCapacity_HS (uint8_t lun, 
-                           uint32_t *block_num, 
-                           uint16_t *block_size);
-static int8_t  STORAGE_IsReady_HS (uint8_t lun);
-static int8_t  STORAGE_IsWriteProtected_HS (uint8_t lun);
-static int8_t STORAGE_Read_HS (uint8_t lun, 
-                        uint8_t *buf, 
-                        uint32_t blk_addr,
-                        uint16_t blk_len);
-static int8_t STORAGE_Write_HS (uint8_t lun, 
-                        uint8_t *buf, 
-                        uint32_t blk_addr,
-                        uint16_t blk_len);
-static int8_t STORAGE_GetMaxLun_HS (void);
+static int8_t STORAGE_Init_HS(uint8_t lun);
+static int8_t STORAGE_GetCapacity_HS(uint8_t lun, uint32_t *block_num, uint16_t *block_size);
+static int8_t STORAGE_IsReady_HS(uint8_t lun);
+static int8_t STORAGE_IsWriteProtected_HS(uint8_t lun);
+static int8_t STORAGE_Read_HS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
+static int8_t STORAGE_Write_HS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
+static int8_t STORAGE_GetMaxLun_HS(void);
+
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_DECLARATION */
 /* USER CODE END PRIVATE_FUNCTIONS_DECLARATION */
 
 /**
   * @}
-  */ 
-  
+  */
 
 USBD_StorageTypeDef USBD_Storage_Interface_fops_HS =
 {
@@ -173,122 +190,110 @@ USBD_StorageTypeDef USBD_Storage_Interface_fops_HS =
   STORAGE_Read_HS,
   STORAGE_Write_HS,
   STORAGE_GetMaxLun_HS,
-  (int8_t *)STORAGE_Inquirydata_HS,
+  (int8_t *)STORAGE_Inquirydata_HS
 };
 
 /* Private functions ---------------------------------------------------------*/
 
-/*******************************************************************************
-* Function Name  : STORAGE_Init_HS
-* Description    : 
-* Input          : None.
-* Output         : None.
-* Return         : None.
-*******************************************************************************/
-int8_t STORAGE_Init_HS (uint8_t lun)
+/**
+  * @brief  .
+  * @param  lun: .
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+int8_t STORAGE_Init_HS(uint8_t lun)
 {
-  /* USER CODE BEGIN 9 */ 
+  /* USER CODE BEGIN 9 */
 	if (FS_OK == 0) return USBD_FAIL;
   return (USBD_OK);
-  /* USER CODE END 9 */ 
+  /* USER CODE END 9 */
 }
 
-/*******************************************************************************
-* Function Name  : STORAGE_GetCapacity_HS
-* Description    : 
-* Input          : None.
-* Output         : None.
-* Return         : None.
-*******************************************************************************/
-int8_t STORAGE_GetCapacity_HS (uint8_t lun, uint32_t *block_num, uint16_t *block_size)
+/**
+  * @brief  .
+  * @param  lun: .
+  * @param  block_num: .
+  * @param  block_size: .
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+int8_t STORAGE_GetCapacity_HS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
-  /* USER CODE BEGIN 10 */   
+  /* USER CODE BEGIN 10 */
 	if (FS_OK == 0) return USBD_FAIL;
 	*block_num  = cardInfo.BlockNbr;
 	*block_size = cardInfo.BlockSize;
 	return (USBD_OK);
-  /* USER CODE END 10 */ 
+  /* USER CODE END 10 */
 }
 
-/*******************************************************************************
-* Function Name  : STORAGE_IsReady_HS
-* Description    : 
-* Input          : None.
-* Output         : None.
-* Return         : None.
-*******************************************************************************/
-int8_t  STORAGE_IsReady_HS (uint8_t lun)
+/**
+  * @brief  .
+  * @param  lun: .
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+int8_t STORAGE_IsReady_HS(uint8_t lun)
 {
-  /* USER CODE BEGIN 11 */ 
+  /* USER CODE BEGIN 11 */
 	if (FS_OK == 0) return USBD_FAIL;
   return (USBD_OK);
-  /* USER CODE END 11 */ 
+  /* USER CODE END 11 */
 }
 
-/*******************************************************************************
-* Function Name  : STORAGE_IsWriteProtected_HS
-* Description    : 
-* Input          : None.
-* Output         : None.
-* Return         : None.
-*******************************************************************************/
-int8_t  STORAGE_IsWriteProtected_HS (uint8_t lun)
+/**
+  * @brief  .
+  * @param  lun: .
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+int8_t STORAGE_IsWriteProtected_HS(uint8_t lun)
 {
-  /* USER CODE BEGIN 12 */ 
+  /* USER CODE BEGIN 12 */
   return (USBD_OK);
-  /* USER CODE END 12 */ 
+  /* USER CODE END 12 */
 }
 
-/*******************************************************************************
-* Function Name  : STORAGE_Read_HS
-* Description    : 
-* Input          : None.
-* Output         : None.
-* Return         : None.
-*******************************************************************************/
-int8_t STORAGE_Read_HS (uint8_t lun, 
-                        uint8_t *buf, 
-                        uint32_t blk_addr,                       
-                        uint16_t blk_len)
+/**
+  * @brief  .
+  * @param  lun: .
+  * @param  buf: .
+  * @param  blk_addr: .
+  * @param  blk_len: .
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+int8_t STORAGE_Read_HS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
-  /* USER CODE BEGIN 13 */ 
+  /* USER CODE BEGIN 13 */
 	if (FS_OK == 0) return USBD_FAIL;
 	HAL_SD_ReadBlocks(&hsd, buf, blk_addr, blk_len, 1000);
 	return (USBD_OK);
-  /* USER CODE END 13 */ 
+  /* USER CODE END 13 */
 }
 
-/*******************************************************************************
-* Function Name  : STORAGE_Write_HS
-* Description    :
-* Input          : None.
-* Output         : None.
-* Return         : None.
-*******************************************************************************/
-int8_t STORAGE_Write_HS (uint8_t lun, 
-                         uint8_t *buf, 
-                         uint32_t blk_addr,
-                         uint16_t blk_len)
+/**
+  * @brief  .
+  * @param  lun: .
+  * @param  buf: .
+  * @param  blk_addr: .
+  * @param  blk_len: .
+  * @retval USBD_OK if all operations are OK else USBD_FAIL
+  */
+int8_t STORAGE_Write_HS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
-  /* USER CODE BEGIN 14 */ 
+  /* USER CODE BEGIN 14 */
 	if (FS_OK == 0) return USBD_FAIL;
 	HAL_SD_WriteBlocks(&hsd, buf, blk_addr, blk_len, 1000);
 	return (USBD_OK);
-  /* USER CODE END 14 */ 
+  /* USER CODE END 14 */
 }
 
-/*******************************************************************************
-* Function Name  : STORAGE_GetMaxLun_HS
-* Description    : 
-* Input          : None.
-* Output         : None.
-* Return         : None.
-*******************************************************************************/
-int8_t STORAGE_GetMaxLun_HS (void)
+/**
+  * @brief  .
+  * @param  None
+  * @retval .
+  */
+int8_t STORAGE_GetMaxLun_HS(void)
 {
-  /* USER CODE BEGIN 15 */ 
+  /* USER CODE BEGIN 15 */
   return (STORAGE_LUN_NBR - 1);
-  /* USER CODE END 15 */   
+  /* USER CODE END 15 */
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
@@ -296,9 +301,10 @@ int8_t STORAGE_GetMaxLun_HS (void)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */  
+  */
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
