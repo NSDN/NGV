@@ -4,8 +4,6 @@
 
 #include "halinc.h"
 
-#include "fatfs.h"
-
 typedef struct {
 	WORD	bfType;
 	DWORD	bfSize;

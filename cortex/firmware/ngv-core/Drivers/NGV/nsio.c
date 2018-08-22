@@ -1,6 +1,4 @@
 #include "./Include/nsio.h"
-#include "fatfs.h"
-
 
 #include <stdio.h>
 #include <string.h>
@@ -24,6 +22,32 @@ char* strlwr(char* s) {
 	return s;
 }
 
+uint8_t filopen(FILTYPE* file, char* name, uint8_t mode) {
+	FRESULT res;
+	if (mode == FIL_READ) {
+		res = f_open(file, name, FA_READ);
+	} else if (mode == FIL_WRITE) {
+		res = f_open(file, name, FA_WRITE);
+	}
+	return res == FR_OK ? FIL_OK : FIL_ERR;
+}
+
+void filclose(FILTYPE* file) {
+	f_close(file);
+}
+
+void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr) {
+	f_read(file, buf, len, ptr);
+}
+
+void filgets(FILTYPE* file, uint8_t* buf, uint32_t len) {
+	f_gets(buf, len, file);
+}
+
+uint8_t fileof(FILTYPE* file) {
+	return f_eof(file);
+}
+
 #define __print(buf) lcd->printfa(lcd->p, buf)
 int print(const char* format, ...) {
 	char* iobuf = malloc(sizeof(char) * IOBUF);
@@ -35,6 +59,7 @@ int print(const char* format, ...) {
 	free(iobuf);
 	return result;
 }
+
 int scan(char* buffer) {
 	unsigned char count = 0, tmp = '\0';
 	while (1) {
@@ -60,6 +85,7 @@ int scan(char* buffer) {
 	print("\n");
 	return count;
 }
+
 int fscan(char* buffer, const char* format, ...) {
 	scan(buffer);
 	va_list args;
@@ -74,36 +100,36 @@ char* read(char* path) {
 		print("File system error.\n");
 		return OK;
 	}
-	FRESULT res; FIL f;
-	res = f_open(&f, path, FA_READ);
-	if (res != FR_OK) {
+	uint8_t res; FILTYPE f;
+	res = filopen(&f, path, FIL_READ);
+	if (res != FIL_OK) {
 		print("File open failed.\n");
 		print("At file: %s\n\n", path);
 		return OK;
 	}
 	int length = 0; char tmp[2];
-	while (f_eof(&f) == 0) {
-		f_gets(tmp, 2, &f);
+	while (fileof(&f) != FIL_OK) {
+		filgets(tmp, 2, &f);
 		if (tmp[0] != '\r')
 			length += 1;
 	}
-	f_close(&f);
-	res = f_open(&f, path, FA_READ);
-	if (res != FR_OK) {
+	filclose(&f);
+	res = filopen(&f, path, FIL_READ);
+	if (res != FIL_OK) {
 		print("File open failed.\n");
 		print("At file: %s\n\n", path);
 		return OK;
 	}
 	char* data = malloc(sizeof(char) * (length + 1));
 	length = 0;
-	while (f_eof(&f) == 0) {
-		f_gets(tmp, 2, &f);
+	while (fileof(&f) != FIL_OK) {
+		filgets(tmp, 2, &f);
 		if (tmp[0] != '\r') {
 			data[length] = tmp[0];
 			length += 1;
 		}
 	}
-	f_close(&f);
+	filclose(&f);
 	data[length] = '\0';
 	return data;
 }
@@ -237,4 +263,3 @@ char* cut(char* src, const char* head) {
 	}
 	return OK;
 }
-
