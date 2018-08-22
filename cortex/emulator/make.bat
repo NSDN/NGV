@@ -14,8 +14,6 @@ echo Copying library...
 copy /Y .\Drivers\SDL2\SDL2.dll .\Output\SDL2.dll
 
 echo Copying assets...
-echo ----
-xcopy /Y /E Assets Output\
-echo ----
+xcopy /Y /E /Q /I Assets Output\Assets
 
 pause
