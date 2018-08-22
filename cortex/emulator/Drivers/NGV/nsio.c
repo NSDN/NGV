@@ -1,8 +1,10 @@
 #include "./Include/nsio.h"
 
 #include <stdio.h>
+#include <conio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <malloc.h>
 
 #include "./Include/lcd.h"
@@ -23,31 +25,48 @@ char* strlwr(char* s) {
 }
 
 uint8_t filopen(FILTYPE* file, char* name, uint8_t mode) {
-	FILTYPE* f;
+	FILTYPE f = NULL;
+	const char* base = "Assets/";
+	char* path = (char*) malloc(sizeof(char) * (strlen(base) + strlen(name)));
+	strcpy(path, base); strcat(path, name);
 	if (mode == FIL_READ) {
-		f = fopen(name, "r");
+		f = fopen(path, "r");
 	} else if (mode == FIL_WRITE) {
-		f = fopen(name, "w");
+		f = fopen(path, "w");
 	}
-	if (f != NULL) memcpy(file, f, sizeof(FILTYPE));
+	if (f != NULL) *file = f;
 	return f != NULL ? FIL_OK : FIL_ERR;
 }
 
 void filclose(FILTYPE* file) {
-	fclose(file);
+	fclose(*file);
 }
 
 void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr) {
-	fread(buf + *ptr, 1, len, file);
+	fread(buf + *ptr, 1, len, *file);
 	*ptr += len;
 }
 
-void filgets(FILTYPE* file, uint8_t* buf, uint32_t len) {
-	fgets((char*) buf, len, file);
+void filgets(FILTYPE* file, char* buf, uint32_t len) {
+	char* ptr = fgets(buf, len, *file);
+	if (ptr == NULL) buf[0] = '\r';
 }
 
 uint8_t fileof(FILTYPE* file) {
-	return feof(file);
+	return feof(*file) != 0;
+}
+
+int filprint(FILTYPE* file, const char* format, ...) {
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF);
+	va_list args;
+	va_start(args, format);
+	int result = vsprintf(iobuf, format, args);
+	va_end(args);
+
+	fputs(iobuf, *file);
+
+	free(iobuf);
+	return result;
 }
 
 int print(const char* format, ...) {
@@ -57,16 +76,49 @@ int print(const char* format, ...) {
 	int result = vsprintf(iobuf, format, args);
 	va_end(args);
 
-	lcd->printfa(lcd->p, iobuf);
 	printf("%s", iobuf);
+	lcd->printfa(lcd->p, iobuf);
 
 	free(iobuf);
 	return result;
 }
 
+extern void processEvent();
+extern void progress();
+
 int scan(char* buffer) {
-	gets(buffer);
-	return strlen(buffer);
+	unsigned char count = 0, tmp = '\0';
+	while (1) {
+		processEvent();
+		if (kbhit() != 0) {
+			tmp = getch();
+			if (tmp == 0x1B || tmp == 0x03)
+				exit(0);
+
+			if (tmp == '\r') {
+				lcd->draw(lcd->p, lcd->p->ptrX, lcd->p->ptrY, ' ');
+				printf(" ");
+				break;
+			}
+			buffer[count] = tmp;
+			if (buffer[count] == 0x08 && count > 0) {
+				count -= 1;
+				lcd->printfa(lcd->p, "%c", 0x08);
+				printf("\b  \b\b");
+				continue;
+			} else if (buffer[count] != 0x08) {
+				lcd->printfa(lcd->p, "%c", buffer[count]);
+				putch(buffer[count]);
+				count += 1;
+			}
+		}
+		lcd->draw(lcd->p, lcd->p->ptrX, lcd->p->ptrY, '_');
+		lcd->draw(lcd->p, lcd->p->ptrX + (lcd->p->Font == Big ? 8 : 6), lcd->p->ptrY, ' ');
+		progress();
+	}
+	buffer[count] = '\0';
+	print("\n");
+	return count;
 }
 
 int fscan(char* buffer, const char* format, ...) {
@@ -92,7 +144,7 @@ char* read(char* path) {
 	}
 	int length = 0; char tmp[2];
 	while (fileof(&f) != FIL_OK) {
-		filgets(&f, (uint8_t*) tmp, 2);
+		filgets(&f, tmp, 2);
 		if (tmp[0] != '\r')
 			length += 1;
 	}
@@ -106,7 +158,7 @@ char* read(char* path) {
 	char* data = (char*) malloc(sizeof(char) * (length + 1));
 	length = 0;
 	while (fileof(&f) != FIL_OK) {
-		filgets(&f, (uint8_t*) tmp, 2);
+		filgets(&f, tmp, 2);
 		if (tmp[0] != '\r') {
 			data[length] = tmp[0];
 			length += 1;

@@ -33,7 +33,7 @@ char* get(char* src, int start, char* buf, int size);
 
 #include <stdio.h>
 
-#define FILTYPE FILE
+#define FILTYPE FILE*
 
 #define FIL_ERR     0
 #define FIL_OK      1
@@ -43,7 +43,8 @@ char* get(char* src, int start, char* buf, int size);
 uint8_t filopen(FILTYPE* file, char* name, uint8_t mode);
 void filclose(FILTYPE* file);
 void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr);
-void filgets(FILTYPE* file, uint8_t* buf, uint32_t len);
+void filgets(FILTYPE* file, char* buf, uint32_t len);
+int filprint(FILTYPE* file, const char* format, ...);
 uint8_t fileof(FILTYPE* file);
 
 #ifdef __cplusplus

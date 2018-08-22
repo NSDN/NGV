@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstdio>
 
+void processEvent();
 SDL_Event event;
 SDL_Renderer* renderer;
 SDL_Rect rect, pixelRect;
@@ -19,14 +20,17 @@ static uint16_t LCD_SCALE = 1;
 static uint32_t LCD_PTR;
 static uint8_t LCD_SPD = 0;
 
-extern uint8_t endFlag, reset;
+extern uint8_t initFlag, endFlag, reset;
 extern uint16_t keyValue;
+
+#include <setjmp.h>
+extern jmp_buf rstPos;
 
 static uint8_t _progress = 0;
 static uint16_t _count = 0;
 void progress() {
     char c;
-    if (_count < 1000) { _count += 1; return; }
+    if (_count < 100) { _count += 1; return; }
     else {
         _count = 0;
 
@@ -40,7 +44,12 @@ void progress() {
     }
 }
 
-void delay(uint32_t ms) { SDL_Delay(ms); }
+void delay(uint32_t ms) { 
+    for (uint32_t i = 0; i < ms; i++) {
+        processEvent();
+        SDL_Delay(1);
+    }
+}
 
 void pixel(SDL_Renderer* render, uint16_t x, uint16_t y) {
 	pixelRect.x = x * pixelRect.w;
@@ -126,7 +135,10 @@ void resizeWindow(uint16_t scale) {
 void processEvent() {
     while (SDL_PollEvent(&event) != 0) {
 		if (event.type == SDL_QUIT) {
-			endFlag = 1;
+			if (initFlag == 0) {
+                deinitSDL();
+                exit(0);
+            } else endFlag = 1;
 		}
 		if (event.type == SDL_KEYDOWN) {
 			switch (event.key.keysym.sym) {
@@ -155,10 +167,15 @@ void processEvent() {
 		if (event.type == SDL_KEYUP) {
 			switch (event.key.keysym.sym) {
                 case SDLK_ESCAPE:
-                    endFlag = 1;
+                    if (initFlag == 0) {
+                        deinitSDL();
+                        exit(0);
+                    } else endFlag = 1;
                     break;
                 case SDLK_BACKSPACE:
-                    reset = 1;
+                    if (initFlag == 0)
+                        longjmp(rstPos, 0);
+                    else reset = 1;
                     break;
 
                 case SDLK_w:        keyValue &= ~LPAD_UP;    break;

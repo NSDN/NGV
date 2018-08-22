@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <setjmp.h>
 
-uint8_t endFlag = 0, reset = 0;
+uint8_t initFlag = 0, endFlag = 0, reset = 0;
 jmp_buf rstPos;
 uint8_t FS_OK = 1;
 
@@ -26,11 +26,12 @@ int main(int argc, char* argv[]) {
 
 	setjmp(rstPos);
 RST:
-	reset = 0;
+	initFlag = endFlag = reset = 0;
 	tReset();
 	resizeWindow(scale);
 
 	setup();
+	initFlag = 1;
 
 	while (!endFlag) {
 		processEvent();
