@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <ctime>
 
 void processEvent();
 SDL_Event event;
@@ -45,10 +46,9 @@ void progress() {
 }
 
 void delay(uint32_t ms) { 
-    for (uint32_t i = 0; i < ms; i++) {
+    clock_t begin = clock();
+    while ((uint32_t) ((double) (clock() - begin) / CLK_TCK * 1000) < ms)
         processEvent();
-        SDL_Delay(1);
-    }
 }
 
 void pixel(SDL_Renderer* render, uint16_t x, uint16_t y) {
@@ -142,6 +142,18 @@ void processEvent() {
 		}
 		if (event.type == SDL_KEYDOWN) {
 			switch (event.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    if (initFlag == 0) {
+                        deinitSDL();
+                        exit(0);
+                    } else endFlag = 1;
+                    break;
+                case SDLK_BACKSPACE:
+                    if (initFlag == 0)
+                        longjmp(rstPos, 0);
+                    else reset = 1;
+                    break;
+
                 case SDLK_w:        keyValue |= LPAD_UP;    break;
                 case SDLK_s:        keyValue |= LPAD_DOWN;  break;
                 case SDLK_a:        keyValue |= LPAD_LEFT;  break;
@@ -166,18 +178,6 @@ void processEvent() {
 		}
 		if (event.type == SDL_KEYUP) {
 			switch (event.key.keysym.sym) {
-                case SDLK_ESCAPE:
-                    if (initFlag == 0) {
-                        deinitSDL();
-                        exit(0);
-                    } else endFlag = 1;
-                    break;
-                case SDLK_BACKSPACE:
-                    if (initFlag == 0)
-                        longjmp(rstPos, 0);
-                    else reset = 1;
-                    break;
-
                 case SDLK_w:        keyValue &= ~LPAD_UP;    break;
                 case SDLK_s:        keyValue &= ~LPAD_DOWN;  break;
                 case SDLK_a:        keyValue &= ~LPAD_LEFT;  break;

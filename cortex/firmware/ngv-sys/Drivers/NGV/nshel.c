@@ -418,16 +418,19 @@ void NSHEL_run(char* var) {
 	char* _gcvar = 0;
 
 	int varLines = lines(var);
+	int result = 0;
 	print("NSHEL: %d line(s), running...\n", varLines);
-	for (int i = 0; i < varLines; i++)
-		if (NSHEL_execute(_gcvar = line(var, i))) {
-			free(_gcvar);
+	for (int i = 0; i < varLines; i++) {
+		result = NSHEL_execute(_gcvar = line(var, i));
+		free(_gcvar);
+		if (result == ERR) {
 			print("\nNSHEL running error!\n");
 			print("At line %d: %s\n\n", i, _gcvar = line(var, i));
 			free(_gcvar);
 			return;
-		} else free(_gcvar);
-	free(_gcvar);
+		} else if (result == ETC)
+			break;
+	}
 
 	print("\nNSHEL running finished.\n\n");
 }

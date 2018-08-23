@@ -45,7 +45,20 @@ void filgets(FILTYPE* file, uint8_t* buf, uint32_t len) {
 }
 
 uint8_t fileof(FILTYPE* file) {
-	return f_eof(file);
+	return f_eof(file) != 0;
+}
+
+int filprint(FILTYPE* file, const char* format, ...) {
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF);
+	va_list args;
+	va_start(args, format);
+	int result = vsprintf(iobuf, format, args);
+	va_end(args);
+
+	f_puts(iobuf, file);
+
+	free(iobuf);
+	return result;
 }
 
 #define __print(buf) lcd->printfa(lcd->p, buf)
