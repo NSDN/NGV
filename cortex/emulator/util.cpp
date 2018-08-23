@@ -23,6 +23,7 @@ bool checkKeyUp(uint16_t key) {
 		tmpState &= ~key;
 		return true;
 	}
+	return false;
 }
 
 bool waitKeyUp(uint16_t key) {
