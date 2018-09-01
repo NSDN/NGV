@@ -1,0 +1,44 @@
+run <main>
+
+<main> {
+	map m1 = M(
+		mov r0, 20
+		mov r1, 0
+	[head]
+		inc r1
+		mov r2, r1
+		mul r2, r1
+		put r1, r2
+		cmp r1, r0
+		jnz [head]
+	)
+
+    use m1
+    mov r0, 20
+    mov r1, 0
+[work]
+    inc r1
+    get r2, r1
+    out r2
+    out ", "
+    cmp r1, r0
+    jnz [work]
+    out '\n'
+
+    code c = (
+        run <test1>
+        <test1> {
+            prt "this is test1"
+            run <test2>
+        }
+        <test2> {
+            prt "this is test2"
+            ret "done"
+        }
+    )
+
+    eval r0, c
+    out "result is "
+    prt r0
+    end
+}

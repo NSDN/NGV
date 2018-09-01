@@ -16,7 +16,7 @@ namespace NSASM {
 	class NSASM {
 
 	public:
-		static string ver() { return "0.45"; }
+		static string ver() { return "0.46"; }
 
 		enum Result {
 			RES_OK, RES_ERR, RES_ETC
@@ -152,8 +152,11 @@ namespace NSASM {
 		vector<Register> regGroup;
 		map<string, Operator> funcList;
 
+		virtual NSASM* instance(NSASM& super, map<string, string>& code);
 		Register* eval(Register* reg);
 		void loadFuncList();
+
+		NSASM(NSASM& super, map<string, string>& code);
 
 	private:
 		enum WordType {
@@ -187,8 +190,6 @@ namespace NSASM {
 		Result calc(float* dst, float src, char type);
 		Result calc(Register* dst, int src, char type);
 		Result calc(Register* dst, Register* src, char type);
-
-		NSASM(NSASM& super, map<string, string>& code);
 
 	};
 
