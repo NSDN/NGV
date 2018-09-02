@@ -1,6 +1,6 @@
-#include "./Include/Util.h"
+#include "Util.h"
 
-#include "./Include/NSASM.h"
+#include "NSASM.h"
 
 namespace NSASM {
 

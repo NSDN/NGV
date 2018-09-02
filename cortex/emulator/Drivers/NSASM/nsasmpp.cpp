@@ -1,5 +1,5 @@
-#include "./Include/NSASM.h"
-#include "./Include/Util.h"
+#include "NSASM.h"
+#include "Util.h"
 
 #include <fstream>
 using namespace std;

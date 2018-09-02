@@ -1,7 +1,7 @@
-#include "./Include/NSASM.h"
+#include "NSASM.h"
 
 #include <algorithm>
-#include "./Include/Util.h"
+#include "Util.h"
 
 template <typename T>
 inline T* _gc(T* v) { delete v; return nullptr; }

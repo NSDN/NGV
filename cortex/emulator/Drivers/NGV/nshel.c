@@ -1,11 +1,13 @@
 #include "./Include/nsio.h"
 #include "./Include/nshel.h"
+#include "./Include/nsasm.h"
 
 #include "./Include/lcd.h"
 #include "./Include/bmp.h"
 #include "./Include/logo.h"
 
 #include "../NSASM/Include/nsasmpp.h"
+#include "../NSGDX/Include/nsgdxpp.h"
 
 #include <malloc.h>
 #include <string.h>
@@ -48,7 +50,8 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "graph", &_nshel_fun_graph },
 #endif
 	{ "nshel", &_nshel_fun_nshel },
-	{ "nsasm", &_nshel_fun_nsasmpp },
+	{ "nsasm", &_nshel_fun_nsasm },
+	{ "nsasm++", &_nshel_fun_nsasmpp },
 
 	{ "bmp", &_nshel_fun_bmp },
 
@@ -337,8 +340,14 @@ int _nshel_fun_graph(int argc, char* argv[]) {
 int _nshel_fun_nshel(int argc, char* argv[]) {
 	return nshel(argc, argv);
 }
+int _nshel_fun_nsasm(int argc, char* argv[]) {
+	return nsasm(argc, argv);
+}
 int _nshel_fun_nsasmpp(int argc, char* argv[]) {
 	return nsasmpp(argc, argv);
+}
+int _nshel_fun_nsgdx(int argc, char* argv[]) {
+	return nsgdx(argc, argv);
 }
 
 int _nshel_fun_bmp(int argc, char* argv[]) {
