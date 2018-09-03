@@ -52,6 +52,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
 	{ "nsasm++", &_nshel_fun_nsasmpp },
+	{ "nsgdx", &_nshel_fun_nsgdx },
 
 	{ "bmp", &_nshel_fun_bmp },
 

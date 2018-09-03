@@ -6,12 +6,6 @@ extern LCD* lcd;
 extern void delay(uint32_t ms);
 
 namespace NSGDX {
-    
-    NSASM* NSGDX::instance(NSASM& super, map<string, string>& code) {
-        return new NSGDX(super, code);
-    }
-
-    NSGDX::NSGDX(NSASM& super, map<string, string>& code) : NSASM(super, code) { }
 
     NSGDX::NSGDX(int heap, int stack, int reg, map<string, string> code) : NSASM(heap, stack, reg, code) {
         funcList["wait"] = $OP_{

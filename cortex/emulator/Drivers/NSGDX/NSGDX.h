@@ -15,8 +15,10 @@ namespace NSGDX {
         ~NSGDX();
     
     protected:
-        NSASM* instance(NSASM& super, map<string, string>& code) override;
-        NSGDX(NSASM& super, map<string, string>& code);
+        NSASM* instance(NSASM& super, map<string, string>& code) override {
+            return new NSGDX(super, code);
+        }
+        NSGDX(NSASM& super, map<string, string>& code) : NSASM(super, code) { }
 
     };
 

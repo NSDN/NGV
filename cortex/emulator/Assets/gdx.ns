@@ -1,0 +1,11 @@
+back 0xFF9800
+fore 0xFFFFFF
+cls
+wait 1000
+mov r0, 128
+mov r1, 128
+show "hello, world!"
+wait 1000
+back 0xFFFFFF
+fore 0x000000
+cls
