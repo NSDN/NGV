@@ -1,5 +1,7 @@
 #include "NSGDX.h"
 
+#include "../../util.h"
+
 #include "../NGV/Include/lcd.h"
 extern LCD* lcd;
 
@@ -33,6 +35,20 @@ namespace NSGDX {
             if (src != nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
             lcd->colorf(lcd->p, dst->n.i);
+            return Result::RES_OK;
+        };
+        funcList["font"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            lcd->font(lcd->p, dst->n.i > 1 ? 2 : 1);
+            return Result::RES_OK;
+        };
+        funcList["scl"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            lcd->scale(lcd->p, dst->n.i);
             return Result::RES_OK;
         };
         funcList["pix"] = $OP_{

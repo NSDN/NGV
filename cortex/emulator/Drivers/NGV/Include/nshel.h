@@ -20,6 +20,7 @@ int _nshel_fun_delay(int argc, char* argv[]);
 int _nshel_fun_colorb(int argc, char* argv[]);
 int _nshel_fun_colorf(int argc, char* argv[]);
 int _nshel_fun_font(int argc, char* argv[]);
+int _nshel_fun_scale(int argc, char* argv[]);
 int _nshel_fun_style(int argc, char* argv[]);
 int _nshel_fun_rotate(int argc, char* argv[]);
 #ifdef USE_FLASH

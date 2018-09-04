@@ -38,6 +38,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "colorb", &_nshel_fun_colorb },
 	{ "colorf", &_nshel_fun_colorf },
 	{ "font", &_nshel_fun_font },
+	{ "scale", &_nshel_fun_scale },
 	{ "style", &_nshel_fun_style },
 	{ "rotate", &_nshel_fun_rotate },
 #ifdef USE_FLASH
@@ -181,6 +182,17 @@ int _nshel_fun_font(int argc, char* argv[]) {
 		} else {
 			return ERR;
 		}
+	}
+	return OK;
+}
+int _nshel_fun_scale(int argc, char* argv[]) {
+	if (argc == 1) {
+		print("Font scale: %d\n", lcd->p->scale);
+	} else {
+		int scale = 0;
+		if (__getvar__(argv[1], &scale) == ERR) return ERR;
+		lcd->scale(lcd->p, scale);
+		lcd->clear(lcd->p);
 	}
 	return OK;
 }

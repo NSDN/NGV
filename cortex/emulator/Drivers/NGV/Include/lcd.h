@@ -13,6 +13,8 @@
 #define LCD_LANDSCAPE 3
 #define LCD_LANDSCAPE_ANTI 1
 
+#define LCD_IS_EMU
+
 //#define LCD_USE_PRIVATE_FUN
 #define LCD_USE_REG_ACCESS
 
@@ -21,18 +23,23 @@ typedef enum {
 	Big = 2
 } LCDFont;
 
-// typedef struct {
-// 	GPIO_TypeDef* port;
-// 	uint16_t pin;
-// } pIO;
+#ifndef LCD_IS_EMU
+typedef struct {
+	GPIO_TypeDef* port;
+	uint16_t pin;
+} pIO;
+#endif
 
 typedef struct {
-	// pIO rd, wr, rs, cs, rst;
-	// pIO data[24];
-	// uint32_t cdata[24];
+#ifndef LCD_IS_EMU
+	pIO rd, wr, rs, cs, rst;
+	pIO data[24];
+	uint32_t cdata[24];
+#endif
 	uint16_t width;
 	uint16_t height;
 	LCDFont Font;
+	uint8_t scale;
 	uint32_t backColor;
 	uint32_t foreColor;
 	uint8_t rotate;
@@ -54,6 +61,7 @@ typedef struct {
 	void (*colorb)(pLCD* p, uint32_t color);
 	void (*colorf)(pLCD* p, uint32_t color);
 	void (*font)(pLCD* p, LCDFont f);
+	void (*scale)(pLCD* p, uint8_t scale);
 	void (*clear)(pLCD* p);
 	void (*scroll)(pLCD* p, uint16_t pos);
 	void (*rotate)(pLCD* p, uint8_t r);
@@ -67,14 +75,21 @@ typedef struct {
 	void (*bitmaptc)(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, uint32_t* data);
 	void (*bitmaps)(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data);
 	void (*bitmapsc)(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data);
+	void (*icon)(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data);
+	void (*iconc)(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data);
 	void (*draw)(pLCD* p, uint16_t x, uint16_t y, char character);
 	void (*print)(pLCD* p, uint16_t x, uint16_t y, char* string);
 	int (*printf)(pLCD* p, uint16_t x, uint16_t y, const char* format, ...);
 	int (*printfc)(pLCD* p, uint16_t y, const char* format, ...);
+	int (*printfcp)(pLCD* p, uint16_t x, uint16_t y, const char* format, ...);
 	int (*printfa)(pLCD* p, const char* format, ...);
 } LCD;
 
-LCD* LCDInit(/*pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST, pIO data[]*/);
+LCD* LCDInit(
+#ifndef LCD_IS_EMU
+	pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST, pIO data[]
+#endif
+);
 
 
 #endif
