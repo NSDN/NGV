@@ -500,15 +500,15 @@ void _lcd_draw(pLCD* p, uint16_t x, uint16_t y, char character) {
 			for (uint8_t i = 0; i < 6; i++) {
 				for (uint8_t j = 0; j < 8; j++) {
 					if (getFont(0)[c * 6 + i] & (1 << j)) {
-						_buf[i * 2 + j * 2 * 6] = p->foreColor;
-						_buf[i * 2 + 1 + j * 2 * 6] = p->foreColor;
-						_buf[i * 2 + (j * 2 + 1) * 6] = p->foreColor;
-						_buf[i * 2 + 1 + (j * 2 + 1) * 6] = p->foreColor;
+						_buf[i * 2 + j * 2 * 12] = p->foreColor;
+						_buf[i * 2 + 1 + j * 2 * 12] = p->foreColor;
+						_buf[i * 2 + (j * 2 + 1) * 12] = p->foreColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 12] = p->foreColor;
 					} else {
-						_buf[i * 2 + j * 2 * 6] = p->backColor;
-						_buf[i * 2 + 1 + j * 2 * 6] = p->backColor;
-						_buf[i * 2 + (j * 2 + 1) * 6] = p->backColor;
-						_buf[i * 2 + 1 + (j * 2 + 1) * 6] = p->backColor;
+						_buf[i * 2 + j * 2 * 12] = p->backColor;
+						_buf[i * 2 + 1 + j * 2 * 12] = p->backColor;
+						_buf[i * 2 + (j * 2 + 1) * 12] = p->backColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 12] = p->backColor;
 					}
 				}
 			}
@@ -571,7 +571,7 @@ void _lcd_printa_(pLCD* p, char* string) {
 				continue;
 			}
 			_lcd_draw(p, p->ptrX, p->ptrY, string[i]);
-			p->buffer[p->ptrY / 16 * p->scale][p->ptrX / 8 * p->scale] = string[i];
+			p->buffer[p->ptrY / 16 / p->scale][p->ptrX / 8 / p->scale] = string[i];
 			p->ptrX += 8 * p->scale;
 			if (p->ptrX > p->width - 8 * p->scale) {
 				p->ptrX = 0;
@@ -579,7 +579,7 @@ void _lcd_printa_(pLCD* p, char* string) {
 			}
 			i++;
 		}
-		if (string[i] == '\0') p->buffer[p->ptrY / 16 * p->scale][p->ptrX / 8 * p->scale] = string[i];
+		if (string[i] == '\0') p->buffer[p->ptrY / 16 / p->scale][p->ptrX / 8 / p->scale] = string[i];
 	} else {
 		while (string[i] != '\0') {
 			if (p->ptrY > p->height - 8 * p->scale) {
@@ -604,7 +604,7 @@ void _lcd_printa_(pLCD* p, char* string) {
 				continue;
 			}
 			_lcd_draw(p, p->ptrX, p->ptrY, string[i]);
-			p->buffer[p->ptrY / 8 * p->scale][p->ptrX / 6 * p->scale] = string[i];
+			p->buffer[p->ptrY / 8 / p->scale][p->ptrX / 6 / p->scale] = string[i];
 			p->ptrX += 6 * p->scale;
 			if (p->ptrX >= p->width - 6 * p->scale) {
 				p->ptrX = 0;
@@ -612,7 +612,7 @@ void _lcd_printa_(pLCD* p, char* string) {
 			}
 			i++;
 		}
-		if (string[i] == '\0') p->buffer[p->ptrY / 8 * p->scale][p->ptrX / 6 * p->scale] = string[i];
+		if (string[i] == '\0') p->buffer[p->ptrY / 8 / p->scale][p->ptrX / 6 / p->scale] = string[i];
 	}
 }
 
@@ -684,7 +684,7 @@ void _lcd_print(pLCD* p, uint16_t x, uint16_t y, char* string) {
 }
 
 int _lcd_printf(pLCD* p, uint16_t x, uint16_t y, const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF_SIZE);
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);
@@ -695,32 +695,32 @@ int _lcd_printf(pLCD* p, uint16_t x, uint16_t y, const char* format, ...) {
 }
 
 int _lcd_printfc(pLCD* p, uint16_t y, const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF_SIZE);
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);
 	va_end(args);
-	uint16_t x = (p->width - strlen(iobuf) * ((p->Font == Big) ? 8 : 6)) / 2;
+	uint16_t x = (p->width - strlen(iobuf) * (((p->Font == Big) ? 8 : 6 ) * p->scale)) / 2;
 	_lcd_print(p, x, y, iobuf);
 	free(iobuf);
 	return result;
 }
 
 int _lcd_printfcp(pLCD* p, uint16_t x, uint16_t y, const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF_SIZE);
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);
 	va_end(args);
-	x = x - (strlen(iobuf) * ((p->Font == Big) ? 8 : 6)) / 2;
-	y = y - ((p->Font == Big) ? 16 : 8);
+	x = x - (strlen(iobuf) * (((p->Font == Big) ? 8 : 6 ) * p->scale)) / 2;
+	y = y - (((p->Font == Big) ? 16 : 8) * p->scale);
 	_lcd_print(p, x, y, iobuf);
 	free(iobuf);
 	return result;
 }
 
 int _lcd_printfa(pLCD* p, const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF_SIZE);
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);

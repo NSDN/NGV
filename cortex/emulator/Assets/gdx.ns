@@ -4,8 +4,12 @@ cls
 wait 1000
 mov r0, 128
 mov r1, 128
-show "hello, world!"
-wait 1000
+font 2
+scl 2
+show "NGV-EMU"
+wait 3000
 back 0xFFFFFF
 fore 0x000000
+scl 1
+font 1
 cls

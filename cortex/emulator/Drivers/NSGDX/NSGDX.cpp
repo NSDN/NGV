@@ -41,7 +41,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
-            lcd->font(lcd->p, dst->n.i > 1 ? 2 : 1);
+            lcd->font(lcd->p, (LCDFont) (dst->n.i > 1 ? 2 : 1));
             return Result::RES_OK;
         };
         funcList["scl"] = $OP_{
