@@ -7,8 +7,14 @@ wait 1000
 code c = (
     mov r0, 128
     mov r1, 128
-    show "NGV-EMU"
+    show "NGV-EMU NSGDX TEST"
     wait 1000
+    eval r0, (
+        mov r0, 128
+        mov r1, 256
+        scl 1
+        show "Press F8 to finish the test"
+    )
     key "F8"
 )
 eval c
