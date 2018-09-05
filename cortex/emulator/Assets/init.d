@@ -10,6 +10,7 @@ print [name].nsg -> nsgdx [name].nsg
 print
 delay 1000
 pause
+print
 clear
 
 nshel
