@@ -11,15 +11,17 @@ namespace NSGDX {
     class NSGDX : public NSASM {
 
     public:
-        NSGDX(int heap, int stack, int reg, map<string, string> code);
-        ~NSGDX();
+        NSGDX(int heap, int stack, int reg, map<string, string> code) : NSASM(heap, stack, reg, code) { gdxFunc(); }
+        ~NSGDX() {  }
     
     protected:
+        void gdxFunc();
+
         NSASM* instance(NSASM& super, map<string, string>& code) override {
             return new NSGDX(super, code);
         }
-        NSGDX(NSASM& super, map<string, string>& code) : NSASM(super, code) { }
-
+        NSGDX(NSASM& super, map<string, string>& code) : NSASM(super, code) { gdxFunc(); }
+        
     };
 
 }

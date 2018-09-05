@@ -23,7 +23,7 @@ extern void delay(uint32_t ms);
 
 namespace NSGDX {
 
-    NSGDX::NSGDX(int heap, int stack, int reg, map<string, string> code) : NSASM(heap, stack, reg, code) {
+    void NSGDX::gdxFunc() {
         funcList["wait"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;
@@ -161,10 +161,6 @@ namespace NSGDX {
             }
             return Result::RES_OK;
         };
-    }
-
-    NSGDX::~NSGDX() {
-
     }
 
 }

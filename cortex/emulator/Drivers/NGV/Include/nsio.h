@@ -21,6 +21,8 @@ extern jmp_buf rstPos;
 
 char* strlwr(char* s);
 
+void pause();
+
 int scan(char* buffer);
 int fscan(char* buffer, const char* format, ...);
 int print(const char* format, ...);

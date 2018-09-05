@@ -2,7 +2,7 @@
 #define __NSHEL_H_
 
 
-#define NSHEL_VERSION 0.02
+#define NSHEL_VERSION 0.03
 
 #define NSHEL_HED_LEN 32
 #define NSHEL_ARG_LEN 64
@@ -11,6 +11,7 @@
 int _nshel_fun_help(int argc, char* argv[]);
 int _nshel_fun_exit(int argc, char* argv[]);
 int _nshel_fun_print(int argc, char* argv[]);
+int _nshel_fun_pause(int argc, char* argv[]);
 int _nshel_fun_clear(int argc, char* argv[]);
 int _nshel_fun_logo(int argc, char* argv[]);
 int _nshel_fun_ver(int argc, char* argv[]);

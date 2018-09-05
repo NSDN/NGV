@@ -1,0 +1,19 @@
+font 2
+scl 2
+back 0xFF9800
+fore 0xFFFFFF
+cls
+wait 1000
+code c = (
+    mov r0, 128
+    mov r1, 128
+    show "NGV-EMU"
+    wait 1000
+    key "F8"
+)
+eval c
+back 0xFFFFFF
+fore 0x000000
+scl 1
+font 1
+cls

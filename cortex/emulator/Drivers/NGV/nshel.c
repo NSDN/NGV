@@ -29,6 +29,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "help", &_nshel_fun_help },
 	{ "exit", &_nshel_fun_exit },
 	{ "print", &_nshel_fun_print },
+	{ "pause", &_nshel_fun_pause },
 	{ "clear", &_nshel_fun_clear },
 	{ "logo", &_nshel_fun_logo },
 	{ "ver", &_nshel_fun_ver },
@@ -60,11 +61,19 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "\0", 0 }
 };
 
+static NSHEL_Function NSHEL_interList[] = {
+	{ "e", &_nshel_fun_nshel },
+	{ "nso", &_nshel_fun_nsasm },
+	{ "ns", &_nshel_fun_nsasmpp },
+	{ "nsg", &_nshel_fun_nsgdx },
+
+	{ "\0", 0 }
+};
+
 int nshel(int argc, char* argv[]) {
 	print("NyaSama Hardware Environment Language\n");
 	print("Version: %1.2f\n\n", NSHEL_VERSION);
 	if (argc < 2) {
-		print("Usage: nshel [FILE]\n\n");
 		NSHEL_console();
 		return OK;
 	} else {
@@ -90,6 +99,12 @@ int _nshel_fun_print(int argc, char* argv[]) {
 		for (int i = 1; i < argc; i++)
 			print("%s ", argv[i]);
 	}
+	print("\n");
+	return OK;
+}
+int _nshel_fun_pause(int argc, char* argv[]) {
+	print("Press any key to continue.");
+	pause();
 	print("\n");
 	return OK;
 }
@@ -406,16 +421,32 @@ int NSHEL_getArgs(char* arg, char* argv[]) {
 
 int NSHEL_execute(char* var) {
 	char head[NSHEL_HED_LEN] = "\0", arg[NSHEL_ARG_LEN] = "\0";
+	if (strlen(var) == 0) return OK;
+	
 	sscanf(var, "%s %[^\n]", head, arg);
 	int index = NSHEL_getSymbolIndex(NSHEL_funList, head);
-	if (index == ETC) return ERR;
-	int argc = 0; char* argv[NSHEL_ARG_MAX];
-	argv[0] = (char*) malloc(sizeof(char) * (strlen(head) + 1));
-	strcpy(argv[0], head);
-	argc =  NSHEL_getArgs(arg, argv);
-	int result = NSHEL_funList[index].fun(argc, argv);
-	for (int i = 0; i < argc; i++) free(argv[i]);
-	return result;
+	if (index == ETC) {
+		char ext[NSHEL_HED_LEN];
+		sscanf(head, "%*[^.] %*[. \t]%[^\n]", ext);
+		index = NSHEL_getSymbolIndex(NSHEL_interList, ext);
+		if (index == ETC) return ERR;
+		char* args[2];
+		args[0] = (char*) malloc(sizeof(char) * NSHEL_HED_LEN);
+		strcpy(args[0], NSHEL_interList[index].name);
+		args[1] = (char*) malloc(sizeof(char) * NSHEL_HED_LEN);
+		strcpy(args[1], head);
+		int result = NSHEL_interList[index].fun(2, args);
+		free(args[0]); free(args[1]);
+		return result;
+	} else {
+		int argc = 0; char* argv[NSHEL_ARG_MAX];
+		argv[0] = (char*) malloc(sizeof(char) * (strlen(head) + 1));
+		strcpy(argv[0], head);
+		argc =  NSHEL_getArgs(arg, argv);
+		int result = NSHEL_funList[index].fun(argc, argv);
+		for (int i = 0; i < argc; i++) free(argv[i]);
+		return result;
+	}
 }
 
 void NSHEL_console() {

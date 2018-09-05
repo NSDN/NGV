@@ -86,6 +86,16 @@ int print(const char* format, ...) {
 extern void processEvent();
 extern void progress();
 
+void pause() {
+	while (1) {
+		processEvent();
+		if (kbhit() != 0) {
+			getch();
+			break;
+		}
+	}
+}
+
 int scan(char* buffer) {
 	unsigned char count = 0, tmp = '\0';
 	while (1) {
