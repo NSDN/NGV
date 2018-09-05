@@ -26,6 +26,15 @@ bool checkKeyUp(uint16_t key) {
 	return false;
 }
 
+bool waitKey(uint16_t key) {
+	if (!checkKey(key)) {
+		while (!checkKey(key)) 
+            processEvent();
+		return true;
+	}
+	return false;
+}
+
 bool waitKeyUp(uint16_t key) {
 	if (checkKey(key)) {
 		while (checkKey(key)) 

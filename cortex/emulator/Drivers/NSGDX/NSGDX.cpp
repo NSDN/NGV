@@ -5,6 +5,20 @@
 #include "../NGV/Include/lcd.h"
 extern LCD* lcd;
 
+#include <algorithm>
+
+#include <map>
+static std::map<std::string, uint16_t> keymap = {
+    { "lu", 0x0001 }, { "ld", 0x0002 },
+    { "ll", 0x0004 }, { "lr", 0x0008 },
+    { "ru", 0x0010 }, { "rd", 0x0020 },
+    { "rl", 0x0040 }, { "rr", 0x0080 },
+    { "f1", 0x0100 }, { "f2", 0x0200 },
+    { "f3", 0x0400 }, { "f4", 0x0800 },
+    { "f5", 0x1000 }, { "f6", 0x2000 },
+    { "f7", 0x4000 }, { "f8", 0x8000 },
+};
+
 extern void delay(uint32_t ms);
 
 namespace NSGDX {
@@ -109,6 +123,42 @@ namespace NSGDX {
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             lcd->print(lcd->p, regGroup[0].n.i, regGroup[1].n.i, (char*) dst->s.substr(dst->sp).c_str());
+            return Result::RES_OK;
+        };
+        funcList["key"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) {
+                if (dst->type != RegType::REG_STR) return Result::RES_ERR;
+                string kcode = dst->s.substr(dst->sp);
+                transform(kcode.begin(), kcode.end(), kcode.begin(), ::tolower);
+                waitKey(keymap[kcode]);
+            } else {
+                if (dst->readOnly) return Result::RES_ERR;
+                if (src->type != RegType::REG_STR) return Result::RES_ERR;
+                string kcode = src->s.substr(src->sp);
+                transform(kcode.begin(), kcode.end(), kcode.begin(), ::tolower);
+                bool res = checkKey(keymap[kcode]);
+                dst->type = RegType::REG_INT;
+                dst->n.i = res ? 1 : 0;
+            }
+            return Result::RES_OK;
+        };
+        funcList["kup"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) {
+                if (dst->type != RegType::REG_STR) return Result::RES_ERR;
+                string kcode = dst->s.substr(dst->sp);
+                transform(kcode.begin(), kcode.end(), kcode.begin(), ::tolower);
+                waitKeyUp(keymap[kcode]);
+            } else {
+                if (dst->readOnly) return Result::RES_ERR;
+                if (src->type != RegType::REG_STR) return Result::RES_ERR;
+                string kcode = src->s.substr(src->sp);
+                transform(kcode.begin(), kcode.end(), kcode.begin(), ::tolower);
+                bool res = checkKeyUp(keymap[kcode]);
+                dst->type = RegType::REG_INT;
+                dst->n.i = res ? 1 : 0;
+            }
             return Result::RES_OK;
         };
     }

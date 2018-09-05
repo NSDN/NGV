@@ -7,7 +7,8 @@ mov r1, 128
 font 2
 scl 2
 show "NGV-EMU"
-wait 3000
+wait 1000
+key "F8"
 back 0xFFFFFF
 fore 0x000000
 scl 1

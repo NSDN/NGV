@@ -27,6 +27,7 @@ long millis();
 
 bool checkKey(uint16_t key);
 bool checkKeyUp(uint16_t key);
+bool waitKey(uint16_t key);
 bool waitKeyUp(uint16_t key);
 
 
