@@ -87,13 +87,28 @@ namespace NSGDX {
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
-            lcd->line(lcd->p, regGroup[0].n.i, regGroup[1].n.i, regGroup[2].n.i, regGroup[3].n.i);
+            lcd->line(lcd->p,
+                regGroup[0].n.i, regGroup[1].n.i,
+                regGroup[2].n.i, regGroup[3].n.i
+            );
             return Result::RES_OK;
         };
         funcList["tri"] = $OP_{
-            if (dst != nullptr) return Result::RES_ERR;
+            if (dst == nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;
-            // TODO
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[4].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[5].type != RegType::REG_INT) return Result::RES_ERR;
+            lcd->tri(lcd->p,
+                regGroup[0].n.i, regGroup[1].n.i,
+                regGroup[2].n.i, regGroup[3].n.i,
+                regGroup[4].n.i, regGroup[5].n.i,
+                dst->n.i
+            );
             return Result::RES_OK;
         };
         funcList["rect"] = $OP_{
@@ -104,7 +119,11 @@ namespace NSGDX {
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
-            lcd->rect(lcd->p, regGroup[0].n.i, regGroup[1].n.i, regGroup[2].n.i, regGroup[3].n.i, dst->n.i);
+            lcd->rect(lcd->p,
+                regGroup[0].n.i, regGroup[1].n.i,
+                regGroup[2].n.i, regGroup[3].n.i,
+                dst->n.i
+            );
             return Result::RES_OK;
         };
         funcList["draw"] = $OP_{
