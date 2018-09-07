@@ -8,7 +8,9 @@
 LCD* lcd;
 FILTYPE file;
 
-#define NGV_SYS_VERSION "180906"
+#ifndef NGV_SYS_VERSION
+#define NGV_SYS_VERSION "null"
+#endif
 
 void greenScreen(const char* head) {
 	lcd->colorb(lcd->p, 0x007F00);

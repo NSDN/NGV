@@ -6,7 +6,7 @@ if exist .\Output\ (
 mkdir .\Output\
 
 echo Compiling binary...
-g++ -std=c++11 -static-libstdc++ -static-libgcc -O3 -B ./ ./Drivers/NGV/*.c ./Drivers/NSASM/*.cpp ./Drivers/NSGDX/*.cpp *.cpp -LDrivers/SDL2/Lib -lm -lmingw32 -lSDL2main -lSDL2 -o ./Output/ngv-emu
+g++ -std=c++11 -static-libstdc++ -static-libgcc -O3 -B ./ -DNGV_SYS_VERSION="""%date:~2,2%%date:~5,2%%date:~8,2%""" ./Drivers/NGV/*.c ./Drivers/NSASM/*.cpp ./Drivers/NSGDX/*.cpp *.cpp -LDrivers/SDL2/Lib -lm -lmingw32 -lSDL2main -lSDL2 -o ./Output/ngv-emu
 echo Done
 
 echo Copying library...

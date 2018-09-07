@@ -98,7 +98,7 @@ void pause() {
 
 int scan(char* buffer) {
 	unsigned char count = 0, tmp = '\0';
-	if (kbhit() != 0) getch();
+	while (kbhit() != 0) getch();
 	while (1) {
 		processEvent();
 		if (kbhit() != 0) {

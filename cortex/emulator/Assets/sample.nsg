@@ -14,38 +14,20 @@ code c = (
         mov r5, 256
         tri r15
     )
-    mov r0, 128
-    mov r1, 128
+    mov r0, 64
+    mov r1, 64
     show "NGV-EMU NSGDX TEST"
     wait 1000
 
     cls
     mov r15, 0
     eval triTest
-    
-    mov r0, 128
-    mov r1, 128
-    mov r2, 256
-    mov r3, 160
-    line
-
-    mov r0, 128
-    mov r1, 128
-    mov r2, 160
-    mov r3, 256
-    line
-
-    wait 1000
-    key "RU"
-
-    cls
-    mov r15, 1
-    eval triTest
     wait 1000
 
     eval r0, (
-        mov r0, 128
-        mov r1, 256
+        mov r0, 64
+        mov r1, 480
+        sub r1, 64
         scl 1
         show "Press F8 to finish the test"
     )

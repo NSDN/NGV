@@ -247,6 +247,14 @@ float _lcd_abs(float v) {
 	return v > 0 ? v : -v;
 }
 
+float _lcd_round(float v) {
+	if (v - (float) ((int) v) > 0)
+		return (float) ((int) v + 1);
+	if (v - (float) ((int) v) < 0)
+		return (float) ((int) v - 1);
+	return v;
+}
+
 void _lcd_pixel(pLCD* p, uint16_t x, uint16_t y) {  
 	_lcd_setPosition(p, x, y, x, y);
 	_lcd_writeCommand(p, LCD_MEMWR);
@@ -254,61 +262,39 @@ void _lcd_pixel(pLCD* p, uint16_t x, uint16_t y) {
 }
 
 void _lcd_line(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
-	int dx = x2 - x1, dy = y2 - y1;
-	if (dx == 0) {
-		_lcd_setPosition(p, x1, dy > 0 ? y1 : y2, x1, dy > 0 ? y2 : y1);
+	float tx = x2 - x1, ty = y2 - y1;
+	if (tx == 0) {
+		_lcd_setPosition(p, x1, ty > 0 ? y1 : y2, x1, ty > 0 ? y2 : y1);
 		_lcd_writeCommand(p, LCD_MEMWR);
-		_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(dy));
-	} else if (dy == 0) {
-		_lcd_setPosition(p, dx > 0 ? x1 : x2, y1, dx > 0 ? x2 : x1, y1);
+		_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(ty));
+	} else if (ty == 0) {
+		_lcd_setPosition(p, tx > 0 ? x1 : x2, y1, tx > 0 ? x2 : x1, y1);
 		_lcd_writeCommand(p, LCD_MEMWR);
-		_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(dx));
+		_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(tx));
 	} else {
-		float k = (float) dy / (float) dx;
-		int d = dx > 0 ? 1 : -1;
-		for (float x = x1, y = y1; x != x2; x += d, y += k) {
-			_lcd_setPosition(p, x, k > 0 ? y : y + k, x, k > 0 ? y + k : y);
-			_lcd_writeCommand(p, LCD_MEMWR);
-			_lcd_writeData32(p, p->foreColor);
+		if (_lcd_abs(tx) > _lcd_abs(ty)) {
+			float dx = tx / _lcd_abs(ty), dy = ty / _lcd_abs(ty);
+			for (float x = x1, y = y1; y != y2; x += dx, y += dy) {
+				_lcd_setPosition(p, dx > 0 ? x : x + dx, y, dx > 0 ? x + dx : x, y);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(_lcd_round(dx)));
+			}
+			printf("%f->%f\n", dx, _lcd_round(_lcd_abs(dx)));
+		} else {
+			float dx = tx / _lcd_abs(tx), dy = ty / _lcd_abs(tx);
+			for (float x = x1, y = y1; x != x2; x += dx, y += dy) {
+				_lcd_setPosition(p, x, dy > 0 ? y : y + dy, x, dy > 0 ? y + dy : y);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(_lcd_round(dy)));
+			}
+			printf("%f->%f\n", dy, _lcd_round(_lcd_abs(dy)));
 		}
 	}
 }
 
 void _lcd_tri(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint8_t fill) {
 	if (fill) {
-		uint16_t maxy = (y1 > y2) ? ((y1 > y3) ? y1 : y3) : ((y1 > y3) ? (y2) : ((y2 > y3) ? y2 : y3));
-		uint16_t miny = (y1 < y2) ? ((y1 < y3) ? y1 : y3) : ((y1 < y3) ? (y2) : ((y2 < y3) ? y2 : y3));
-		uint16_t midy = (y1 == maxy) ? ((y2 == miny) ? y3 : y2) : ((y1 == miny) ? ((y2 == maxy) ? y3 : y2) : y1);
-		uint16_t maxx = (x1 > x2) ? ((x1 > x3) ? x1 : x3) : ((x1 > x3) ? (x2) : ((x2 > x3) ? x2 : x3));
-		uint16_t minx = (x1 < x2) ? ((x1 < x3) ? x1 : x3) : ((x1 < x3) ? (x2) : ((x2 < x3) ? x2 : x3));
-		uint16_t midx = (x1 == maxx) ? ((x2 == minx) ? x3 : x2) : ((x1 == minx) ? ((x2 == maxx) ? x3 : x2) : x1);
-		
-		float k1, k2; uint16_t xs, xe, tmp;
-		k1 = (float)(maxy - miny) / (float)(maxx - minx);
-		
-		k2 = (float)(midy - miny) / (float)(midx - minx);
-		for (uint16_t i = miny; i <= midy - miny; i++) {
-			xs = (float)(i - miny) / k1 + (float)minx;
-			xe = (float)(i - miny) / k2 + (float)minx;
-			if (xe < xs) { tmp = xe; xe = xs; xs = tmp; }
-			_lcd_setPosition(p, xs, i, xe, i);
-			_lcd_writeCommand(p, LCD_MEMWR);
-			for (uint16_t j = 0; j <= xe - xs; j++) {
-				_lcd_writeData32(p, p->foreColor);
-			}
-		}
-		
-		k2 = (float)(maxy - midy) / (float)(maxx - midx);
-		for (uint16_t i = midy; i <= maxy - midy; i++) {
-			xs = (i - miny) / k1 + minx;
-			xe = (i - midy) / k2 + midx;
-			if (xe < xs) { tmp = xe; xe = xs; xs = tmp; }
-			_lcd_setPosition(p, xs, i, xe, i);
-			_lcd_writeCommand(p, LCD_MEMWR);
-			for (uint16_t j = 0; j <= xe - xs; j++) {
-				_lcd_writeData32(p, p->foreColor);
-			}
-		}
+		// ADD TRI FILL CODE
 	} else {
 		_lcd_line(p, x1, y1, x2, y2);
 		_lcd_line(p, x2, y2, x3, y3);
