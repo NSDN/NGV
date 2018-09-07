@@ -298,9 +298,19 @@ float _lcd_line_func(char out, float i, float x1, float y1, float x2, float y2) 
 	return i;
 }
 
+int _lcd_tri_min(int a, int b, int c) {
+	return a > b ? (b > c ? c : b) : (a > c ? c : a);
+}
+
+char _lcd_tri_judge(int x1, int y1, int x2, int y2, int x3, int y3) {
+
+}
+
 void _lcd_tri(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint8_t fill) {
 	if (fill) {
-		//TODO
+		int xmin = 0, ymin = _lcd_tri_min(y1, y2, y3);
+		xmin = (y1 == ymin ? x1 : (y2 == ymin ? x2 : x3));
+		
 	} else {
 		_lcd_line(p, x1, y1, x2, y2);
 		_lcd_line(p, x2, y2, x3, y3);
