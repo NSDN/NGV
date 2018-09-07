@@ -279,7 +279,6 @@ void _lcd_line(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
 				_lcd_writeCommand(p, LCD_MEMWR);
 				_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(_lcd_round(dx)));
 			}
-			printf("%f->%f\n", dx, _lcd_round(_lcd_abs(dx)));
 		} else {
 			float dx = tx / _lcd_abs(tx), dy = ty / _lcd_abs(tx);
 			for (float x = x1, y = y1; x != x2; x += dx, y += dy) {
@@ -287,14 +286,21 @@ void _lcd_line(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
 				_lcd_writeCommand(p, LCD_MEMWR);
 				_lcd_flashData32(p, p->foreColor, (int) _lcd_abs(_lcd_round(dy)));
 			}
-			printf("%f->%f\n", dy, _lcd_round(_lcd_abs(dy)));
 		}
 	}
 }
 
+float _lcd_line_func(char out, float i, float x1, float y1, float x2, float y2) {
+	if (out == 'x') 
+		return (y2 - y1) / (x2 - x1) * (i - x1) + y1;
+	else if (out == 'y')
+		return (x2 - x1) / (y2 - y1) * (i - y1) + x1;
+	return i;
+}
+
 void _lcd_tri(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint8_t fill) {
 	if (fill) {
-		// ADD TRI FILL CODE
+		//TODO
 	} else {
 		_lcd_line(p, x1, y1, x2, y2);
 		_lcd_line(p, x2, y2, x3, y3);
@@ -306,8 +312,10 @@ void _lcd_rect(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint
 	if (fill) {
 		_lcd_setPosition(p, x1, y1, x2, y2);
 		_lcd_writeCommand(p, LCD_MEMWR);
-		_lcd_flashData32(p, p->foreColor,
-		(_lcd_abs((char)x2 - (char)x1) + 1) * (_lcd_abs((char)y2 - (char)y1) + 1));
+		_lcd_flashData32(
+			p, p->foreColor,
+			(_lcd_abs((char)x2 - (char)x1) + 1) * (_lcd_abs((char)y2 - (char)y1) + 1)
+		);
 	} else {
 		_lcd_line(p, x1, y1, x2, y1);
 		_lcd_line(p, x2, y1, x2, y2);
