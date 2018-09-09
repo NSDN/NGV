@@ -82,8 +82,10 @@ namespace NSASM {
 			}
 			return var.find('.') == var.npos && (
 				(var[0] >= '0' && var[0] <= '9') ||
-				var[0] == '-' || var[0] == '+' ||
-				var[var.length() - 1] == 'h' || var[var.length() - 1] == 'H'
+				var[0] == '-' || var[0] == '+' || (
+					((var[0] >= '0' && var[0] <= '9') || var[0] == '-' || var[0] == '+') &&
+					 (var[var.length() - 1] == 'h' || var[var.length() - 1] == 'H')
+				)
 			);
 		case WordType::WD_FLOAT:
 			return (

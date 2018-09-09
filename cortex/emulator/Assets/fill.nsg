@@ -1,0 +1,31 @@
+cls
+
+var width = 854
+var height = 480
+
+fore 0xFF9800
+
+mov r0, 0
+mov r1, 0
+[HEAD]
+pix r0, r1
+inc r0
+cmp r0, width
+jnz [HEAD]
+mov r0, 0
+inc r1
+cmp r1, height
+jnz [HEAD]
+
+[END]
+fore 0xFFFFFF
+mov r0, 64
+mov r1, 480
+sub r1, 64
+scl 2
+show "Press F8 to finish the test"
+scl 1
+key "F8"
+
+fore 0x000000
+cls
