@@ -20,10 +20,17 @@ static std::map<std::string, uint16_t> keymap = {
 };
 
 extern void delay(uint32_t ms);
+extern void processEvent();
 
 namespace NSGDX {
 
     void NSGDX::gdxFunc() {
+        funcList["pmq"] = $OP_{
+            if (dst != nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            processEvent();
+            return Result::RES_OK;
+        };
         funcList["wait"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;

@@ -9,6 +9,7 @@ mov r0, 0
 mov r1, 0
 [HEAD]
 pix r0, r1
+pmq
 inc r0
 cmp r0, width
 jnz [HEAD]
@@ -17,8 +18,8 @@ inc r1
 cmp r1, height
 jnz [HEAD]
 
-[END]
 fore 0xFFFFFF
+back 0xFF9800
 mov r0, 64
 mov r1, 480
 sub r1, 64
@@ -28,4 +29,5 @@ scl 1
 key "F8"
 
 fore 0x000000
+back 0xFFFFFF
 cls
