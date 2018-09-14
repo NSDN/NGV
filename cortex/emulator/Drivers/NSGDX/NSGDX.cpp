@@ -105,7 +105,7 @@ namespace NSGDX {
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
             if (regGroup[0].readOnly) return Result::RES_ERR;
             uint32_t len = 0; FILTYPE file;
-            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ) != FIL_OK)
+            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ | FLI_BIN) != FIL_OK)
                 return Result::RES_ERR;
             len = filsiz(&file);
             if (dst->n.i + len > memsize) return Result::RES_ERR;
@@ -125,7 +125,7 @@ namespace NSGDX {
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
             if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
             FILTYPE file;
-            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE) != FIL_OK)
+            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE | FLI_BIN) != FIL_OK)
                 return Result::RES_ERR;
             filwrite(&file, memory + dst->n.i, regGroup[0].n.i);
             filclose(&file);

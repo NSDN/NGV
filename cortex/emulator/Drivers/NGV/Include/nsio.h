@@ -39,9 +39,9 @@ char* get(char* src, int start, char* buf, int size);
 
 #define FIL_ERR     0
 #define FIL_OK      1
-#define FIL_READ    0
-#define FIL_WRITE   1
-#define FIL_BIN     2
+#define FIL_READ    1
+#define FIL_WRITE   2
+#define FIL_BIN     4
 
 uint8_t filopen(FILTYPE* file, char* name, uint8_t mode);
 void filclose(FILTYPE* file);
