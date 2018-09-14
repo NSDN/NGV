@@ -3,7 +3,7 @@
 #include "./Include/nsio.h"
 
 FILTYPE bmp;
-uint32_t* ptr = 0;
+uint32_t ptr = 0;
 uint16_t buf;
 uint16_t width, height;
 
@@ -26,24 +26,24 @@ int bmp_main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	filread(&bmp, (uint8_t*) &buf, 2, ptr);
+	filread(&bmp, (uint8_t*) &buf, 2, &ptr);
 	if (swap16(buf) != 0x1018) {
 		print("File type error.\n\n");
 		return -1;
 	}
 
-	filread(&bmp, (uint8_t*) &buf, 2, ptr); width = swap16(buf);
-	filread(&bmp, (uint8_t*) &buf, 2, ptr); height = swap16(buf);
+	filread(&bmp, (uint8_t*) &buf, 2, &ptr); width = swap16(buf);
+	filread(&bmp, (uint8_t*) &buf, 2, &ptr); height = swap16(buf);
 	print("Image size: %d x %d\n", width, height);
 	delay(1000);
 
-	filread(&bmp, (uint8_t*) &buf, 2, ptr);
+	filread(&bmp, (uint8_t*) &buf, 2, &ptr);
 	lcd->clear(lcd->p);
 
 	uint32_t buff;
 	for (uint16_t y = 0; y < height; y++)
 		for (uint16_t x = 0; x < width; x++) {
-			filread(&bmp, (uint8_t*) &buff, 3, ptr);
+			filread(&bmp, (uint8_t*) &buff, 3, &ptr);
 			lcd->bitmap(lcd->p,
 					x + (lcd->p->width - width) / 2,
 					y + (lcd->p->height - height) / 2,

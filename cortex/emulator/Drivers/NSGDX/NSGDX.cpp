@@ -2,6 +2,8 @@
 
 #include "../../util.h"
 
+#include "../NGV/Include/nsio.h"
+
 #include "../NGV/Include/lcd.h"
 extern LCD* lcd;
 
@@ -18,6 +20,13 @@ static std::map<std::string, uint16_t> keymap = {
     { "f5", 0x1000 }, { "f6", 0x2000 },
     { "f7", 0x4000 }, { "f8", 0x8000 },
 };
+
+#include <cstring>
+#include <cstdlib>
+const uint32_t MEM_DEFAULT = 64 * 1024; // 64KB
+const uint32_t MEM_MAXSIZE = 8 * 1024 * 1024; // 8MB
+static uint32_t memsize = MEM_DEFAULT;
+static uint8_t* memory = (uint8_t*) malloc(memsize);
 
 extern void delay(uint32_t ms);
 extern void processEvent();
@@ -38,6 +47,131 @@ namespace NSGDX {
             delay(dst->n.i);
             return Result::RES_OK;
         };
+
+        funcList["msiz"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            memsize = dst->n.i;
+            if (memsize < MEM_DEFAULT) memsize = MEM_DEFAULT;
+            if (memsize > MEM_MAXSIZE) memsize = MEM_MAXSIZE;
+            free(memory);
+            memory = (uint8_t*) malloc(memsize);
+            return Result::RES_OK;
+        };
+        funcList["mmov"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (src->type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0 || src->n.i <= 0) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+            if (src->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+            memmove(memory + dst->n.i, memory + src->n.i, regGroup[0].n.i);
+            return Result::RES_OK;
+        };
+        funcList["mcpy"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (src->type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0 || src->n.i <= 0) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+            if (src->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+            memcpy(memory + dst->n.i, memory + src->n.i, regGroup[0].n.i);
+            return Result::RES_OK;
+        };
+        funcList["mset"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (src->type != RegType::REG_INT && src->type != RegType::REG_CHAR) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+            memset(memory + dst->n.i, src->type == RegType::REG_INT ? src->n.i : src->n.c, regGroup[0].n.i);
+            return Result::RES_OK;
+        };
+        funcList["mld"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (src->type != RegType::REG_STR) return Result::RES_ERR;
+            if (regGroup[0].readOnly) return Result::RES_ERR;
+            uint32_t len = 0; FILTYPE file;
+            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ) != FIL_OK)
+                return Result::RES_ERR;
+            len = filsiz(&file);
+            if (dst->n.i + len > memsize) return Result::RES_ERR;
+            uint32_t ptr = dst->n.i;
+            filread(&file, memory, len, &ptr);
+            filclose(&file);
+            regGroup[0].type = RegType::REG_INT; regGroup[0].n.i = len;
+            return Result::RES_OK;
+        };
+        funcList["msv"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (src->type != RegType::REG_STR) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+            FILTYPE file;
+            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE) != FIL_OK)
+                return Result::RES_ERR;
+            filwrite(&file, memory + dst->n.i, regGroup[0].n.i);
+            filclose(&file);
+            return Result::RES_OK;
+        };
+        funcList["mgc"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (src->type != RegType::REG_INT) return Result::RES_ERR;
+            if (src->n.i <= 0) return Result::RES_ERR;
+            if (src->n.i >= memsize) return Result::RES_ERR;
+            if (dst->readOnly) return Result::RES_ERR;
+            dst->type = RegType::REG_CHAR; dst->n.c = memory[src->n.i];
+            return Result::RES_OK;
+        };
+        funcList["msc"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i >= memsize) return Result::RES_ERR;
+            if (src->type != RegType::REG_CHAR) return Result::RES_ERR;
+            memory[dst->n.i] = src->n.c;
+            return Result::RES_OK;
+        };
+        funcList["mgb"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (src->type != RegType::REG_INT) return Result::RES_ERR;
+            if (src->n.i <= 0) return Result::RES_ERR;
+            if (src->n.i >= memsize) return Result::RES_ERR;
+            if (dst->readOnly) return Result::RES_ERR;
+            dst->type = RegType::REG_INT; dst->n.i = memory[src->n.i];
+            return Result::RES_OK;
+        };
+        funcList["msb"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i >= memsize) return Result::RES_ERR;
+            if (src->type != RegType::REG_INT) return Result::RES_ERR;
+            memory[dst->n.i] = src->n.i & 0xFF;
+            return Result::RES_OK;
+        };
+
         funcList["cls"] = $OP_{
             if (dst != nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;
@@ -151,6 +285,7 @@ namespace NSGDX {
             lcd->print(lcd->p, regGroup[0].n.i, regGroup[1].n.i, (char*) dst->s.substr(dst->sp).c_str());
             return Result::RES_OK;
         };
+
         funcList["key"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) {

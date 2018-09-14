@@ -29,10 +29,10 @@ uint8_t filopen(FILTYPE* file, char* name, uint8_t mode) {
 	const char* base = "Assets/";
 	char* path = (char*) malloc(sizeof(char) * (strlen(base) + strlen(name)));
 	strcpy(path, base); strcat(path, name);
-	if (mode == FIL_READ) {
-		f = fopen(path, "r");
-	} else if (mode == FIL_WRITE) {
-		f = fopen(path, "w");
+	if ((mode & FIL_READ) != 0) {
+		f = fopen(path, (mode & FIL_BIN) != 0 ? "rb" : "r");
+	} else if ((mode & FIL_WRITE) != 0) {
+		f = fopen(path, (mode & FIL_BIN) != 0 ? "wb" : "w");
 	}
 	if (f != NULL) *file = f;
 	return f != NULL ? FIL_OK : FIL_ERR;
@@ -47,6 +47,10 @@ void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr) {
 	*ptr += len;
 }
 
+void filwrite(FILTYPE* file, uint8_t* buf, uint32_t len) {
+	fwrite(buf, 1, len, *file);
+}
+
 void filgets(FILTYPE* file, char* buf, uint32_t len) {
 	char* ptr = fgets(buf, len, *file);
 	if (ptr == NULL) buf[0] = '\r';
@@ -54,6 +58,14 @@ void filgets(FILTYPE* file, char* buf, uint32_t len) {
 
 uint8_t fileof(FILTYPE* file) {
 	return feof(*file) != 0;
+}
+
+uint32_t filsiz(FILTYPE* file) {
+	uint32_t tmp = ftell(*file);
+	fseek(*file, 0, SEEK_END);
+	uint32_t size = ftell(*file);
+	fseek(*file, tmp, SEEK_SET);
+	return size;
 }
 
 int filprint(FILTYPE* file, const char* format, ...) {
