@@ -125,7 +125,11 @@ void deinitSDL() {
 
 void resizeWindow(uint16_t scale) {
     LCD_SCALE = scale;
-    SDL_SetWindowSize(window, LCD_WIDTH * LCD_SCALE, LCD_HEIGHT * LCD_SCALE);
+    SDL_Rect monitor;
+    SDL_GetDisplayBounds(0, &monitor);
+    int width = LCD_WIDTH * LCD_SCALE, height = LCD_HEIGHT * LCD_SCALE;
+    SDL_SetWindowSize(window, width, height);
+    SDL_SetWindowPosition(window, (monitor.w - width) / 2, (monitor.h - height) / 2);
 	pixelRect.w = LCD_SCALE;
 	pixelRect.h = LCD_SCALE;
 }

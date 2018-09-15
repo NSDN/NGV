@@ -105,7 +105,7 @@ namespace NSGDX {
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
             if (regGroup[0].readOnly) return Result::RES_ERR;
             uint32_t len = 0; FILTYPE file;
-            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ | FLI_BIN) != FIL_OK)
+            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ | FIL_BIN) != FIL_OK)
                 return Result::RES_ERR;
             len = filsiz(&file);
             if (dst->n.i + len > memsize) return Result::RES_ERR;
@@ -125,7 +125,7 @@ namespace NSGDX {
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
             if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
             FILTYPE file;
-            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE | FLI_BIN) != FIL_OK)
+            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE | FIL_BIN) != FIL_OK)
                 return Result::RES_ERR;
             filwrite(&file, memory + dst->n.i, regGroup[0].n.i);
             filclose(&file);
@@ -283,6 +283,78 @@ namespace NSGDX {
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             lcd->print(lcd->p, regGroup[0].n.i, regGroup[1].n.i, (char*) dst->s.substr(dst->sp).c_str());
+            return Result::RES_OK;
+        };
+        funcList["bmp"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            int siz = regGroup[2].n.i * regGroup[3].n.i;
+            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
+            lcd->bitmaps(lcd->p,
+                regGroup[0].n.i, regGroup[1].n.i,
+                regGroup[2].n.i, regGroup[3].n.i,
+                memory + dst->n.i
+            );
+            return Result::RES_OK;
+        };
+        funcList["bmpc"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            int siz = regGroup[2].n.i * regGroup[3].n.i;
+            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
+            lcd->bitmapsc(lcd->p,
+                regGroup[0].n.i, regGroup[1].n.i,
+                regGroup[2].n.i, regGroup[3].n.i,
+                memory + dst->n.i
+            );
+            return Result::RES_OK;
+        };
+        funcList["ico"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            int siz = regGroup[2].n.i * regGroup[3].n.i;
+            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
+            lcd->icon(lcd->p,
+                regGroup[0].n.i, regGroup[1].n.i,
+                regGroup[2].n.i, regGroup[3].n.i,
+                memory + dst->n.i
+            );
+            return Result::RES_OK;
+        };
+        funcList["icoc"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i <= 0) return Result::RES_ERR;
+            int siz = regGroup[2].n.i * regGroup[3].n.i;
+            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
+            lcd->iconc(lcd->p,
+                regGroup[0].n.i, regGroup[1].n.i,
+                regGroup[2].n.i, regGroup[3].n.i,
+                memory + dst->n.i
+            );
             return Result::RES_OK;
         };
 
