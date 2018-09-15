@@ -33,6 +33,8 @@ extern void processEvent();
 
 namespace NSGDX {
 
+    void NSGDX::dispose() { free(memory); }
+
     void NSGDX::gdxFunc() {
         funcList["pmq"] = $OP_{
             if (dst != nullptr) return Result::RES_ERR;
@@ -64,7 +66,7 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0 || src->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0 || src->n.i < 0) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
             if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
@@ -77,7 +79,7 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0 || src->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0 || src->n.i < 0) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
             if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
@@ -89,7 +91,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             if (src->type != RegType::REG_INT && src->type != RegType::REG_CHAR) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
@@ -101,7 +103,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
             if (regGroup[0].readOnly) return Result::RES_ERR;
             uint32_t len = 0; FILTYPE file;
@@ -119,7 +121,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
@@ -135,7 +137,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
-            if (src->n.i <= 0) return Result::RES_ERR;
+            if (src->n.i < 0) return Result::RES_ERR;
             if (src->n.i >= memsize) return Result::RES_ERR;
             if (dst->readOnly) return Result::RES_ERR;
             dst->type = RegType::REG_CHAR; dst->n.c = memory[src->n.i];
@@ -145,7 +147,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             if (dst->n.i >= memsize) return Result::RES_ERR;
             if (src->type != RegType::REG_CHAR) return Result::RES_ERR;
             memory[dst->n.i] = src->n.c;
@@ -155,7 +157,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
-            if (src->n.i <= 0) return Result::RES_ERR;
+            if (src->n.i < 0) return Result::RES_ERR;
             if (src->n.i >= memsize) return Result::RES_ERR;
             if (dst->readOnly) return Result::RES_ERR;
             dst->type = RegType::REG_INT; dst->n.i = memory[src->n.i];
@@ -165,7 +167,7 @@ namespace NSGDX {
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             if (dst->n.i >= memsize) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
             memory[dst->n.i] = src->n.i & 0xFF;
@@ -293,7 +295,7 @@ namespace NSGDX {
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
             if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
             lcd->bitmaps(lcd->p,
@@ -311,7 +313,7 @@ namespace NSGDX {
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
             if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
             lcd->bitmapsc(lcd->p,
@@ -329,7 +331,7 @@ namespace NSGDX {
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
             if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
             lcd->icon(lcd->p,
@@ -347,7 +349,7 @@ namespace NSGDX {
             if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
-            if (dst->n.i <= 0) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
             if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
             lcd->iconc(lcd->p,

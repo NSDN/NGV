@@ -1,0 +1,12 @@
+cls
+msiz 0x10000000
+mld 0x00000000, "icon.bin"
+var size = r0
+mov r0, 128
+mov r1, 128
+mov r2, 48
+mov r3, 48
+ico 0x00000000
+wait 1000
+key "F1"
+cls

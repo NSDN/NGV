@@ -12,7 +12,8 @@ namespace NSGDX {
 
     public:
         NSGDX(int heap, int stack, int reg, map<string, string> code) : NSASM(heap, stack, reg, code) { gdxFunc(); }
-        ~NSGDX() {  }
+        ~NSGDX() { dispose(); }
+        void dispose();
     
     protected:
         void gdxFunc();
