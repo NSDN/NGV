@@ -1,11 +1,14 @@
 cls
+prt "Resize memory..."
 msiz 0x10000000
+prt "Load file..."
 mld 0x00000000, "icon.bin"
 var size = r0
-mov r0, 128
-mov r1, 128
+mov r0, 256
+mov r1, 256
 mov r2, 48
 mov r3, 48
+prt "Draw icon..."
 ico 0x00000000
 wait 1000
 key "F1"
