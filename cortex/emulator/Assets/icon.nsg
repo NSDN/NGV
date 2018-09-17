@@ -1,15 +1,36 @@
 cls
-prt "Resize memory..."
 msiz 0x10000000
-prt "Load file..."
 mld 0x00000000, "icon.bin"
 var size = r0
-mov r0, 256
-mov r1, 256
+
+var cnt = 6
+var xpos = 128
+var ypos = 128
+var addr = 0
+
+mov r0, 64
+mov r1, 64
+scl 2
+show "Icon Drawing Test"
+
+[HEAD]
+mov r0, xpos
+mov r1, ypos
 mov r2, 48
 mov r3, 48
-prt "Draw icon..."
-ico 0x00000000
+ico addr
+
+add xpos, 64
+add ypos, 16
+add addr, 288
+dec cnt
+cmp cnt, 0
+jnz [HEAD]
+
+mov r0, 64
+mov r1, 400
+scl 1
+show "Press F1 to exit"
 wait 1000
 key "F1"
 cls

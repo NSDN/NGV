@@ -26,14 +26,22 @@ static std::map<std::string, uint16_t> keymap = {
 const uint32_t MEM_DEFAULT = 64 * 1024; // 64KB
 const uint32_t MEM_MAXSIZE = 8 * 1024 * 1024; // 8MB
 static uint32_t memsize = MEM_DEFAULT;
+#ifdef USE_MEM_MALLOC
 static uint8_t* memory = (uint8_t*) malloc(memsize);
+#else
+static uint8_t memory[MEM_MAXSIZE] = { 0 };
+#endif
 
 extern void delay(uint32_t ms);
 extern void processEvent();
 
 namespace NSGDX {
 
-    void NSGDX::dispose() { free(memory); }
+    void NSGDX::dispose() {
+    #ifdef USE_MEM_MALLOC
+        free(memory);
+    #endif
+    }
 
     void NSGDX::gdxFunc() {
         funcList["pmq"] = $OP_{
@@ -57,8 +65,10 @@ namespace NSGDX {
             memsize = dst->n.i;
             if (memsize < MEM_DEFAULT) memsize = MEM_DEFAULT;
             if (memsize > MEM_MAXSIZE) memsize = MEM_MAXSIZE;
-            free(memory);
+        #ifdef USE_MEM_MALLOC
+            free(memory); memory = NULL;
             memory = (uint8_t*) malloc(memsize);
+        #endif
             return Result::RES_OK;
         };
         funcList["mmov"] = $OP_{

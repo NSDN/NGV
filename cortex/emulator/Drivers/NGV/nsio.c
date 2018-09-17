@@ -34,12 +34,16 @@ uint8_t filopen(FILTYPE* file, char* name, uint8_t mode) {
 	} else if ((mode & FIL_WRITE) != 0) {
 		f = fopen(path, (mode & FIL_BIN) != 0 ? "wb" : "w");
 	}
+	free(path);
 	if (f != NULL) *file = f;
 	return f != NULL ? FIL_OK : FIL_ERR;
 }
 
 void filclose(FILTYPE* file) {
-	fclose(*file);
+	if (*file != NULL) {
+		fclose(*file);
+		*file = NULL;
+	}
 }
 
 void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr) {
