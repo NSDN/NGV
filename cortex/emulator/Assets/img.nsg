@@ -1,0 +1,26 @@
+cls
+msiz 0x100000
+mld 0x000000, "img.bin"
+var size = r0
+div size, 3
+out "Pixel count is "
+prt size
+
+mov r0, 64
+mov r1, 64
+scl 2
+show "Image Drawing Test"
+
+mov r0, 128
+mov r1, 96
+mov r2, 480
+mov r3, 270
+img 0x000000
+
+mov r0, 64
+mov r1, 400
+scl 1
+show "Press F1 to exit"
+wait 1000
+key "F1"
+cls

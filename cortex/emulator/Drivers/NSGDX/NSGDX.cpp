@@ -369,6 +369,60 @@ namespace NSGDX {
             );
             return Result::RES_OK;
         };
+        funcList["img"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
+            int siz = regGroup[2].n.i * regGroup[3].n.i;
+            if (dst->n.i + siz * 3 >= memsize) return Result::RES_ERR;
+            if (src != nullptr) {
+                if (src->type != RegType::REG_INT) return Result::RES_ERR;
+                if (src->n.i < 0) return Result::RES_ERR;
+                lcd->bitmapt(lcd->p,
+                    regGroup[0].n.i, regGroup[1].n.i,
+                    regGroup[2].n.i, regGroup[3].n.i,
+                    src->n.i, (uint32_t*) (memory + dst->n.i)
+                );
+            } else {
+                lcd->bitmap(lcd->p,
+                    regGroup[0].n.i, regGroup[1].n.i,
+                    regGroup[2].n.i, regGroup[3].n.i,
+                    (uint32_t*) (memory + dst->n.i)
+                );
+            }
+            return Result::RES_OK;
+        };
+        funcList["imgc"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[1].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[2].type != RegType::REG_INT) return Result::RES_ERR;
+            if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
+            if (dst->n.i < 0) return Result::RES_ERR;
+            int siz = regGroup[2].n.i * regGroup[3].n.i;
+            if (dst->n.i + siz * 3 >= memsize) return Result::RES_ERR;
+            if (src != nullptr) {
+                if (src->type != RegType::REG_INT) return Result::RES_ERR;
+                if (src->n.i < 0) return Result::RES_ERR;
+                lcd->bitmaptc(lcd->p,
+                    regGroup[0].n.i, regGroup[1].n.i,
+                    regGroup[2].n.i, regGroup[3].n.i,
+                    src->n.i, (uint32_t*) (memory + dst->n.i)
+                );
+            } else {
+                lcd->bitmapc(lcd->p,
+                    regGroup[0].n.i, regGroup[1].n.i,
+                    regGroup[2].n.i, regGroup[3].n.i,
+                    (uint32_t*) (memory + dst->n.i)
+                );
+            }
+            return Result::RES_OK;
+        };
 
         funcList["key"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;

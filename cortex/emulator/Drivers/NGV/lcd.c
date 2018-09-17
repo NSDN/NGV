@@ -395,49 +395,29 @@ void _lcd_rect(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint
 void _lcd_bitmap(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t* data) {
 	_lcd_setPosition(p, x, y, x + w - 1, y + h - 1);
 	_lcd_writeCommand(p, LCD_MEMWR);
-	uint32_t c = 0;
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			_lcd_writeData32(p, data[c]);
-			c += 1;
-		}
-	}
+	_lcd_writeData32s(p, data, w * h);
 }
 
 void _lcd_bitmapc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t* data) {
-	_lcd_setPosition(p, x - w / 2, y - h / 2, x + w / 2 - 1, y + h / 2 - 1);
-	_lcd_writeCommand(p, LCD_MEMWR);
-	uint32_t c = 0;
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			_lcd_writeData32(p, data[c]);
-			c += 1;
-		}
-	}
+	_lcd_bitmap(p, x - w / 2, y - h / 2, w, h, data);
 }
 
 void _lcd_bitmapt(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, uint32_t* data) {
-	_lcd_setPosition(p, x, y, x + w - 1, y + h - 1);
-	_lcd_writeCommand(p, LCD_MEMWR);
 	uint32_t c = 0; uint32_t colort = trans & 0xFFFFFF;
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			if (data[c] != colort) _lcd_writeData32(p, data[c]);
+	for (uint16_t j = 0; j < h; j++) {
+		for (uint16_t i = 0; i < w; i++) {
+			if (data[c] != colort) {
+				_lcd_setPosition(p, x + i, y + j, x + i, y + j);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_writeData32(p, data[c]);
+			}
 			c += 1;
 		}
 	}
 }
 
 void _lcd_bitmaptc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, uint32_t* data) {
-	_lcd_setPosition(p, x - w / 2, y - h / 2, x + w / 2 - 1, y + h / 2 - 1);
-	_lcd_writeCommand(p, LCD_MEMWR);
-	uint32_t c = 0; uint32_t colort = trans & 0xFFFFFF;
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			if (data[c] != colort) _lcd_writeData32(p, data[c]);
-			c += 1;
-		}
-	}
+	_lcd_bitmapt(p, x - w / 2, y - h / 2, w, h, trans, data);
 }
 
 void _lcd_bitmaps(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data) {

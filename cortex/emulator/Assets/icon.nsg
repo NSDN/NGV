@@ -1,12 +1,15 @@
 cls
-msiz 0x10000000
-mld 0x00000000, "icon.bin"
+msiz 0x100000
+mld 0x000000, "icon.bin"
 var size = r0
+out "Pixel count is "
+prt size
 
 var cnt = 6
 var xpos = 128
 var ypos = 128
-var addr = 0
+var addr = 0x000000
+var color = 0x0000FF
 
 mov r0, 64
 mov r1, 64
@@ -18,14 +21,17 @@ mov r0, xpos
 mov r1, ypos
 mov r2, 48
 mov r3, 48
+fore color
 ico addr
 
 add xpos, 64
 add ypos, 16
 add addr, 288
+shl color, 4
 dec cnt
 cmp cnt, 0
 jnz [HEAD]
+fore 0x000000
 
 mov r0, 64
 mov r1, 400
