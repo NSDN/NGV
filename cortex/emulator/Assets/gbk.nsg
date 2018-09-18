@@ -1,0 +1,62 @@
+cls
+msiz 0x100000
+var fnt = 0x000000
+mld fnt, "gb2312_song.bin"
+var siz = r0
+
+code drawGBK = (
+    var baseAddr = r0
+    var x = r1
+    var y = r2
+    var s = r3
+
+    len r0, s
+    var siz = r0
+    div siz, 2
+
+    var cnt = 0
+    var addr = 0
+
+[HEAD]
+    gbk addr, s
+    add s, 2
+
+    mul addr, 32
+    add addr, baseAddr
+
+    mov r0, cnt
+    mul r0, 16
+    add r0, x
+    mov r1, y
+    mov r2, 16
+    mov r3, 16
+    ico addr
+
+    inc cnt
+    cmp cnt, siz
+    jnz [HEAD]
+
+    ret 1
+[END]
+    ret 0
+)
+
+mov r0, 64
+mov r1, 64
+scl 2
+show "GBK Char Drawing Test"
+scl 1
+
+mov r0, fnt
+mov r1, 128
+mov r2, 96
+mov r3, "≤‚ ‘"
+eval drawGBK
+
+mov r0, 64
+mov r1, 400
+scl 1
+show "Press F1 to exit"
+wait 1000
+key "F1"
+cls

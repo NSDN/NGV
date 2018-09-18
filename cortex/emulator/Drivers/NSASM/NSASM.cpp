@@ -302,6 +302,7 @@ namespace NSASM {
 		case '-': *dst -= src; break;
 		case '*': *dst *= src; break;
 		case '/': *dst /= src; break;
+		case '%': *dst %= src; break;
 		case '&': *dst &= src; break;
 		case '|': *dst |= src; break;
 		case '~': *dst = ~(*dst); break;
@@ -318,6 +319,7 @@ namespace NSASM {
 		case '-': *dst -= src; break;
 		case '*': *dst *= src; break;
 		case '/': *dst /= src; break;
+		case '%': *dst %= src; break;
 		case '&': *dst &= src; break;
 		case '|': *dst |= src; break;
 		case '~': *dst = ~(*dst); break;
