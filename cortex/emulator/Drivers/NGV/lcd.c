@@ -402,21 +402,24 @@ void _lcd_bitmapc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint3
 	_lcd_bitmap(p, x - w / 2, y - h / 2, w, h, data);
 }
 
-void _lcd_bitmapt(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, uint32_t* data) {
-	uint32_t c = 0; uint32_t colort = trans & 0xFFFFFF;
+void _lcd_bitmapt(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, const unsigned char* data) {
+	uint32_t c = 0; uint32_t colort = trans & 0xFFFFFF, color = 0;
 	for (uint16_t j = 0; j < h; j++) {
 		for (uint16_t i = 0; i < w; i++) {
-			if (data[c] != colort) {
+			color = data[c + 2] << 16;
+			color |= data[c + 1] << 8;
+			color |= data[c];
+			if (color != colort) {
 				_lcd_setPosition(p, x + i, y + j, x + i, y + j);
 				_lcd_writeCommand(p, LCD_MEMWR);
-				_lcd_writeData32(p, data[c]);
+				_lcd_writeData32(p, color);
 			}
-			c += 1;
+			c += 3;
 		}
 	}
 }
 
-void _lcd_bitmaptc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, uint32_t* data) {
+void _lcd_bitmaptc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, const unsigned char* data) {
 	_lcd_bitmapt(p, x - w / 2, y - h / 2, w, h, trans, data);
 }
 

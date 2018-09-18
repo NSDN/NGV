@@ -385,7 +385,7 @@ namespace NSGDX {
                 lcd->bitmapt(lcd->p,
                     regGroup[0].n.i, regGroup[1].n.i,
                     regGroup[2].n.i, regGroup[3].n.i,
-                    src->n.i, (uint32_t*) (memory + dst->n.i)
+                    src->n.i, memory + dst->n.i
                 );
             } else {
                 lcd->bitmap(lcd->p,
@@ -412,7 +412,7 @@ namespace NSGDX {
                 lcd->bitmaptc(lcd->p,
                     regGroup[0].n.i, regGroup[1].n.i,
                     regGroup[2].n.i, regGroup[3].n.i,
-                    src->n.i, (uint32_t*) (memory + dst->n.i)
+                    src->n.i, memory + dst->n.i
                 );
             } else {
                 lcd->bitmapc(lcd->p,

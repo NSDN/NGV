@@ -1,10 +1,11 @@
 cls
 msiz 0x100000
-mld 0x000000, "img.bin"
-var size = r0
-div size, 3
-out "Pixel count is "
-prt size
+var img4 = 0x000000
+mld img4, "img4.bin"
+var siz4 = r0
+var img3 = siz4
+mld img3, "img3.bin"
+var siz3 = r0
 
 mov r0, 64
 mov r1, 64
@@ -15,7 +16,13 @@ mov r0, 128
 mov r1, 96
 mov r2, 480
 mov r3, 270
-img 0x000000
+img img4
+
+mov r0, 640
+mov r1, 96
+mov r2, 64
+mov r3, 64
+img img3, 0x000000
 
 mov r0, 64
 mov r1, 400
