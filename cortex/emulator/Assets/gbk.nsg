@@ -12,27 +12,57 @@ code drawGBK = (
 
     len r0, s
     var siz = r0
-    div siz, 2
 
     var cnt = 0
     var addr = 0
+    var chr = '\0'
+    var ox = x
 
 [HEAD]
     gbk addr, s
-    add s, 2
+    cmp addr, 0
+    jl [ASCII]
+    jmp [GBK]
 
+[ASCII]
+    mov chr, s
+    font 2
+    scl 1
+    mov r0, x
+    mov r1, y
+    draw chr
+    font 1
+
+    add x, 8
+    add s, 1
+    add cnt, 1
+    rem "854 - 8 - 8 = 838"
+    cmp x, 838
+    jg [ORIX]
+    jmp [NEXT]
+
+[GBK]
     mul addr, 32
     add addr, baseAddr
-
-    mov r0, cnt
-    mul r0, 16
-    add r0, x
+    mov r0, x
     mov r1, y
     mov r2, 16
     mov r3, 16
     ico addr
+    
+    add x, 16
+    add s, 2
+    add cnt, 2
+    rem "854 - 16 - 8 = 830"
+    cmp x, 830
+    jg [ORIX]
+    jmp [NEXT]
 
-    inc cnt
+[ORIX]
+    mov x, ox
+    add y, 16
+
+[NEXT]
     cmp cnt, siz
     jnz [HEAD]
 
@@ -50,7 +80,7 @@ scl 1
 mov r0, fnt
 mov r1, 128
 mov r2, 96
-mov r3, "测试"
+mov r3, "要注意一个问题, 由于NSASM的设计, 目标操作数不能是字符型, 字符串型, 函数型和映射型立即数. 因此要将这些立即数用为键的话, 需要使用通用寄存器做次替代. 或者说, 这里的目标操作数仅支持寄存器寻址和数值型立即数寻址. ---- 来自NSASM映射型变量介绍"
 eval drawGBK
 
 mov r0, 64

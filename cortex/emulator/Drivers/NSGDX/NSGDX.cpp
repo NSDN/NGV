@@ -466,11 +466,10 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (dst->readOnly) return Result::RES_ERR;
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
-            if (src->s.length() % 2 != 0) return Result::RES_ERR;
             if (src->sp >= src->s.length()) return Result::RES_ERR;
-            uint8_t a = src->s[src->sp], b = src->s[src->sp + 1];
-            if (a < 0xA1 || b < 0xA1) return Result::RES_ERR;
-            int res = (a - 0xA1) * 0x5E + (b - 0xA1);
+            uint8_t end = (src->sp == (src->s.length() - 1)) ? 1 : 0;
+            uint8_t a = src->s[src->sp], b = (end != 0) ? 0 : src->s[src->sp + 1];
+            int res = (a < 0xA1 || b < 0xA1) ? -1 : ((a - 0xA1) * 0x5E + (b - 0xA1));
             dst->type = RegType::REG_INT; dst->n.i = res;
             return Result::RES_OK;
         };
