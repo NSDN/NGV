@@ -292,6 +292,7 @@ namespace NSASM {
 		return Result::RES_OK;
 	}
 	void NSASM::copyRegGroup(NSASM& super) {
+		super.regGroup[super.regCnt] = *super.useReg;
 		for (int i = 0; i < super.regGroup.size(); i++)
 			this->regGroup[i] = super.regGroup[i];
 	}

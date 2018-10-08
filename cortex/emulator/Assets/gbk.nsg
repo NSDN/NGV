@@ -71,17 +71,22 @@ code drawGBK = (
     ret 0
 )
 
+.gbkShow<x, y, str> {
+    mov r0, fnt
+    mov r1, x
+    mov r2, y
+    mov r3, str
+    eval drawGBK
+}
+
 mov r0, 64
 mov r1, 64
 scl 2
 show "GBK Char Drawing Test"
 scl 1
 
-mov r0, fnt
-mov r1, 128
-mov r2, 96
-mov r3, "要注意一个问题, 由于NSASM的设计, 目标操作数不能是字符型, 字符串型, 函数型和映射型立即数. 因此要将这些立即数用为键的话, 需要使用通用寄存器做次替代. 或者说, 这里的目标操作数仅支持寄存器寻址和数值型立即数寻址. ---- 来自NSASM映射型变量介绍"
-eval drawGBK
+var text = "要注意一个问题, 由于NSASM的设计, 目标操作数不能是字符型, 字符串型, 函数型和映射型立即数. 因此要将这些立即数用为键的话, 需要使用通用寄存器做次替代. 或者说, 这里的目标操作数仅支持寄存器寻址和数值型立即数寻址. ---- 来自NSASM映射型变量介绍"
+gbkShow<128, 96, text>
 
 mov r0, 64
 mov r1, 400

@@ -10,6 +10,7 @@
 #ifdef LCD_IS_EMU
 #include "../../sdl.h"
 static uint8_t cmdBuf;
+extern void processEvent();
 #endif
 
 static uint32_t _buf[512] = { 0 };
@@ -415,6 +416,9 @@ void _lcd_bitmapt(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint3
 				_lcd_writeData32(p, color);
 			}
 			c += 3;
+		#ifdef LCD_IS_EMU
+			if (((c / 3) % 16) == 0) processEvent();
+		#endif
 		}
 	}
 }
@@ -576,6 +580,9 @@ void _lcd_scroll(pLCD* p, uint16_t pos) {
 				if (j >= IOBUF_WIDTH) break;
 				_lcd_draw(p, j * 8 * p->scale, i * 16 * p->scale, p->buffer[i][j]);
 			}
+		#ifdef LCD_IS_EMU
+			processEvent();
+		#endif
 		}
 		memset(p->buffer[p->height / 16 / p->scale - pos], 0, IOBUF_WIDTH * pos);
 	} else {
@@ -585,6 +592,9 @@ void _lcd_scroll(pLCD* p, uint16_t pos) {
 				if (j >= IOBUF_WIDTH) break;
 				_lcd_draw(p, j * 6 * p->scale, i * 8 * p->scale, p->buffer[i][j]);
 			}
+		#ifdef LCD_IS_EMU
+			processEvent();
+		#endif
 		}
 		memset(p->buffer[p->height / 8 / p->scale - pos], 0, IOBUF_WIDTH * pos);
 	}
