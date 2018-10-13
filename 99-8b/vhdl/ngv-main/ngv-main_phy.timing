@@ -1,0 +1,467 @@
+=========================================================================================================
+Auto created by the td v4.1.389
+@Copy Right: Shanghai Anlogic Infotech, 2011 - 2021.
+Sat Oct 13 14:08:46 2018
+=========================================================================================================
+
+
+Top Model:                ngv_main                                                        
+Device:                   al3_s10                                                         
+Timing Constraint File:   ngv-main.sdc                                                    
+STA Level:                Detail                                                          
+Process parameter::       TT  1.10v  85C                                                  
+
+=========================================================================================================
+Timing constraint:        clock: stm_clk                                                  
+Clock = stm_clk, period 24ns, rising at 0ns, falling at 12ns
+
+68 endpoints analyzed totally, and 2708 paths analyzed
+0 errors detected : 0 setup errors (TNS = 0), 0 hold errors (TNS = 0)
+Minimum period is 4.994ns
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point reg0_b16|reg0_b23.F (49 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (setup check)      19.006 ns                                                       
+ StartPoint:              reg0_b12|reg0_b28.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b16|reg0_b23.b[0] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b12|reg0_b28.clk                                       clock                   1.518
+ reg0_b12|reg0_b28.q[1]                                      cell                    0.146
+ _al_u4|reg0_b9.b[1]                                         net (fanout = 2)        0.300
+ _al_u4|reg0_b9.f[1]                                         cell                    0.392
+ _al_u5|reg0_b8.c[1]                                         net (fanout = 1)        0.418
+ _al_u5|reg0_b8.f[1]                                         cell                    0.316
+ _al_u8.e[0]                                                 net (fanout = 1)        0.418
+ _al_u8.f[0]                                                 cell                    0.256
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ reg0_b16|reg0_b23.b[0]                                      net (fanout = 33)       1.118
+ Arrival time                                                                        6.085 (6 lvl)
+                                                                                          (54% logic, 46% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.091
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.006 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      19.138 ns                                                       
+ StartPoint:              reg0_b17|reg0_b21.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b16|reg0_b23.b[0] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b17|reg0_b21.clk                                       clock                   1.595
+ reg0_b17|reg0_b21.q[1]                                      cell                    0.146
+ _al_u6|reg0_b19.b[1]                                        net (fanout = 2)        0.296
+ _al_u6|reg0_b19.f[1]                                        cell                    0.392
+ _al_u7|reg0_b22.e[1]                                        net (fanout = 1)        0.281
+ _al_u7|reg0_b22.f[1]                                        cell                    0.256
+ _al_u8.a[0]                                                 net (fanout = 1)        0.281
+ _al_u8.f[0]                                                 cell                    0.385
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ reg0_b16|reg0_b23.b[0]                                      net (fanout = 33)       1.118
+ Arrival time                                                                        5.953 (6 lvl)
+                                                                                          (58% logic, 42% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.091
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.138 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      19.144 ns                                                       
+ StartPoint:              reg0_b16|reg0_b23.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b16|reg0_b23.b[0] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b16|reg0_b23.clk                                       clock                   1.340
+ reg0_b16|reg0_b23.q[1]                                      cell                    0.146
+ _al_u6|reg0_b19.e[1]                                        net (fanout = 2)        0.681
+ _al_u6|reg0_b19.f[1]                                        cell                    0.256
+ _al_u7|reg0_b22.e[1]                                        net (fanout = 1)        0.281
+ _al_u7|reg0_b22.f[1]                                        cell                    0.256
+ _al_u8.a[0]                                                 net (fanout = 1)        0.281
+ _al_u8.f[0]                                                 cell                    0.385
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ reg0_b16|reg0_b23.b[0]                                      net (fanout = 33)       1.118
+ Arrival time                                                                        5.947 (6 lvl)
+                                                                                          (51% logic, 49% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.091
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.144 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point reg0_b16|reg0_b23.F (42 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (setup check)      19.006 ns                                                       
+ StartPoint:              reg0_b12|reg0_b28.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b16|reg0_b23.b[1] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b12|reg0_b28.clk                                       clock                   1.518
+ reg0_b12|reg0_b28.q[1]                                      cell                    0.146
+ _al_u4|reg0_b9.b[1]                                         net (fanout = 2)        0.300
+ _al_u4|reg0_b9.f[1]                                         cell                    0.392
+ _al_u5|reg0_b8.c[1]                                         net (fanout = 1)        0.418
+ _al_u5|reg0_b8.f[1]                                         cell                    0.316
+ _al_u8.e[0]                                                 net (fanout = 1)        0.418
+ _al_u8.f[0]                                                 cell                    0.256
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ reg0_b16|reg0_b23.b[1]                                      net (fanout = 33)       1.118
+ Arrival time                                                                        6.085 (6 lvl)
+                                                                                          (54% logic, 46% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.091
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.006 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      19.138 ns                                                       
+ StartPoint:              reg0_b17|reg0_b21.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b16|reg0_b23.b[1] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b17|reg0_b21.clk                                       clock                   1.595
+ reg0_b17|reg0_b21.q[1]                                      cell                    0.146
+ _al_u6|reg0_b19.b[1]                                        net (fanout = 2)        0.296
+ _al_u6|reg0_b19.f[1]                                        cell                    0.392
+ _al_u7|reg0_b22.e[1]                                        net (fanout = 1)        0.281
+ _al_u7|reg0_b22.f[1]                                        cell                    0.256
+ _al_u8.a[0]                                                 net (fanout = 1)        0.281
+ _al_u8.f[0]                                                 cell                    0.385
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ reg0_b16|reg0_b23.b[1]                                      net (fanout = 33)       1.118
+ Arrival time                                                                        5.953 (6 lvl)
+                                                                                          (58% logic, 42% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.091
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.138 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      19.144 ns                                                       
+ StartPoint:              reg0_b16|reg0_b23.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b16|reg0_b23.b[1] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b16|reg0_b23.clk                                       clock                   1.340
+ reg0_b16|reg0_b23.q[1]                                      cell                    0.146
+ _al_u6|reg0_b19.e[1]                                        net (fanout = 2)        0.681
+ _al_u6|reg0_b19.f[1]                                        cell                    0.256
+ _al_u7|reg0_b22.e[1]                                        net (fanout = 1)        0.281
+ _al_u7|reg0_b22.f[1]                                        cell                    0.256
+ _al_u8.a[0]                                                 net (fanout = 1)        0.281
+ _al_u8.f[0]                                                 cell                    0.385
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ reg0_b16|reg0_b23.b[1]                                      net (fanout = 33)       1.118
+ Arrival time                                                                        5.947 (6 lvl)
+                                                                                          (51% logic, 49% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.091
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.144 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point _al_u5|reg0_b8.F (34 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (setup check)      19.140 ns                                                       
+ StartPoint:              reg0_b12|reg0_b28.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                _al_u5|reg0_b8.b[0] (rising edge triggered by clock stm_clk)    
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b12|reg0_b28.clk                                       clock                   1.518
+ reg0_b12|reg0_b28.q[1]                                      cell                    0.146
+ _al_u4|reg0_b9.b[1]                                         net (fanout = 2)        0.300
+ _al_u4|reg0_b9.f[1]                                         cell                    0.392
+ _al_u5|reg0_b8.c[1]                                         net (fanout = 1)        0.418
+ _al_u5|reg0_b8.f[1]                                         cell                    0.316
+ _al_u8.e[0]                                                 net (fanout = 1)        0.418
+ _al_u8.f[0]                                                 cell                    0.256
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ _al_u5|reg0_b8.b[0]                                         net (fanout = 33)       1.129
+ Arrival time                                                                        6.096 (6 lvl)
+                                                                                          (54% logic, 46% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.236
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.140 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      19.272 ns                                                       
+ StartPoint:              reg0_b17|reg0_b21.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                _al_u5|reg0_b8.b[0] (rising edge triggered by clock stm_clk)    
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b17|reg0_b21.clk                                       clock                   1.595
+ reg0_b17|reg0_b21.q[1]                                      cell                    0.146
+ _al_u6|reg0_b19.b[1]                                        net (fanout = 2)        0.296
+ _al_u6|reg0_b19.f[1]                                        cell                    0.392
+ _al_u7|reg0_b22.e[1]                                        net (fanout = 1)        0.281
+ _al_u7|reg0_b22.f[1]                                        cell                    0.256
+ _al_u8.a[0]                                                 net (fanout = 1)        0.281
+ _al_u8.f[0]                                                 cell                    0.385
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ _al_u5|reg0_b8.b[0]                                         net (fanout = 33)       1.129
+ Arrival time                                                                        5.964 (6 lvl)
+                                                                                          (58% logic, 42% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.236
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.272 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      19.278 ns                                                       
+ StartPoint:              reg0_b16|reg0_b23.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                _al_u5|reg0_b8.b[0] (rising edge triggered by clock stm_clk)    
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b16|reg0_b23.clk                                       clock                   1.340
+ reg0_b16|reg0_b23.q[1]                                      cell                    0.146
+ _al_u6|reg0_b19.e[1]                                        net (fanout = 2)        0.681
+ _al_u6|reg0_b19.f[1]                                        cell                    0.256
+ _al_u7|reg0_b22.e[1]                                        net (fanout = 1)        0.281
+ _al_u7|reg0_b22.f[1]                                        cell                    0.256
+ _al_u8.a[0]                                                 net (fanout = 1)        0.281
+ _al_u8.f[0]                                                 cell                    0.385
+ _al_u9|reg0_b25.e[1]                                        net (fanout = 1)        0.281
+ _al_u9|reg0_b25.f[1]                                        cell                    0.256
+ _al_u11|state_reg.a[1]                                      net (fanout = 1)        0.281
+ _al_u11|state_reg.f[1]                                      cell                    0.385
+ _al_u5|reg0_b8.b[0]                                         net (fanout = 33)       1.129
+ Arrival time                                                                        5.958 (6 lvl)
+                                                                                          (51% logic, 49% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s)                         25.236
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                           19.278 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Hold checks:
+---------------------------------------------------------------------------------------------------------
+Paths for end point _al_u11|state_reg.F (1 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (hold check)       0.514 ns                                                        
+ StartPoint:              _al_u11|state_reg.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                _al_u11|state_reg.a[0] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ _al_u11|state_reg.clk                                       clock                   1.192
+ _al_u11|state_reg.q[0]                                      cell                    0.140
+ _al_u11|state_reg.a[0]                                      net (fanout = 2)        0.580
+ Arrival time                                                                        1.912 (1 lvl)
+                                                                                          (70% logic, 30% net)
+
+ Required time (t_capture_clk + hold_time + uncertainty_h)                           1.398
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            0.514 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point reg0_b14|reg0_b26.F (40 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (hold check)       1.088 ns                                                        
+ StartPoint:              reg0_b14|reg0_b26.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b14|reg0_b26.e[1] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b14|reg0_b26.clk                                       clock                   1.473
+ reg0_b14|reg0_b26.q[1]                                      cell                    0.140
+ add0/u14|add0/u13.b[1]                                      net (fanout = 2)        0.246
+ add0/u14|add0/u13.f[1]                                      cell                    0.363
+ reg0_b14|reg0_b26.e[1]                                      net (fanout = 1)        0.577
+ Arrival time                                                                        2.799 (2 lvl)
+                                                                                          (71% logic, 29% net)
+
+ Required time (t_capture_clk + hold_time + uncertainty_h)                           1.711
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.088 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (hold check)       1.296 ns                                                        
+ StartPoint:              reg0_b11|reg0_b29.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b14|reg0_b26.e[1] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b11|reg0_b29.clk                                       clock                   1.367
+ reg0_b11|reg0_b29.q[1]                                      cell                    0.140
+ add0/u12|add0/u11.a[0]                                      net (fanout = 2)        0.126
+ add0/u12|add0/u11.fco                                       cell                    0.507
+ add0/u14|add0/u13.fci                                       net (fanout = 1)        0.000
+ add0/u14|add0/u13.f[1]                                      cell                    0.290
+ reg0_b14|reg0_b26.e[1]                                      net (fanout = 1)        0.577
+ Arrival time                                                                        3.007 (3 lvl)
+                                                                                          (77% logic, 23% net)
+
+ Required time (t_capture_clk + hold_time + uncertainty_h)                           1.711
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.296 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (hold check)       1.471 ns                                                        
+ StartPoint:              reg0_b12|reg0_b28.clk (rising edge triggered by clock stm_clk)  
+ EndPoint:                reg0_b14|reg0_b26.e[1] (rising edge triggered by clock stm_clk) 
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b12|reg0_b28.clk                                       clock                   1.367
+ reg0_b12|reg0_b28.q[1]                                      cell                    0.140
+ add0/u12|add0/u11.a[1]                                      net (fanout = 2)        0.378
+ add0/u12|add0/u11.fco                                       cell                    0.430
+ add0/u14|add0/u13.fci                                       net (fanout = 1)        0.000
+ add0/u14|add0/u13.f[1]                                      cell                    0.290
+ reg0_b14|reg0_b26.e[1]                                      net (fanout = 1)        0.577
+ Arrival time                                                                        3.182 (3 lvl)
+                                                                                          (70% logic, 30% net)
+
+ Required time (t_capture_clk + hold_time + uncertainty_h)                           1.711
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.471 ns
+
+---------------------------------------------------------------------------------------------------------
+
+Paths for end point _al_u5|reg0_b8.F (34 paths)
+---------------------------------------------------------------------------------------------------------
+ Slack (hold check)       1.102 ns                                                        
+ StartPoint:              _al_u5|reg0_b8.clk (rising edge triggered by clock stm_clk)     
+ EndPoint:                _al_u5|reg0_b8.e[0] (rising edge triggered by clock stm_clk)    
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ _al_u5|reg0_b8.clk                                          clock                   1.352
+ _al_u5|reg0_b8.q[0]                                         cell                    0.140
+ add0/u8|add0/u7.b[1]                                        net (fanout = 2)        0.246
+ add0/u8|add0/u7.f[1]                                        cell                    0.363
+ _al_u5|reg0_b8.e[0]                                         net (fanout = 1)        0.577
+ Arrival time                                                                        2.678 (2 lvl)
+                                                                                          (70% logic, 30% net)
+
+ Required time (t_capture_clk + hold_time + uncertainty_h)                           1.576
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.102 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (hold check)       1.580 ns                                                        
+ StartPoint:              reg0_b1|reg0_b6.clk (rising edge triggered by clock stm_clk)    
+ EndPoint:                _al_u5|reg0_b8.e[0] (rising edge triggered by clock stm_clk)    
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b1|reg0_b6.clk                                         clock                   1.473
+ reg0_b1|reg0_b6.q[0]                                        cell                    0.140
+ add0/u6|add0/u5.a[1]                                        net (fanout = 1)        0.246
+ add0/u6|add0/u5.fco                                         cell                    0.430
+ add0/u8|add0/u7.fci                                         net (fanout = 1)        0.000
+ add0/u8|add0/u7.f[1]                                        cell                    0.290
+ _al_u5|reg0_b8.e[0]                                         net (fanout = 1)        0.577
+ Arrival time                                                                        3.156 (3 lvl)
+                                                                                          (74% logic, 26% net)
+
+ Required time (t_capture_clk + hold_time + uncertainty_h)                           1.576
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.580 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (hold check)       1.610 ns                                                        
+ StartPoint:              reg0_b2|reg0_b5.clk (rising edge triggered by clock stm_clk)    
+ EndPoint:                _al_u5|reg0_b8.e[0] (rising edge triggered by clock stm_clk)    
+ Clock group:             stm_clk                                                         
+
+ Point                                                       Type                     Incr
+---------------------------------------------------------------------------------------------------------
+ reg0_b2|reg0_b5.clk                                         clock                   1.352
+ reg0_b2|reg0_b5.q[0]                                        cell                    0.140
+ add0/u6|add0/u5.b[0]                                        net (fanout = 1)        0.378
+ add0/u6|add0/u5.fco                                         cell                    0.449
+ add0/u8|add0/u7.fci                                         net (fanout = 1)        0.000
+ add0/u8|add0/u7.f[1]                                        cell                    0.290
+ _al_u5|reg0_b8.e[0]                                         net (fanout = 1)        0.577
+ Arrival time                                                                        3.186 (3 lvl)
+                                                                                          (71% logic, 29% net)
+
+ Required time (t_capture_clk + hold_time + uncertainty_h)                           1.576
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.610 ns
+
+---------------------------------------------------------------------------------------------------------
+
+
+=========================================================================================================
+Timing summary:                                                                           
+---------------------------------------------------------------------------------------------------------
+Constraint path number: 2708 (STA coverage = 90.64%)
+Timing violations: 0 setup errors, and 0 hold errors.
+Minimal setup slack: 19.006, minimal hold slack: 0.514
+
+Timing group statistics: 
+	Clock constraints: 
+	  Clock Name                             Min Period     Max Freq           Skew      Fanout            TNS
+	  stm_clk (24.000 ns)                       4.994ns     200.240MHz        0.333ns        20        0.000ns
+	Minimum input arrival time before clock: no constraint path
+	Maximum output required time after clock: no constraint path
+	Maximum combinational path delay: no constraint path
+
+---------------------------------------------------------------------------------------------------------

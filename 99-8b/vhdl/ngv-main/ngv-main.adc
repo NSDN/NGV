@@ -1,4 +1,4 @@
 set_pin_assignment {clk} { LOCATION = P23; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
-set_pin_assignment {rst} { LOCATION = P54; IOSTANDARD = LVCMOS33; SLEWRATE = FAST;  }
+set_pin_assignment {rst} { LOCATION = P54; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
 set_pin_assignment {out1} { LOCATION = P126; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
 set_pin_assignment {out2} { LOCATION = P110; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
