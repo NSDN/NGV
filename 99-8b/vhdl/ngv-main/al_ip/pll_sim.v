@@ -1,25 +1,23 @@
 // Verilog netlist created by TD v4.1.389
-// Fri Oct 12 18:30:34 2018
+// Sun Oct 14 18:50:23 2018
 
 `timescale 1ns / 1ps
 module pll  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(23)
   (
   refclk,
-  reset,
   clk0_out,
   clk1_out
   );
 
-  input refclk;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(28)
-  input reset;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(29)
-  output clk0_out;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(30)
-  output clk1_out;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(31)
+  input refclk;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(27)
+  output clk0_out;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(28)
+  output clk1_out;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(29)
 
-  wire clk0_buf;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(33)
+  wire clk0_buf;  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(31)
 
   AL_PHY_GCLK bufg_feedback (
     .clki(clk0_buf),
-    .clko(clk0_out));  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(35)
+    .clko(clk0_out));  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(33)
   AL_PHY_PLL #(
     .CLKC0_CPHASE(7),
     .CLKC0_DIV(7),
@@ -41,13 +39,13 @@ module pll  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(23)
     .CLKC4_DIV(1),
     .CLKC4_ENABLE("DISABLE"),
     .CLKC4_FPHASE("0"),
-    .DERIVE_PLL_CLOCKS("DISABLE"),
+    .DERIVE_PLL_CLOCKS("ENABLE"),
     .DPHASE_SOURCE("DISABLE"),
     .FBCLK_DIV(8),
     .FEEDBK_PATH("CLKC0_EXT"),
     .FIN("42.000"),
     .FREQ_LOCK_ACCURACY("2"),
-    .GEN_BASIC_CLOCK("DISABLE"),
+    .GEN_BASIC_CLOCK("ENABLE"),
     .GMC_GAIN("6"),
     .GMC_TEST("14"),
     .ICP_CURRENT(3),
@@ -65,7 +63,7 @@ module pll  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(23)
     .PLLC2RST_ENA("DISABLE"),
     .PLLC34RST_ENA("DISABLE"),
     .PLLMRST_ENA("DISABLE"),
-    .PLLRST_ENA("ENABLE"),
+    .PLLRST_ENA("DISABLE"),
     .PLL_LOCK_MODE("0"),
     .PREDIV_MUXC0("VCO"),
     .PREDIV_MUXC1("VCO"),
@@ -83,11 +81,11 @@ module pll  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(23)
     .phasestep(1'b0),
     .phaseupdown(1'b0),
     .phcntsel(3'b000),
-    .pllreset(reset),
+    .pllreset(1'b0),
     .refclk(refclk),
     .scanclk(1'b0),
     .stdby(1'b0),
-    .clkc({open_n0,open_n1,open_n2,clk1_out,clk0_buf}));  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(69)
+    .clkc({open_n0,open_n1,open_n2,clk1_out,clk0_buf}));  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(67)
 
 endmodule 
 

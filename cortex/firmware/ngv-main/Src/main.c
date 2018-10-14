@@ -148,6 +148,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   USBD_Stop(&hUsbDeviceFS);
   HAL_Delay(3000);
+
   HAL_SD_Init(&hsd);
   HAL_SD_GetCardInfo(&hsd, &cardInfo);
   USBD_Start(&hUsbDeviceFS);
@@ -162,6 +163,10 @@ int main(void)
   HAL_Delay(1000);
   HAL_GPIO_WritePin(FPGA_RST_GPIO_Port, FPGA_RST_Pin, GPIO_PIN_SET);
   HAL_GPIO_TogglePin(SYS_LED_GPIO_Port, SYS_LED_Pin);
+
+  HAL_SRAM_WriteOperation_Enable(&hsram1);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -169,7 +174,8 @@ int main(void)
   while (1)
   {
 	HAL_GPIO_TogglePin(SYS_LED_GPIO_Port, SYS_LED_Pin);
-	HAL_Delay(500);
+	//HAL_Delay(500);
+	*(__IO uint32_t*) (0x60000000 + 0x800000) = 0x00;
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */

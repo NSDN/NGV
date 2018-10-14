@@ -10,7 +10,8 @@
 		<input_frequency>42.000Mhz</input_frequency>
 		<feedback_mode>Normal</feedback_mode>
 		<clk_num>CLKC0</clk_num>
-		<enable_reset>ENABLE</enable_reset>
+		<derive_pll_clocks>ENABLE</derive_pll_clocks>
+		<gen_basic_clocks>ENABLE</gen_basic_clocks>
 	</Page1>
 	<Page2>
 		<bandwidth_setting>Medium</bandwidth_setting>
