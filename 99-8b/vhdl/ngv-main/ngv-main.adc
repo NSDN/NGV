@@ -77,3 +77,4 @@ set_pin_assignment {lcd_data[9]} { LOCATION = P137; IOSTANDARD = LVTTL33; SLEWRA
 set_pin_assignment {lcd_rd} { LOCATION = P124; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
 set_pin_assignment {lcd_rs} { LOCATION = P122; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
 set_pin_assignment {lcd_rst} { LOCATION = P17; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {lcd_cs} { LOCATION = P111; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }

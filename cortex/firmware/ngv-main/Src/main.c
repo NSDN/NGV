@@ -165,17 +165,23 @@ int main(void)
   HAL_GPIO_TogglePin(SYS_LED_GPIO_Port, SYS_LED_Pin);
 
   HAL_SRAM_WriteOperation_Enable(&hsram1);
-
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint32_t nowTick = HAL_GetTick();
+  uint8_t val = 0x01;
   while (1)
   {
-	HAL_GPIO_TogglePin(SYS_LED_GPIO_Port, SYS_LED_Pin);
-	//HAL_Delay(500);
-	*(__IO uint32_t*) (0x60000000 + 0x800000) = 0x00;
+	*(__IO uint32_t*) (0x60000000 + 0x800000) = val;
+
+	if (HAL_GetTick() - nowTick > 500) {
+		nowTick = HAL_GetTick();
+		HAL_GPIO_TogglePin(SYS_LED_GPIO_Port, SYS_LED_Pin);
+
+		if (val == 0x01) val = 0x81;
+		else if (val == 0x81) val = 0x01;
+	}
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */

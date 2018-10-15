@@ -2,7 +2,7 @@ module ngv_main(
 	rst, clk,
 	
 	fmc_nwe, fmc_noe, fmc_ne, fmc_addr, fmc_data,
-	lcd_blk, lcd_rs, lcd_wr, lcd_rd, lcd_rst, lcd_data,
+	lcd_blk, lcd_cs, lcd_rs, lcd_wr, lcd_rd, lcd_rst, lcd_data,
 	
 	led_w, led_y
 );
@@ -15,7 +15,7 @@ module ngv_main(
 	input[23:0] fmc_addr;
 	input[15:0] fmc_data;
 	
-	output lcd_blk, lcd_rs, lcd_wr, lcd_rd, lcd_rst;
+	output lcd_blk, lcd_cs, lcd_rs, lcd_wr, lcd_rd, lcd_rst;
 	output[23:0] lcd_data;
 	
 	wire freq_168;
@@ -27,15 +27,31 @@ module ngv_main(
 		.clk1_out(freq_1176)
 	);
 	
+	reg[3:0] lcdCtrl;
+	
+	initial begin
+		lcdCtrl <= 4'b0;
+	end
+	
+	always @(negedge fmc_nwe or negedge rst) begin
+		if (!rst) begin
+			lcdCtrl <= 4'b0;
+		end else begin
+			lcdCtrl <= fmc_data[3:0];
+		end
+	end
+	
 	lcd_trans lcd_conv(
-		.i_blk(fmc_data[0]),
-		.i_rs(fmc_data[1]),
+		.i_blk(lcdCtrl[0]),
+		.i_cs(lcdCtrl[1]),
+		.i_rs(lcdCtrl[2]),
+		.i_rst(lcdCtrl[3]),
 		.i_wr(fmc_nwe),
 		.i_rd(fmc_noe),
-		.i_rst(fmc_data[2]),
 		.i_data(fmc_addr),
 		
 		.o_blk(lcd_blk),
+		.o_cs(lcd_cs),
 		.o_rs(lcd_rs),
 		.o_wr(lcd_wr),
 		.o_rd(lcd_rd),
@@ -43,10 +59,6 @@ module ngv_main(
 		.o_data(lcd_data)
 	);
 
-	assign led_w = fmc_addr[23];
-	assign led_y = fmc_data[7];
-
-	/*
 	blink #(
 		.CNT(32'd168000000)
 	) bi_blink(
@@ -55,6 +67,5 @@ module ngv_main(
 		.out1(led_w),
 		.out2(led_y)
 	);
-	*/
 
 endmodule
