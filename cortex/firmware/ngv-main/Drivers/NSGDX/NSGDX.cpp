@@ -1,11 +1,13 @@
 #include "NSGDX.h"
 
-#include "../../util.h"
-
 #include "../NGV/Include/nsio.h"
 
 #include "../NGV/Include/lcd.h"
 extern LCD* lcd;
+
+#include "../NGV/Include/key.h"
+
+#define USE_FLASH_MEM
 
 #include <algorithm>
 
@@ -24,16 +26,28 @@ static std::map<std::string, uint16_t> keymap = {
 #include <cstring>
 #include <cstdlib>
 const uint32_t MEM_DEFAULT = 64 * 1024; // 64KB
+#ifdef USE_FLASH_MEM
+const uint32_t MEM_MAXSIZE = 512 * 1024; // 512KB
+#else
 const uint32_t MEM_MAXSIZE = 8 * 1024 * 1024; // 8MB
+#endif
 static uint32_t memsize = MEM_DEFAULT;
 #ifdef USE_MEM_MALLOC
 static uint8_t* memory = (uint8_t*) malloc(memsize);
 #else
+#ifdef USE_FLASH_MEM
+static uint8_t* memory = (uint8_t*) 0x08080000; //Flash memory at 512KB / 1MB
+#else
 static uint8_t memory[MEM_MAXSIZE] = { 0 };
 #endif
+#endif
 
+#ifdef USE_FLASH_MEM
+#include "ngv_bios.h"
+#else
 extern void delay(uint32_t ms);
 extern void processEvent();
+#endif
 
 namespace NSGDX {
 

@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * @file    sd_diskio.h (based on sd_diskio_template.h v2.0.2)
-  * @brief   Header for sd_diskio.c module
+  * @file           : fatfs_platform.h
+  * @brief          : fatfs_platform header file
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -44,28 +44,11 @@
   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
-
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __SD_DISKIO_H
-#define __SD_DISKIO_H
-
-/* USER CODE BEGIN firstSection */ 
-/* can be used to modify / undefine following code or add new definitions */
-/* USER CODE END firstSection */
-
+*/
 /* Includes ------------------------------------------------------------------*/
-#include "bsp_driver_sd.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
-extern const Diskio_drvTypeDef  SD_Driver;
-
-/* USER CODE BEGIN lastSection */ 
-/* can be used to modify / undefine previous code or add new definitions */
-/* USER CODE END lastSection */
-
-#endif /* __SD_DISKIO_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
+#include "stm32f4xx_hal.h"           
+/* Defines ------------------------------------------------------------------*/
+#define SD_PIN                   GPIO_PIN_15
+#define SD_PORT                  GPIOA
+/* Prototypes ---------------------------------------------------------------*/
+uint8_t	BSP_PlatformIsDetected(void);

@@ -27,27 +27,32 @@ module ngv_main(
 		.clk1_out(freq_1176)
 	);
 	
-	reg[3:0] lcdCtrl;
+	reg[3:0] lcd_ctl;
 	
 	initial begin
-		lcdCtrl <= 4'b0;
+		lcd_ctl <= 4'b0;
 	end
 	
-	always @(negedge fmc_nwe or negedge rst) begin
+	always @(posedge fmc_nwe or negedge rst) begin
 		if (!rst) begin
-			lcdCtrl <= 4'b0;
-		end else begin
-			lcdCtrl <= fmc_data[3:0];
+			lcd_ctl <= 4'b0;
+		end else if (!fmc_data[7]) begin
+			lcd_ctl <= fmc_data[3:0];
 		end
 	end
 	
+	wire lcd_ctl_we, lcd_ctl_oe;
+	
+	assign lcd_ctl_we = fmc_nwe | ~fmc_data[7];
+	assign lcd_ctl_oe = fmc_noe | ~fmc_data[7];
+	
 	lcd_trans lcd_conv(
-		.i_blk(lcdCtrl[0]),
-		.i_cs(lcdCtrl[1]),
-		.i_rs(lcdCtrl[2]),
-		.i_rst(lcdCtrl[3]),
-		.i_wr(fmc_nwe),
-		.i_rd(fmc_noe),
+		.i_blk(lcd_ctl[0]),
+		.i_cs(lcd_ctl[1]),
+		.i_rs(lcd_ctl[2]),
+		.i_rst(lcd_ctl[3]),
+		.i_wr(lcd_ctl_we),
+		.i_rd(lcd_ctl_oe),
 		.i_data(fmc_addr),
 		
 		.o_blk(lcd_blk),

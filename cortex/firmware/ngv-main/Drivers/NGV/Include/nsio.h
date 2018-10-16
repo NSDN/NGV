@@ -18,6 +18,7 @@ extern "C" {
 #define IOBUF 128
 
 extern jmp_buf rstPos;
+extern UART_HandleTypeDef HUART;
 
 char* strlwr(char* s);
 

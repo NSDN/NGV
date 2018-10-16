@@ -36,7 +36,8 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern void tick();
+extern void greenScreen(const char* head);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -66,7 +67,12 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+	greenScreen("Hard Fault Interrupt");
+	for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 250; j++)
+			for (int k = 0; k < 168000; k++)
+				asm("nop");
+	NVIC_SystemReset();
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -182,7 +188,8 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  if (HAL_GetTick() % 500 == 0)
+	  tick();
   /* USER CODE END SysTick_IRQn 1 */
 }
 

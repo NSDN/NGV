@@ -5,25 +5,25 @@
 #include "halinc.h"
 
 typedef struct {
-	WORD	bfType;
-	DWORD	bfSize;
-	WORD	bfReserved1;
-	WORD	bfReserved2;
-	DWORD	bfOffBits;
+	uint16_t	bfType;
+	uint32_t	bfSize;
+	uint16_t	bfReserved1;
+	uint16_t	bfReserved2;
+	uint32_t	bfOffBits;
 } BitmapFileHeader;
 
 typedef struct {
-	DWORD	biSize;
-	LONG	biWidth;
-	LONG	biHeight;
-	WORD	biPlanes;
-	WORD	biBitCount;
-	DWORD	biCompression;
-	DWORD	biSizeImage;
-	LONG	biXPelsPerMeter;
-	LONG	biYPelsPerMeter;
-	DWORD	biClrUsed;
-	DWORD	biClrImportant;
+	uint32_t	biSize;
+	uint32_t	biWidth;
+	uint32_t	biHeight;
+	uint16_t	biPlanes;
+	uint16_t	biBitCount;
+	uint32_t	biCompression;
+	uint32_t	biSizeImage;
+	uint32_t	biXPelsPerMeter;
+	uint32_t	biYPelsPerMeter;
+	uint32_t	biClrUsed;
+	uint32_t	biClrImportant;
 } BitmapInfoHeader;
 
 typedef struct {

@@ -19,20 +19,24 @@ static uint32_t _fmcAddr = 0x60000000;
 static uint8_t _fmcData = 0;
 
 const int LCD_BLK = 0x01;
-const int LCD_RS = 0x02;
+const int LCD_CS = 0x02;
+const int LCD_RS = 0x04;
 const int LCD_RST = 0x08;
+const int LCD_IOCTL = 0x80;
 
 #ifndef LCD_IS_EMU
-inline void _write_(pLCD* p, uint32_t v) {
-	v &= 0xFFFFFF;
-	*(__IO uint8_t*) (_fmcAddr + v) = _fmcData;
-}
+#define _data(v) *(__IO uint8_t*) (_fmcAddr + ((v) & 0xFFFFFF)) = _fmcData | LCD_IOCTL
+#define _ioctl() *(__IO uint8_t*) (_fmcAddr + 0xFFFFFF) = _fmcData
 #endif
 
 void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
 #ifndef LCD_IS_EMU
 	_fmcData &= ~LCD_RS; //CMD
-	_write_(p, cmd);
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(cmd);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	cmdBuf = cmd;
 #endif
@@ -41,35 +45,61 @@ void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
 void _lcd_writeData(pLCD* p, uint8_t data) {
 #ifndef LCD_IS_EMU
 	_fmcData |= LCD_RS; //DATA
-	_write_(p, data);
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #endif
 }
 
 void _lcd_writeReg8(pLCD* p, uint8_t cmd, uint8_t data) {
 #ifndef LCD_IS_EMU
 	_fmcData &= ~LCD_RS; //CMD
-	_write_(p, cmd);
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(cmd);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
+
 	_fmcData |= LCD_RS; //DATA
-	_write_(p, data);
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #endif
 }
 
 void _lcd_writeReg32(pLCD* p, uint8_t cmd, uint32_t data) {
 #ifndef LCD_IS_EMU
 	_fmcData &= ~LCD_RS; //CMD
-	_write_(p, cmd);
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(cmd);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
+
 	_fmcData |= LCD_RS; //DATA
-	_write_(p, (data >> 24) & 0xFF);
-	_write_(p, (data >> 16) & 0xFF);
-	_write_(p, (data >> 8 ) & 0xFF);
-	_write_(p, (data      ) & 0xFF);
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data((data >> 24) & 0xFF);
+	_data((data >> 16) & 0xFF);
+	_data((data >> 8 ) & 0xFF);
+	_data((data      ) & 0xFF);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #endif
 }
 
 void _lcd_writeData32(pLCD* p, uint32_t data) {
 #ifndef LCD_IS_EMU
 	_fmcData |= LCD_RS; //DATA
-	_write_(p, data);
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	if (cmdBuf == LCD_MEMWR) write(data);
 #endif
@@ -78,9 +108,12 @@ void _lcd_writeData32(pLCD* p, uint32_t data) {
 void _lcd_writeData32s(pLCD* p, uint32_t* data, uint32_t length) {
 #ifndef LCD_IS_EMU
 	_fmcData |= LCD_RS; //DATA
-	for (uint32_t i = 0; i < length; i++) {
-		_write_(p, data[i]);
-	}
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	for (uint32_t i = 0; i < length; i++)
+		_data(data[i]);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	if (cmdBuf == LCD_MEMWR) writes(data, length);
 #endif
@@ -89,9 +122,12 @@ void _lcd_writeData32s(pLCD* p, uint32_t* data, uint32_t length) {
 void _lcd_flashData32(pLCD* p, uint32_t data, uint32_t count) {
 #ifndef LCD_IS_EMU
 	_fmcData |= LCD_RS; //DATA
-	for (uint32_t i = 0; i < count; i++) {
-		_write_(p, data);
-	}
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	for (uint32_t i = 0; i < count; i++)
+		_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	if (cmdBuf == LCD_MEMWR) flash(data, count);
 #endif
@@ -116,10 +152,16 @@ void _lcd_setPosition(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y
 
 void _lcd_reset(pLCD* p) {
 #ifndef LCD_IS_EMU
-	// !RST
+	_fmcData |= LCD_CS; //CS
+	_fmcData &= ~LCD_RST; //NRST
+	_ioctl();
 	HAL_Delay(10);
-	// RST
+	_fmcData |= LCD_RST; //RST
+	_ioctl();
 	HAL_Delay(100);
+
+	_fmcData |= LCD_BLK;
+	_ioctl();
 #else
 	p->backColor = 0x000000;
 	p->foreColor = 0xFFFFFF;
@@ -171,12 +213,21 @@ void _lcd_init(pLCD* p) {
 			HAL_Delay(len);
 		} else {
 			_fmcData &= ~LCD_RS; //CMD
-			_write_(p, r & 0xFF);
-			_fmcData |= LCD_RS; //CMD
+			_fmcData &= ~LCD_CS; //NCS
+			_ioctl();
+			_data(r & 0xFF);
+			_fmcData |= LCD_CS; //CS
+			_ioctl();
+
+			_fmcData |= LCD_RS; //DATA
+			_fmcData &= ~LCD_CS; //NCS
+			_ioctl();
 			for (uint16_t d = 0; d < len; d++) {
 				x = _regValues[i++];
-				_write_(p, x & 0xFF);
+				_data(x & 0xFF);
 			}
+			_fmcData |= LCD_CS; //CS
+			_ioctl();
 		}
 	#endif
     }
@@ -284,7 +335,7 @@ void _lcd_tri(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint1
 	if (fill) {
 		int xs = 0, ys = _lcd_tri_min(y1, y2, y3), xe = 0, ye = 0;
 		int xa, ya, xb, yb;
-		if (ys = y1) { xs = x1; xa = x2; ya = y2; xb = x3; yb = y3; }
+		if (ys == y1) { xs = x1; xa = x2; ya = y2; xb = x3; yb = y3; }
 		else if (ys == y2) { xs = x2; xa = x1; ya = y1; xb = x3; yb = y3; }
 		else { xs = x3; xa = x1; ya = y1; xb = x2; yb = y2; }
 		

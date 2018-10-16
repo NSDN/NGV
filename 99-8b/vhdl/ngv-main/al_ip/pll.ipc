@@ -7,7 +7,7 @@
 	</GeneralConfig>
 	<Page1>
 		<speed_grade>Any</speed_grade>
-		<input_frequency>42.000Mhz</input_frequency>
+		<input_frequency>24.000Mhz</input_frequency>
 		<feedback_mode>Normal</feedback_mode>
 		<clk_num>CLKC0</clk_num>
 		<derive_pll_clocks>ENABLE</derive_pll_clocks>
@@ -18,8 +18,8 @@
 	</Page2>
 	<Page3>
 		<setting>frequncy_setting</setting>
-		<multiplication_factor>8</multiplication_factor>
-		<division_factor>2</division_factor>
+		<multiplication_factor>7</multiplication_factor>
+		<division_factor>1</division_factor>
 		<clocks>
 			<clock>
 				<id>0</id>

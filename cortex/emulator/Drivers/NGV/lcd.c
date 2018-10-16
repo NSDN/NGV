@@ -15,39 +15,28 @@ extern void processEvent();
 
 static uint32_t _buf[512] = { 0 };
 
+static uint32_t _fmcAddr = 0x60000000;
+static uint8_t _fmcData = 0;
+
+const int LCD_BLK = 0x01;
+const int LCD_CS = 0x02;
+const int LCD_RS = 0x04;
+const int LCD_RST = 0x08;
+const int LCD_IOCTL = 0x80;
+
 #ifndef LCD_IS_EMU
-void _io_cpy(pIO* dst, pIO* src) {
-	dst->port = src->port;
-	dst->pin = src->pin;
-}
-
-void _write_(pLCD* p, uint32_t v) {
-	v &= 0xFFFFFF;
-#ifdef LCD_USE_REG_ACCESS
-	uint16_t tmp = (v & 0x000FFF) << 4;
-	p->data[0].port->BSRR = tmp | ((~tmp & 0xFFF0) << 16);
-	tmp = (v & 0xFFF000) >> 8;
-	p->data[23].port->BSRR = tmp | ((~tmp & 0xFFF0) << 16);
-
-	p->wr.port->BSRR = (uint32_t) p->wr.pin << 16; // always @(negedge wr) begin "Lock" end
-	p->wr.port->BSRR = p->wr.pin;
-#else
-	for (uint8_t i = 0; i < 24; i++) {
-		HAL_GPIO_WritePin(p->data[i].port, p->data[i].pin, (v & (1 << i)) > 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
-	}
-	HAL_GPIO_WritePin(p->wr.port, p->wr.pin, GPIO_PIN_RESET); // always @(negedge wr) begin "Lock" end
-	HAL_GPIO_WritePin(p->wr.port, p->wr.pin, GPIO_PIN_SET);
-#endif
-}
+#define _data(v) *(__IO uint8_t*) (_fmcAddr + ((v) & 0xFFFFFF)) = _fmcData | LCD_IOCTL
+#define _ioctl() *(__IO uint8_t*) (_fmcAddr + 0xFFFFFF) = _fmcData
 #endif
 
 void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, cmd);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_fmcData &= ~LCD_RS; //CMD
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(cmd);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	cmdBuf = cmd;
 #endif
@@ -55,52 +44,62 @@ void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
 
 void _lcd_writeData(pLCD* p, uint8_t data) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_fmcData |= LCD_RS; //DATA
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #endif
 }
 
 void _lcd_writeReg8(pLCD* p, uint8_t cmd, uint8_t data) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, cmd);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_fmcData &= ~LCD_RS; //CMD
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(cmd);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
+
+	_fmcData |= LCD_RS; //DATA
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #endif
 }
 
 void _lcd_writeReg32(pLCD* p, uint8_t cmd, uint32_t data) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, cmd);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, (data >> 24) & 0xFF);
-	_write_(p, (data >> 16) & 0xFF);
-	_write_(p, (data >> 8 ) & 0xFF);
-	_write_(p, (data      ) & 0xFF);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_fmcData &= ~LCD_RS; //CMD
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(cmd);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
+
+	_fmcData |= LCD_RS; //DATA
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data((data >> 24) & 0xFF);
+	_data((data >> 16) & 0xFF);
+	_data((data >> 8 ) & 0xFF);
+	_data((data      ) & 0xFF);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #endif
 }
 
 void _lcd_writeData32(pLCD* p, uint32_t data) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_fmcData |= LCD_RS; //DATA
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	if (cmdBuf == LCD_MEMWR) write(data);
 #endif
@@ -108,13 +107,13 @@ void _lcd_writeData32(pLCD* p, uint32_t data) {
 
 void _lcd_writeData32s(pLCD* p, uint32_t* data, uint32_t length) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	for (uint32_t i = 0; i < length; i++) {
-		_write_(p, data[i]);
-	}
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_fmcData |= LCD_RS; //DATA
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	for (uint32_t i = 0; i < length; i++)
+		_data(data[i]);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	if (cmdBuf == LCD_MEMWR) writes(data, length);
 #endif
@@ -122,13 +121,13 @@ void _lcd_writeData32s(pLCD* p, uint32_t* data, uint32_t length) {
 
 void _lcd_flashData32(pLCD* p, uint32_t data, uint32_t count) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	for (uint32_t i = 0; i < count; i++) {
-		_write_(p, data);
-	}
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_fmcData |= LCD_RS; //DATA
+	_fmcData &= ~LCD_CS; //NCS
+	_ioctl();
+	for (uint32_t i = 0; i < count; i++)
+		_data(data);
+	_fmcData |= LCD_CS; //CS
+	_ioctl();
 #else
 	if (cmdBuf == LCD_MEMWR) flash(data, count);
 #endif
@@ -153,12 +152,12 @@ void _lcd_setPosition(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y
 
 void _lcd_reset(pLCD* p) {
 #ifndef LCD_IS_EMU
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->wr.port, p->wr.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rst.port, p->rst.pin, GPIO_PIN_RESET);
+	_fmcData |= LCD_CS; //CS
+	_fmcData &= ~LCD_RST; //NRST
+	_ioctl();
 	HAL_Delay(10);
-	HAL_GPIO_WritePin(p->rst.port, p->rst.pin, GPIO_PIN_SET);
+	_fmcData |= LCD_RST; //RST
+	_ioctl();
 	HAL_Delay(100);
 #else
 	p->backColor = 0x000000;
@@ -210,18 +209,22 @@ void _lcd_init(pLCD* p) {
 		if(r == LCD_DELAY) {
 			HAL_Delay(len);
 		} else {
-			HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-			HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-			_write_(p, r & 0xFF);
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
+			_fmcData &= ~LCD_RS; //CMD
+			_fmcData &= ~LCD_CS; //NCS
+			_ioctl();
+			_data(r & 0xFF);
+			_fmcData |= LCD_CS; //CS
+			_ioctl();
+
+			_fmcData |= LCD_RS; //DATA
+			_fmcData &= ~LCD_CS; //NCS
+			_ioctl();
 			for (uint16_t d = 0; d < len; d++) {
 				x = _regValues[i++];
-				_write_(p, x & 0xFF);
+				_data(x & 0xFF);
 			}
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+			_fmcData |= LCD_CS; //CS
+			_ioctl();
 		}
 	#endif
     }
@@ -329,7 +332,7 @@ void _lcd_tri(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint1
 	if (fill) {
 		int xs = 0, ys = _lcd_tri_min(y1, y2, y3), xe = 0, ye = 0;
 		int xa, ya, xb, yb;
-		if (ys = y1) { xs = x1; xa = x2; ya = y2; xb = x3; yb = y3; }
+		if (ys == y1) { xs = x1; xa = x2; ya = y2; xb = x3; yb = y3; }
 		else if (ys == y2) { xs = x2; xa = x1; ya = y1; xb = x3; yb = y3; }
 		else { xs = x3; xa = x1; ya = y1; xb = x2; yb = y2; }
 		
@@ -785,24 +788,8 @@ int _lcd_printfa(pLCD* p, const char* format, ...) {
 	return result;
 }
 
-LCD* LCDInit(
-	#ifndef LCD_IS_EMU
-		pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST,
-		pIO data[]*
-	#endif
-		) {
+LCD* LCDInit() {
 	pLCD* p = (pLCD*) malloc(sizeof(pLCD));
-#ifndef LCD_IS_EMU
-	_io_cpy(&p->rd, RD);
-	_io_cpy(&p->wr, WR);
-	_io_cpy(&p->rs, RS);
-	_io_cpy(&p->cs, CS);
-	_io_cpy(&p->rst, RST);
-	for (uint8_t i = 0; i < 24; i++) {
-		_io_cpy(&p->data[i], &data[i]);
-		p->cdata[i] = (uint32_t) p->data[i].pin << 16;
-	}
-#endif
 
 	p->width = 480;
 	p->height = 854;

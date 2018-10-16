@@ -16,7 +16,6 @@
 #define LCD_IS_EMU
 
 //#define LCD_USE_PRIVATE_FUN
-#define LCD_USE_REG_ACCESS
 
 typedef enum {
 	Small = 1,
@@ -31,11 +30,6 @@ typedef struct {
 #endif
 
 typedef struct {
-#ifndef LCD_IS_EMU
-	pIO rd, wr, rs, cs, rst;
-	pIO data[24];
-	uint32_t cdata[24];
-#endif
 	uint16_t width;
 	uint16_t height;
 	LCDFont Font;
@@ -85,11 +79,7 @@ typedef struct {
 	int (*printfa)(pLCD* p, const char* format, ...);
 } LCD;
 
-LCD* LCDInit(
-#ifndef LCD_IS_EMU
-	pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST, pIO data[]
-#endif
-);
+LCD* LCDInit();
 
 
 #endif

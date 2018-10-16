@@ -1,5 +1,5 @@
 // Verilog netlist created by TD v4.1.389
-// Sun Oct 14 18:50:23 2018
+// Tue Oct 16 22:12:07 2018
 
 `timescale 1ns / 1ps
 module pll  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(23)
@@ -41,9 +41,9 @@ module pll  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(23)
     .CLKC4_FPHASE("0"),
     .DERIVE_PLL_CLOCKS("ENABLE"),
     .DPHASE_SOURCE("DISABLE"),
-    .FBCLK_DIV(8),
+    .FBCLK_DIV(7),
     .FEEDBK_PATH("CLKC0_EXT"),
-    .FIN("42.000"),
+    .FIN("24.000"),
     .FREQ_LOCK_ACCURACY("2"),
     .GEN_BASIC_CLOCK("ENABLE"),
     .GMC_GAIN("6"),
@@ -70,7 +70,7 @@ module pll  // E:/Works/NGV/99-8b/vhdl/ngv-main/al_ip/pll.v(23)
     .PREDIV_MUXC2("VCO"),
     .PREDIV_MUXC3("VCO"),
     .PREDIV_MUXC4("VCO"),
-    .REFCLK_DIV(2),
+    .REFCLK_DIV(1),
     .REFCLK_SEL("INTERNAL"),
     .STDBY_ENABLE("DISABLE"),
     .STDBY_VCO_ENA("DISABLE"),

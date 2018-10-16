@@ -2,7 +2,7 @@
 <Project>
     <Project_Created_Time>2018-10-12 10:56:53</Project_Created_Time>
     <TD_Version>4.1.389</TD_Version>
-    <UCode>0010001000101000</UCode>
+    <UCode>0101011001001011</UCode>
     <Name>ngv-main</Name>
     <HardWare>
         <Family>AL3</Family>
@@ -22,10 +22,10 @@
     <TOP_MODULE>
         <LABEL/>
         <MODULE>ngv_main</MODULE>
-        <CREATEINDEX>user</CREATEINDEX>
+        <CREATEINDEX>auto</CREATEINDEX>
     </TOP_MODULE>
     <Project_Settings>
-        <Step_Last_Change>2018-10-15 22:46:37</Step_Last_Change>
+        <Step_Last_Change>2018-10-16 23:20:41</Step_Last_Change>
         <Current_Step>60</Current_Step>
         <Step_Status>true</Step_Status>
     </Project_Settings>

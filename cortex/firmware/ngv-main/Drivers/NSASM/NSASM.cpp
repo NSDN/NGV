@@ -403,10 +403,6 @@ namespace NSASM {
 		return Result::RES_OK;
 	}
 
-	NSASM* NSASM::instance(NSASM& super, map<string, string>& code) {
-		return new NSASM(super, code);
-	}
-
 	NSASM::Register* NSASM::eval(Register* reg) {
 		if (reg == nullptr) return nullptr;
 		if (reg->type != RegType::REG_CODE) return nullptr;
