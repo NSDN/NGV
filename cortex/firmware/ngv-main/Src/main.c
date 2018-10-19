@@ -54,6 +54,8 @@
 
 /* USER CODE BEGIN Includes */
 #include "ngv_bios.h"
+#include "ngp_bios.h"
+#include "flash.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -62,9 +64,10 @@ I2C_HandleTypeDef hi2c2;
 
 SD_HandleTypeDef hsd;
 
-SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 SPI_HandleTypeDef hspi5;
+
+TIM_HandleTypeDef htim10;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
@@ -78,6 +81,7 @@ SDRAM_HandleTypeDef hsdram1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+extern Flash* flash;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -85,19 +89,32 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_FMC_Init(void);
 static void MX_I2C1_Init(void);
-static void MX_SDIO_SD_Init(void);
-static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_SPI5_Init(void);
+static void MX_SDIO_SD_Init(void);
+static void MX_TIM10_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 void tick() {
 	HAL_GPIO_TogglePin(SYS_LED_GPIO_Port, SYS_LED_Pin);
+}
+
+void _lcd_ctl_blk(unsigned char state) {
+	HAL_GPIO_WritePin(LCD_BLK_GPIO_Port, LCD_BLK_Pin, state);
+}
+void _lcd_ctl_cs(unsigned char state) {
+	HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, state);
+}
+void _lcd_ctl_rs(unsigned char state) {
+	HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, state);
+}
+void _lcd_ctl_rst(unsigned char state) {
+	HAL_GPIO_WritePin(LCD_RST_GPIO_Port, LCD_RST_Pin, state);
 }
 /* USER CODE END PFP */
 
@@ -136,8 +153,6 @@ int main(void)
   MX_GPIO_Init();
   MX_FMC_Init();
   MX_I2C1_Init();
-  MX_SDIO_SD_Init();
-  MX_SPI1_Init();
   MX_SPI2_Init();
   MX_I2C2_Init();
   MX_USART1_UART_Init();
@@ -146,13 +161,16 @@ int main(void)
   MX_SPI5_Init();
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
+  MX_SDIO_SD_Init();
+  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
-  setup();
+  flash = FlashInit(&hspi5, SPI5_CS_GPIO_Port, SPI5_CS_Pin, W25Q128);
+  ngv_setup();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1) loop();
+  while (1) ngp_loop();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -207,10 +225,6 @@ void SystemClock_Config(void)
   }
 
   HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_PLLCLK, RCC_MCODIV_5);
-
-    /**Enables the Clock Security System 
-    */
-  HAL_RCC_EnableCSS();
 
     /**Configure the Systick interrupt time 
     */
@@ -278,30 +292,6 @@ static void MX_SDIO_SD_Init(void)
 
 }
 
-/* SPI1 init function */
-static void MX_SPI1_Init(void)
-{
-
-  /* SPI1 parameter configuration*/
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 10;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
 /* SPI2 init function */
 static void MX_SPI2_Init(void)
 {
@@ -344,6 +334,22 @@ static void MX_SPI5_Init(void)
   hspi5.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi5.Init.CRCPolynomial = 10;
   if (HAL_SPI_Init(&hspi5) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* TIM10 init function */
+static void MX_TIM10_Init(void)
+{
+
+  htim10.Instance = TIM10;
+  htim10.Init.Prescaler = 5;
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim10.Init.Period = 239;
+  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -616,7 +622,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(SYS_LED_GPIO_Port, SYS_LED_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA, LCD_BLK_Pin|LCD_RS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, LCD_CS_Pin|LCD_RST_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
@@ -658,12 +667,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI1_CS_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_Pin;
+  /*Configure GPIO pins : LCD_BLK_Pin LCD_CS_Pin LCD_RS_Pin LCD_RST_Pin */
+  GPIO_InitStruct.Pin = LCD_BLK_Pin|LCD_CS_Pin|LCD_RS_Pin|LCD_RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : KEYBRD_F4_Pin KEYBRD_F5_Pin */
   GPIO_InitStruct.Pin = KEYBRD_F4_Pin|KEYBRD_F5_Pin;
@@ -686,12 +695,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(SPI2_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : FPGA_CONF_Pin KEYPAD_OUTA_Pin KEYPAD_OUTB_Pin */
-  GPIO_InitStruct.Pin = FPGA_CONF_Pin|KEYPAD_OUTA_Pin|KEYPAD_OUTB_Pin;
+  /*Configure GPIO pin : FPGA_CONF_Pin */
+  GPIO_InitStruct.Pin = FPGA_CONF_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+  HAL_GPIO_Init(FPGA_CONF_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : FPGA_RST_Pin FPGA_CTL_Pin */
   GPIO_InitStruct.Pin = FPGA_RST_Pin|FPGA_CTL_Pin;
@@ -704,7 +713,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = GPIO_PIN_8;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF0_MCO;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -713,6 +722,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(FPGA_INT_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : KEYPAD_OUTA_Pin KEYPAD_OUTB_Pin */
+  GPIO_InitStruct.Pin = KEYPAD_OUTA_Pin|KEYPAD_OUTB_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LCDTC_INT_Pin */
   GPIO_InitStruct.Pin = LCDTC_INT_Pin;

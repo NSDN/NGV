@@ -51,7 +51,7 @@
 #include "usbd_storage_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "flash.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,7 +60,6 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -158,8 +157,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
 extern uint8_t FS_OK;
-extern SD_HandleTypeDef hsd;
-extern HAL_SD_CardInfoTypeDef cardInfo;
+extern Flash* flash;
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -224,8 +222,8 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 {
   /* USER CODE BEGIN 3 */
   if (FS_OK == 0) return USBD_FAIL;
-  *block_num  = cardInfo.BlockNbr;
-  *block_size = cardInfo.BlockSize;
+  *block_num  = STORAGE_BLK_NBR;
+  *block_size = STORAGE_BLK_SIZ;
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -264,7 +262,9 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 {
   /* USER CODE BEGIN 6 */
   if (FS_OK == 0) return USBD_FAIL;
-  HAL_SD_ReadBlocks(&hsd, buf, blk_addr, blk_len, 1000);
+  for (uint16_t i = 0; i < blk_len; i++) {
+  	flash->read512byte(flash->p, STORAGE_BLK_SIZ * (blk_addr + i), buf + STORAGE_BLK_SIZ * i);
+  }
   return (USBD_OK);
   /* USER CODE END 6 */
 }
@@ -278,7 +278,9 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 {
   /* USER CODE BEGIN 7 */
   if (FS_OK == 0) return USBD_FAIL;
-  HAL_SD_WriteBlocks(&hsd, buf, blk_addr, blk_len, 1000);
+  for (uint16_t i = 0; i < blk_len; i++) {
+  	flash->write512byte(flash->p, STORAGE_BLK_SIZ * (blk_addr + i), buf + STORAGE_BLK_SIZ * i);
+  }
   return (USBD_OK);
   /* USER CODE END 7 */
 }

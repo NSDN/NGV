@@ -75,8 +75,14 @@
 #define KEYBRD_F2_GPIO_Port GPIOA
 #define KEYBRD_F3_Pin GPIO_PIN_1
 #define KEYBRD_F3_GPIO_Port GPIOA
-#define SPI1_CS_Pin GPIO_PIN_4
-#define SPI1_CS_GPIO_Port GPIOA
+#define LCD_BLK_Pin GPIO_PIN_4
+#define LCD_BLK_GPIO_Port GPIOA
+#define LCD_CS_Pin GPIO_PIN_5
+#define LCD_CS_GPIO_Port GPIOA
+#define LCD_RS_Pin GPIO_PIN_6
+#define LCD_RS_GPIO_Port GPIOA
+#define LCD_RST_Pin GPIO_PIN_7
+#define LCD_RST_GPIO_Port GPIOA
 #define KEYBRD_F4_Pin GPIO_PIN_4
 #define KEYBRD_F4_GPIO_Port GPIOC
 #define KEYBRD_F5_Pin GPIO_PIN_5

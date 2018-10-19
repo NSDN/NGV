@@ -1,7 +1,8 @@
 /**
-  ******************************************************************************
-  * @file           : fatfs_platform.c
-  * @brief          : fatfs_platform source file
+ ******************************************************************************
+  * @file    user_diskio.h
+  * @brief   This file contains the common defines and functions prototypes for  
+  *          the user_diskio driver.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -44,17 +45,30 @@
   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-*/
-#include "fatfs_platform.h"
+  */
+  
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __USER_DISKIO_H
+#define __USER_DISKIO_H
 
-uint8_t	BSP_PlatformIsDetected(void) {
-  uint8_t status = (uint8_t)0x01;
-  /* Check SD card detect pin */
-  if (HAL_GPIO_ReadPin(SD_PORT,SD_PIN) == GPIO_PIN_RESET) {
-    status = (uint8_t)0x00;
-  }
-  /* USER CODE BEGIN 1 */
-  /* user code can be inserted here */
-  /* USER CODE END 1 */ 
-  return status;
-}  
+#ifdef __cplusplus
+ extern "C" {
+#endif 
+
+/* USER CODE BEGIN 0 */
+
+/* Includes ------------------------------------------------------------------*/
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+/* Exported functions ------------------------------------------------------- */
+extern Diskio_drvTypeDef  USER_Driver;
+
+/* USER CODE END 0 */
+   
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __USER_DISKIO_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

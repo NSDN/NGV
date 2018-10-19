@@ -1,6 +1,6 @@
 al3_s10
-13 34 495 68 3170 0 0
-1.818 0.497 ngv_main al3_s10 LQFP144 Detail 8 3
+13 34 507 68 3170 0 0
+1.860 0.497 ngv_main al3_s10 LQFP144 Detail 8 3
 clock: core_pll/pll_inst.refclk
 13 0 0 0
 
@@ -8,34 +8,12 @@ clock: core_pll/pll_inst.clkc[0]
 24 3170 68 2
 Setup check
 34 3
-Endpoint: bi_blink/reg0_b17|bi_blink/reg0_b3.F
-34 1.818000 50 3
-Timing path: bi_blink/reg0_b2|bi_blink/reg0_b23.clk->bi_blink/reg0_b17|bi_blink/reg0_b3.F
-bi_blink/reg0_b2|bi_blink/reg0_b23.clk
-bi_blink/reg0_b17|bi_blink/reg0_b3.F
-36 1.818000 6.774000 4.956000 3 17
-bi_blink/cnt[2] bi_blink/lt0/u2|bi_blink/lt0/u1.a[1]
-bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
-bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
-bi_blink/lt0/c7 bi_blink/lt0/u8|bi_blink/lt0/u7.fci
-bi_blink/lt0/c9 bi_blink/lt0/u10|bi_blink/lt0/u9.fci
-bi_blink/lt0/c11 bi_blink/lt0/u12|bi_blink/lt0/u11.fci
-bi_blink/lt0/c13 bi_blink/lt0/u14|bi_blink/lt0/u13.fci
-bi_blink/lt0/c15 bi_blink/lt0/u16|bi_blink/lt0/u15.fci
-bi_blink/lt0/c17 bi_blink/lt0/u18|bi_blink/lt0/u17.fci
-bi_blink/lt0/c19 bi_blink/lt0/u20|bi_blink/lt0/u19.fci
-bi_blink/lt0/c21 bi_blink/lt0/u22|bi_blink/lt0/u21.fci
-bi_blink/lt0/c23 bi_blink/lt0/u24|bi_blink/lt0/u23.fci
-bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
-bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
-bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
-bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b17|bi_blink/reg0_b3.b[1]
-
-Timing path: bi_blink/reg0_b1|bi_blink/reg0_b27.clk->bi_blink/reg0_b17|bi_blink/reg0_b3.F
+Endpoint: bi_blink/reg0_b14|bi_blink/reg0_b4.F
+34 1.860000 47 3
+Timing path: bi_blink/reg0_b1|bi_blink/reg0_b27.clk->bi_blink/reg0_b14|bi_blink/reg0_b4.F
 bi_blink/reg0_b1|bi_blink/reg0_b27.clk
-bi_blink/reg0_b17|bi_blink/reg0_b3.F
-87 1.860000 6.774000 4.914000 3 17
+bi_blink/reg0_b14|bi_blink/reg0_b4.F
+36 1.860000 6.774000 4.914000 3 17
 bi_blink/cnt[1] bi_blink/lt0/u2|bi_blink/lt0/u1.a[0]
 bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
@@ -52,13 +30,15 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b17|bi_blink/reg0_b3.b[1]
+bi_blink/n1 bi_blink/reg0_b14|bi_blink/reg0_b4.b[1]
 
-Timing path: bi_blink/reg0_b17|bi_blink/reg0_b3.clk->bi_blink/reg0_b17|bi_blink/reg0_b3.F
-bi_blink/reg0_b17|bi_blink/reg0_b3.clk
-bi_blink/reg0_b17|bi_blink/reg0_b3.F
-138 1.936000 6.774000 4.838000 3 16
-bi_blink/cnt[3] bi_blink/lt0/u4|bi_blink/lt0/u3.a[0]
+Timing path: bi_blink/reg0_b0|bi_blink/reg0_b9.clk->bi_blink/reg0_b14|bi_blink/reg0_b4.F
+bi_blink/reg0_b0|bi_blink/reg0_b9.clk
+bi_blink/reg0_b14|bi_blink/reg0_b4.F
+87 1.866000 6.774000 4.908000 3 18
+bi_blink/cnt[0] bi_blink/lt0/u0|bi_blink/lt0/ucin.a[1]
+bi_blink/lt0/c1 bi_blink/lt0/u2|bi_blink/lt0/u1.fci
+bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
 bi_blink/lt0/c7 bi_blink/lt0/u8|bi_blink/lt0/u7.fci
 bi_blink/lt0/c9 bi_blink/lt0/u10|bi_blink/lt0/u9.fci
@@ -73,15 +53,12 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b17|bi_blink/reg0_b3.b[1]
+bi_blink/n1 bi_blink/reg0_b14|bi_blink/reg0_b4.b[1]
 
-
-Endpoint: bi_blink/reg0_b17|bi_blink/reg0_b3.F
-187 1.818000 36 3
-Timing path: bi_blink/reg0_b2|bi_blink/reg0_b23.clk->bi_blink/reg0_b17|bi_blink/reg0_b3.F
+Timing path: bi_blink/reg0_b2|bi_blink/reg0_b23.clk->bi_blink/reg0_b14|bi_blink/reg0_b4.F
 bi_blink/reg0_b2|bi_blink/reg0_b23.clk
-bi_blink/reg0_b17|bi_blink/reg0_b3.F
-189 1.818000 6.774000 4.956000 3 17
+bi_blink/reg0_b14|bi_blink/reg0_b4.F
+140 1.932000 6.774000 4.842000 3 17
 bi_blink/cnt[2] bi_blink/lt0/u2|bi_blink/lt0/u1.a[1]
 bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
@@ -98,12 +75,15 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b17|bi_blink/reg0_b3.b[0]
+bi_blink/n1 bi_blink/reg0_b14|bi_blink/reg0_b4.b[1]
 
-Timing path: bi_blink/reg0_b1|bi_blink/reg0_b27.clk->bi_blink/reg0_b17|bi_blink/reg0_b3.F
+
+Endpoint: bi_blink/reg0_b14|bi_blink/reg0_b4.F
+191 1.860000 37 3
+Timing path: bi_blink/reg0_b1|bi_blink/reg0_b27.clk->bi_blink/reg0_b14|bi_blink/reg0_b4.F
 bi_blink/reg0_b1|bi_blink/reg0_b27.clk
-bi_blink/reg0_b17|bi_blink/reg0_b3.F
-240 1.860000 6.774000 4.914000 3 17
+bi_blink/reg0_b14|bi_blink/reg0_b4.F
+193 1.860000 6.774000 4.914000 3 17
 bi_blink/cnt[1] bi_blink/lt0/u2|bi_blink/lt0/u1.a[0]
 bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
@@ -120,13 +100,15 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b17|bi_blink/reg0_b3.b[0]
+bi_blink/n1 bi_blink/reg0_b14|bi_blink/reg0_b4.b[0]
 
-Timing path: bi_blink/reg0_b17|bi_blink/reg0_b3.clk->bi_blink/reg0_b17|bi_blink/reg0_b3.F
-bi_blink/reg0_b17|bi_blink/reg0_b3.clk
-bi_blink/reg0_b17|bi_blink/reg0_b3.F
-291 1.936000 6.774000 4.838000 3 16
-bi_blink/cnt[3] bi_blink/lt0/u4|bi_blink/lt0/u3.a[0]
+Timing path: bi_blink/reg0_b0|bi_blink/reg0_b9.clk->bi_blink/reg0_b14|bi_blink/reg0_b4.F
+bi_blink/reg0_b0|bi_blink/reg0_b9.clk
+bi_blink/reg0_b14|bi_blink/reg0_b4.F
+244 1.866000 6.774000 4.908000 3 18
+bi_blink/cnt[0] bi_blink/lt0/u0|bi_blink/lt0/ucin.a[1]
+bi_blink/lt0/c1 bi_blink/lt0/u2|bi_blink/lt0/u1.fci
+bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
 bi_blink/lt0/c7 bi_blink/lt0/u8|bi_blink/lt0/u7.fci
 bi_blink/lt0/c9 bi_blink/lt0/u10|bi_blink/lt0/u9.fci
@@ -141,15 +123,12 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b17|bi_blink/reg0_b3.b[0]
+bi_blink/n1 bi_blink/reg0_b14|bi_blink/reg0_b4.b[0]
 
-
-Endpoint: bi_blink/reg0_b11|bi_blink/reg0_b7.F
-340 1.855000 40 3
-Timing path: bi_blink/reg0_b2|bi_blink/reg0_b23.clk->bi_blink/reg0_b11|bi_blink/reg0_b7.F
+Timing path: bi_blink/reg0_b2|bi_blink/reg0_b23.clk->bi_blink/reg0_b14|bi_blink/reg0_b4.F
 bi_blink/reg0_b2|bi_blink/reg0_b23.clk
-bi_blink/reg0_b11|bi_blink/reg0_b7.F
-342 1.855000 6.774000 4.919000 3 17
+bi_blink/reg0_b14|bi_blink/reg0_b4.F
+297 1.932000 6.774000 4.842000 3 17
 bi_blink/cnt[2] bi_blink/lt0/u2|bi_blink/lt0/u1.a[1]
 bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
@@ -166,12 +145,15 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b11|bi_blink/reg0_b7.a[0]
+bi_blink/n1 bi_blink/reg0_b14|bi_blink/reg0_b4.b[0]
 
-Timing path: bi_blink/reg0_b1|bi_blink/reg0_b27.clk->bi_blink/reg0_b11|bi_blink/reg0_b7.F
+
+Endpoint: bi_blink/reg0_b12|bi_blink/reg0_b6.F
+348 1.867000 45 3
+Timing path: bi_blink/reg0_b1|bi_blink/reg0_b27.clk->bi_blink/reg0_b12|bi_blink/reg0_b6.F
 bi_blink/reg0_b1|bi_blink/reg0_b27.clk
-bi_blink/reg0_b11|bi_blink/reg0_b7.F
-393 1.897000 6.774000 4.877000 3 17
+bi_blink/reg0_b12|bi_blink/reg0_b6.F
+350 1.867000 6.774000 4.907000 3 17
 bi_blink/cnt[1] bi_blink/lt0/u2|bi_blink/lt0/u1.a[0]
 bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
@@ -188,13 +170,15 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b11|bi_blink/reg0_b7.a[0]
+bi_blink/n1 bi_blink/reg0_b12|bi_blink/reg0_b6.a[1]
 
-Timing path: bi_blink/reg0_b17|bi_blink/reg0_b3.clk->bi_blink/reg0_b11|bi_blink/reg0_b7.F
-bi_blink/reg0_b17|bi_blink/reg0_b3.clk
-bi_blink/reg0_b11|bi_blink/reg0_b7.F
-444 1.973000 6.774000 4.801000 3 16
-bi_blink/cnt[3] bi_blink/lt0/u4|bi_blink/lt0/u3.a[0]
+Timing path: bi_blink/reg0_b0|bi_blink/reg0_b9.clk->bi_blink/reg0_b12|bi_blink/reg0_b6.F
+bi_blink/reg0_b0|bi_blink/reg0_b9.clk
+bi_blink/reg0_b12|bi_blink/reg0_b6.F
+401 1.873000 6.774000 4.901000 3 18
+bi_blink/cnt[0] bi_blink/lt0/u0|bi_blink/lt0/ucin.a[1]
+bi_blink/lt0/c1 bi_blink/lt0/u2|bi_blink/lt0/u1.fci
+bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
 bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
 bi_blink/lt0/c7 bi_blink/lt0/u8|bi_blink/lt0/u7.fci
 bi_blink/lt0/c9 bi_blink/lt0/u10|bi_blink/lt0/u9.fci
@@ -209,87 +193,107 @@ bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
 bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
 bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
 bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
-bi_blink/n1 bi_blink/reg0_b11|bi_blink/reg0_b7.a[0]
+bi_blink/n1 bi_blink/reg0_b12|bi_blink/reg0_b6.a[1]
+
+Timing path: bi_blink/reg0_b2|bi_blink/reg0_b23.clk->bi_blink/reg0_b12|bi_blink/reg0_b6.F
+bi_blink/reg0_b2|bi_blink/reg0_b23.clk
+bi_blink/reg0_b12|bi_blink/reg0_b6.F
+454 1.939000 6.774000 4.835000 3 17
+bi_blink/cnt[2] bi_blink/lt0/u2|bi_blink/lt0/u1.a[1]
+bi_blink/lt0/c3 bi_blink/lt0/u4|bi_blink/lt0/u3.fci
+bi_blink/lt0/c5 bi_blink/lt0/u6|bi_blink/lt0/u5.fci
+bi_blink/lt0/c7 bi_blink/lt0/u8|bi_blink/lt0/u7.fci
+bi_blink/lt0/c9 bi_blink/lt0/u10|bi_blink/lt0/u9.fci
+bi_blink/lt0/c11 bi_blink/lt0/u12|bi_blink/lt0/u11.fci
+bi_blink/lt0/c13 bi_blink/lt0/u14|bi_blink/lt0/u13.fci
+bi_blink/lt0/c15 bi_blink/lt0/u16|bi_blink/lt0/u15.fci
+bi_blink/lt0/c17 bi_blink/lt0/u18|bi_blink/lt0/u17.fci
+bi_blink/lt0/c19 bi_blink/lt0/u20|bi_blink/lt0/u19.fci
+bi_blink/lt0/c21 bi_blink/lt0/u22|bi_blink/lt0/u21.fci
+bi_blink/lt0/c23 bi_blink/lt0/u24|bi_blink/lt0/u23.fci
+bi_blink/lt0/c25 bi_blink/lt0/u26|bi_blink/lt0/u25.fci
+bi_blink/lt0/c27 bi_blink/lt0/u28|bi_blink/lt0/u27.fci
+bi_blink/lt0/c29 bi_blink/lt0/u30|bi_blink/lt0/u29.fci
+bi_blink/lt0/c31 bi_blink/lt0/ucout|bi_blink/lt0/u31.fci
+bi_blink/n1 bi_blink/reg0_b12|bi_blink/reg0_b6.a[1]
 
 
 
 Hold check
-493 3
-Endpoint: _al_u109|bi_blink/state_reg.F
-495 0.497000 1 1
-Timing path: _al_u109|bi_blink/state_reg.clk->_al_u109|bi_blink/state_reg.F
-_al_u109|bi_blink/state_reg.clk
-_al_u109|bi_blink/state_reg.F
-497 0.497000 1.161000 1.658000 1 1
-led_w_pad _al_u109|bi_blink/state_reg.a[0]
+505 3
+Endpoint: bi_blink/state_reg.F
+507 0.497000 1 1
+Timing path: bi_blink/state_reg.clk->bi_blink/state_reg.F
+bi_blink/state_reg.clk
+bi_blink/state_reg.F
+509 0.497000 1.161000 1.658000 1 1
+led_w_pad bi_blink/state_reg.a[0]
 
 
-Endpoint: bi_blink/reg0_b22|bi_blink/reg0_b24.F
-516 1.086000 57 3
-Timing path: bi_blink/reg0_b22|bi_blink/reg0_b24.clk->bi_blink/reg0_b22|bi_blink/reg0_b24.F
-bi_blink/reg0_b22|bi_blink/reg0_b24.clk
-bi_blink/reg0_b22|bi_blink/reg0_b24.F
-518 1.086000 1.161000 2.247000 2 2
-bi_blink/cnt[24] bi_blink/add0/u24|bi_blink/add0/u23.b[1]
-bi_blink/n2[24] bi_blink/reg0_b22|bi_blink/reg0_b24.d[0]
-
-Timing path: bi_blink/reg0_b20|bi_blink/reg0_b26.clk->bi_blink/reg0_b22|bi_blink/reg0_b24.F
-bi_blink/reg0_b20|bi_blink/reg0_b26.clk
-bi_blink/reg0_b22|bi_blink/reg0_b24.F
-539 1.448000 1.161000 2.609000 3 4
-bi_blink/cnt[20] bi_blink/add0/u20|bi_blink/add0/u19.b[1]
-bi_blink/add0/c21 bi_blink/add0/u22|bi_blink/add0/u21.fci
-bi_blink/add0/c23 bi_blink/add0/u24|bi_blink/add0/u23.fci
-bi_blink/n2[24] bi_blink/reg0_b22|bi_blink/reg0_b24.d[0]
-
-Timing path: bi_blink/reg0_b19|bi_blink/reg0_b28.clk->bi_blink/reg0_b22|bi_blink/reg0_b24.F
+Endpoint: bi_blink/reg0_b19|bi_blink/reg0_b28.F
+528 1.086000 52 3
+Timing path: bi_blink/reg0_b19|bi_blink/reg0_b28.clk->bi_blink/reg0_b19|bi_blink/reg0_b28.F
 bi_blink/reg0_b19|bi_blink/reg0_b28.clk
-bi_blink/reg0_b22|bi_blink/reg0_b24.F
-564 1.525000 1.161000 2.686000 3 4
+bi_blink/reg0_b19|bi_blink/reg0_b28.F
+530 1.086000 1.161000 2.247000 2 2
 bi_blink/cnt[19] bi_blink/add0/u20|bi_blink/add0/u19.b[0]
-bi_blink/add0/c21 bi_blink/add0/u22|bi_blink/add0/u21.fci
-bi_blink/add0/c23 bi_blink/add0/u24|bi_blink/add0/u23.fci
-bi_blink/n2[24] bi_blink/reg0_b22|bi_blink/reg0_b24.d[0]
+bi_blink/n2[19] bi_blink/reg0_b19|bi_blink/reg0_b28.d[1]
 
-
-Endpoint: bi_blink/reg0_b18|bi_blink/reg0_b29.F
-589 1.086000 51 3
-Timing path: bi_blink/reg0_b18|bi_blink/reg0_b29.clk->bi_blink/reg0_b18|bi_blink/reg0_b29.F
+Timing path: bi_blink/reg0_b18|bi_blink/reg0_b29.clk->bi_blink/reg0_b19|bi_blink/reg0_b28.F
 bi_blink/reg0_b18|bi_blink/reg0_b29.clk
-bi_blink/reg0_b18|bi_blink/reg0_b29.F
-591 1.086000 1.161000 2.247000 2 2
-bi_blink/cnt[18] bi_blink/add0/u18|bi_blink/add0/u17.b[1]
-bi_blink/n2[18] bi_blink/reg0_b18|bi_blink/reg0_b29.d[1]
+bi_blink/reg0_b19|bi_blink/reg0_b28.F
+551 1.365000 1.161000 2.526000 3 3
+bi_blink/cnt[18] bi_blink/add0/u18|bi_blink/add0/u17.a[1]
+bi_blink/add0/c19 bi_blink/add0/u20|bi_blink/add0/u19.fci
+bi_blink/n2[19] bi_blink/reg0_b19|bi_blink/reg0_b28.d[1]
 
-Timing path: bi_blink/reg0_b16|bi_blink/reg0_b30.clk->bi_blink/reg0_b18|bi_blink/reg0_b29.F
+Timing path: bi_blink/reg0_b16|bi_blink/reg0_b30.clk->bi_blink/reg0_b19|bi_blink/reg0_b28.F
 bi_blink/reg0_b16|bi_blink/reg0_b30.clk
-bi_blink/reg0_b18|bi_blink/reg0_b29.F
-612 1.385000 1.161000 2.546000 3 3
-bi_blink/cnt[16] bi_blink/add0/u16|bi_blink/add0/u15.b[1]
+bi_blink/reg0_b19|bi_blink/reg0_b28.F
+574 1.428000 1.161000 2.589000 3 4
+bi_blink/cnt[16] bi_blink/add0/u16|bi_blink/add0/u15.a[1]
 bi_blink/add0/c17 bi_blink/add0/u18|bi_blink/add0/u17.fci
-bi_blink/n2[18] bi_blink/reg0_b18|bi_blink/reg0_b29.d[1]
+bi_blink/add0/c19 bi_blink/add0/u20|bi_blink/add0/u19.fci
+bi_blink/n2[19] bi_blink/reg0_b19|bi_blink/reg0_b28.d[1]
 
-Timing path: bi_blink/reg0_b11|bi_blink/reg0_b7.clk->bi_blink/reg0_b18|bi_blink/reg0_b29.F
-bi_blink/reg0_b11|bi_blink/reg0_b7.clk
-bi_blink/reg0_b18|bi_blink/reg0_b29.F
-635 1.588000 1.161000 2.749000 3 5
-bi_blink/cnt[11] bi_blink/add0/u12|bi_blink/add0/u11.b[0]
-bi_blink/add0/c13 bi_blink/add0/u14|bi_blink/add0/u13.fci
-bi_blink/add0/c15 bi_blink/add0/u16|bi_blink/add0/u15.fci
-bi_blink/add0/c17 bi_blink/add0/u18|bi_blink/add0/u17.fci
-bi_blink/n2[18] bi_blink/reg0_b18|bi_blink/reg0_b29.d[1]
+
+Endpoint: bi_blink/reg0_b19|bi_blink/reg0_b28.F
+599 1.103000 61 3
+Timing path: bi_blink/reg0_b19|bi_blink/reg0_b28.clk->bi_blink/reg0_b19|bi_blink/reg0_b28.F
+bi_blink/reg0_b19|bi_blink/reg0_b28.clk
+bi_blink/reg0_b19|bi_blink/reg0_b28.F
+601 1.103000 1.161000 2.264000 2 2
+bi_blink/cnt[28] bi_blink/add0/u28|bi_blink/add0/u27.b[1]
+bi_blink/n2[28] bi_blink/reg0_b19|bi_blink/reg0_b28.e[0]
+
+Timing path: bi_blink/reg0_b20|bi_blink/reg0_b26.clk->bi_blink/reg0_b19|bi_blink/reg0_b28.F
+bi_blink/reg0_b20|bi_blink/reg0_b26.clk
+bi_blink/reg0_b19|bi_blink/reg0_b28.F
+622 1.460000 1.161000 2.621000 3 3
+bi_blink/cnt[26] bi_blink/add0/u26|bi_blink/add0/u25.a[1]
+bi_blink/add0/c27 bi_blink/add0/u28|bi_blink/add0/u27.fci
+bi_blink/n2[28] bi_blink/reg0_b19|bi_blink/reg0_b28.e[0]
+
+Timing path: bi_blink/reg0_b2|bi_blink/reg0_b23.clk->bi_blink/reg0_b19|bi_blink/reg0_b28.F
+bi_blink/reg0_b2|bi_blink/reg0_b23.clk
+bi_blink/reg0_b19|bi_blink/reg0_b28.F
+645 1.581000 1.161000 2.742000 3 4
+bi_blink/cnt[23] bi_blink/add0/u24|bi_blink/add0/u23.b[0]
+bi_blink/add0/c25 bi_blink/add0/u26|bi_blink/add0/u25.fci
+bi_blink/add0/c27 bi_blink/add0/u28|bi_blink/add0/u27.fci
+bi_blink/n2[28] bi_blink/reg0_b19|bi_blink/reg0_b28.e[0]
 
 
 
 
 clock: stm_clk
-662 0 0 0
+670 0 0 0
 
 
 Timing group statistics: 
 	Clock constraints: 
 	  Clock Name                             Min Period     Max Freq           Skew      Fanout            TNS
-	  core_pll/pll_inst.clkc[0] (5.952 ns)        4.134ns     241.896MHz        0.015ns        17        0.000ns
+	  core_pll/pll_inst.clkc[0] (5.952 ns)        4.092ns     244.379MHz        0.015ns        17        0.000ns
 	Minimum input arrival time before clock: no constraint path
 	Maximum output required time after clock: no constraint path
 	Maximum combinational path delay: no constraint path

@@ -7,22 +7,23 @@
 #include "usbd_core.h"
 
 #include "nshel.h"
+#include "flash.h"
 #include "nsio.h"
 #include "logo.h"
 #include "lcd.h"
 
 #include "99_8b.h"
 
-#define NGV_SYS_VERSION "181016"
+#define NGV_SYS_VERSION "181020"
 
 LCD* lcd;
+Flash* flash;
 FILTYPE file;
 jmp_buf rstPos;
 uint8_t FS_OK = 0;
-HAL_SD_CardInfoTypeDef cardInfo;
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
-extern SD_HandleTypeDef hsd;
+
 extern SRAM_HandleTypeDef hsram1;
 
 void greenScreen(const char* head) {
@@ -41,7 +42,7 @@ void delay(int t) { HAL_Delay(t); }
 
 void processEvent() {  }
 
-void setup() {
+void ngv_setup() {
 	lcd = LCDInit();
 	setjmp(rstPos);
 	USBD_Stop(&hUsbDeviceFS);
@@ -78,15 +79,16 @@ void setup() {
 	delay(1000);
 
 	uint8_t result = 0;
-	if (HAL_SD_Init(&hsd) == HAL_OK)
-		print("Init SD card... OK\n");
-	else
-		print("Init SD card... ERR\n");
+	print("Init flash...\n");
+	result = flash->begin(flash->p);
+	print("  State: %d\n", result);
+	print("  PID: 0x%X\n", flash->readPartID(flash->p));
+	print("  UID: 0x%X\n", flash->readUniqueID(flash->p));
 	print("\n");
 	delay(1000);
 
-	print("Mount SD card...\n");
-	result = f_mount(&SDFatFS, SDPath, 1);
+	print("Mount file system...\n");
+	result = f_mount(&USERFatFS, USERPath, 1);
 	delay(1000);
 	if(result == FR_OK) {
 		char path[] = "NGV_INFO.TXT";
@@ -95,17 +97,16 @@ void setup() {
 		f_printf(&file, "by NyaSama Developer Network\n");
 		f_printf(&file, "Firmware Version: %s\n", NGV_SYS_VERSION);
 		f_close(&file);
-		print("Test SD card... OK\n");
+		print("Test file system... OK\n");
 		FS_OK = 1;
 	} else {
-		print("Test SD card... ERR: %02X\n", result);
+		print("Test file system... ERR: %02X\n", result);
 		FS_OK = 0;
 	}
 	print("\n");
 	delay(1000);
 
 	if (FS_OK) {
-		HAL_SD_GetCardInfo(&hsd, &cardInfo);
 		print("Init USB Mass Storage...\n");
 		USBD_Start(&hUsbDeviceFS);
 	}
@@ -124,7 +125,7 @@ void setup() {
 }
 
 volatile uint8_t cnt = 0;
-void loop() {
+void ngv_loop() {
 	lcd->colorb(lcd->p, 0xFF0000);
 	lcd->clear(lcd->p);
 	lcd->colorb(lcd->p, 0x00FF00);
@@ -133,6 +134,7 @@ void loop() {
 	lcd->clear(lcd->p);
 	if (cnt < 128) cnt += 1;
 	else {
+		cnt = 0;
 		greenScreen("END OF SYSTEM");
 		delay(3000);
 		longjmp(rstPos, 0);

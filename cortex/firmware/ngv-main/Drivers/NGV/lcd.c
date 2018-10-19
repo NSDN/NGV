@@ -25,18 +25,17 @@ const int LCD_RST = 0x08;
 const int LCD_IOCTL = 0x80;
 
 #ifndef LCD_IS_EMU
+#include "ngv_bios.h"
 #define _data(v) *(__IO uint8_t*) (_fmcAddr + ((v) & 0xFFFFFF)) = _fmcData | LCD_IOCTL
 #define _ioctl() *(__IO uint8_t*) (_fmcAddr + 0xFFFFFF) = _fmcData
 #endif
 
 void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
 #ifndef LCD_IS_EMU
-	_fmcData &= ~LCD_RS; //CMD
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(0); //CMD
+	_lcd_ctl_cs(0); //NCS
 	_data(cmd);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 #else
 	cmdBuf = cmd;
 #endif
@@ -44,62 +43,50 @@ void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
 
 void _lcd_writeData(pLCD* p, uint8_t data) {
 #ifndef LCD_IS_EMU
-	_fmcData |= LCD_RS; //DATA
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
 	_data(data);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 #endif
 }
 
 void _lcd_writeReg8(pLCD* p, uint8_t cmd, uint8_t data) {
 #ifndef LCD_IS_EMU
-	_fmcData &= ~LCD_RS; //CMD
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(0); //CMD
+	_lcd_ctl_cs(0); //NCS
 	_data(cmd);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 
-	_fmcData |= LCD_RS; //DATA
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
 	_data(data);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 #endif
 }
 
 void _lcd_writeReg32(pLCD* p, uint8_t cmd, uint32_t data) {
 #ifndef LCD_IS_EMU
-	_fmcData &= ~LCD_RS; //CMD
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(0); //CMD
+	_lcd_ctl_cs(0); //NCS
 	_data(cmd);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 
-	_fmcData |= LCD_RS; //DATA
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
 	_data((data >> 24) & 0xFF);
 	_data((data >> 16) & 0xFF);
 	_data((data >> 8 ) & 0xFF);
 	_data((data      ) & 0xFF);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 #endif
 }
 
 void _lcd_writeData32(pLCD* p, uint32_t data) {
 #ifndef LCD_IS_EMU
-	_fmcData |= LCD_RS; //DATA
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
 	_data(data);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 #else
 	if (cmdBuf == LCD_MEMWR) write(data);
 #endif
@@ -107,13 +94,11 @@ void _lcd_writeData32(pLCD* p, uint32_t data) {
 
 void _lcd_writeData32s(pLCD* p, uint32_t* data, uint32_t length) {
 #ifndef LCD_IS_EMU
-	_fmcData |= LCD_RS; //DATA
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
 	for (uint32_t i = 0; i < length; i++)
 		_data(data[i]);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 #else
 	if (cmdBuf == LCD_MEMWR) writes(data, length);
 #endif
@@ -121,13 +106,11 @@ void _lcd_writeData32s(pLCD* p, uint32_t* data, uint32_t length) {
 
 void _lcd_flashData32(pLCD* p, uint32_t data, uint32_t count) {
 #ifndef LCD_IS_EMU
-	_fmcData |= LCD_RS; //DATA
-	_fmcData &= ~LCD_CS; //NCS
-	_ioctl();
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
 	for (uint32_t i = 0; i < count; i++)
 		_data(data);
-	_fmcData |= LCD_CS; //CS
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
 #else
 	if (cmdBuf == LCD_MEMWR) flash(data, count);
 #endif
@@ -152,16 +135,13 @@ void _lcd_setPosition(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y
 
 void _lcd_reset(pLCD* p) {
 #ifndef LCD_IS_EMU
-	_fmcData |= LCD_CS; //CS
-	_fmcData &= ~LCD_RST; //NRST
-	_ioctl();
+	_lcd_ctl_cs(1); //CS
+	_lcd_ctl_rst(0); //NRST
 	HAL_Delay(10);
-	_fmcData |= LCD_RST; //RST
-	_ioctl();
+	_lcd_ctl_rst(1); //RST
 	HAL_Delay(100);
 
-	_fmcData |= LCD_BLK;
-	_ioctl();
+	_lcd_ctl_blk(1);
 #else
 	p->backColor = 0x000000;
 	p->foreColor = 0xFFFFFF;
@@ -212,22 +192,18 @@ void _lcd_init(pLCD* p) {
 		if(r == LCD_DELAY) {
 			HAL_Delay(len);
 		} else {
-			_fmcData &= ~LCD_RS; //CMD
-			_fmcData &= ~LCD_CS; //NCS
-			_ioctl();
+			_lcd_ctl_rs(0); //CMD
+			_lcd_ctl_cs(0); //NCS
 			_data(r & 0xFF);
-			_fmcData |= LCD_CS; //CS
-			_ioctl();
+			_lcd_ctl_cs(1); //CS
 
-			_fmcData |= LCD_RS; //DATA
-			_fmcData &= ~LCD_CS; //NCS
-			_ioctl();
+			_lcd_ctl_rs(1); //DATA
+			_lcd_ctl_cs(0); //NCS
 			for (uint16_t d = 0; d < len; d++) {
 				x = _regValues[i++];
 				_data(x & 0xFF);
 			}
-			_fmcData |= LCD_CS; //CS
-			_ioctl();
+			_lcd_ctl_cs(1); //CS
 		}
 	#endif
     }
