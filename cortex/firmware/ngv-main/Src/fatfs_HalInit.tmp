@@ -1,0 +1,4 @@
+#t/*## FatFS: Link the SD driver ###########################*/
+#tretSD = FATFS_LinkDriver(&SD_Driver, SDPath);
+#t/*## FatFS: Link the USER driver ###########################*/
+#tretUSER = FATFS_LinkDriver(&USER_Driver, USERPath);

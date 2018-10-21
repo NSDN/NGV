@@ -82,3 +82,7 @@ set_pin_assignment {ctl_blk} { LOCATION = P94; IOSTANDARD = LVTTL33; SLEWRATE = 
 set_pin_assignment {ctl_cs} { LOCATION = P93; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
 set_pin_assignment {ctl_rs} { LOCATION = P92; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
 set_pin_assignment {ctl_rst} { LOCATION = P91; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {beep_l} { LOCATION = P108; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {usart_tx} { LOCATION = P57; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {beep_r} { LOCATION = P5; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {usart_rx} { LOCATION = P39; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }

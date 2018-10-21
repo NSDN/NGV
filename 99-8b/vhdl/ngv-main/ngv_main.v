@@ -3,12 +3,17 @@ module ngv_main(
 	
 	fmc_nwe, fmc_noe, fmc_ne, fmc_addr, fmc_data,
 	
-	ctl_blk, ctl_cs, ctl_rs, ctl_rst,	
+	ctl_blk, ctl_cs, ctl_rs, ctl_rst,
+	usart_tx, usart_rx,
 	
 	lcd_blk, lcd_cs, lcd_rs, lcd_wr, lcd_rd, lcd_rst, lcd_data,
 	
+	beep_l, beep_r,
 	led_w, led_y
 );
+
+	input usart_tx, usart_rx;
+	output beep_l, beep_r;
 	
 	input rst, clk;
 	output led_w, led_y;

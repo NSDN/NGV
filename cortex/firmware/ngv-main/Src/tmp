@@ -36,7 +36,9 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern void tick();
+extern void _tim_irq_callback();
+extern void greenScreen(const char* head);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -52,8 +54,10 @@ extern TIM_HandleTypeDef htim10;
 void NMI_Handler(void)
 {
 #t/* USER CODE BEGIN NonMaskableInt_IRQn 0 */
+
 #n#t/* USER CODE END NonMaskableInt_IRQn 0 */
 #t/* USER CODE BEGIN NonMaskableInt_IRQn 1 */
+
 #n#t/* USER CODE END NonMaskableInt_IRQn 1 */
 }#n
 /**
@@ -62,6 +66,12 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
 #t/* USER CODE BEGIN HardFault_IRQn 0 */
+	greenScreen("Hard Fault Interrupt");
+	for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 250; j++)
+			for (int k = 0; k < 168000; k++)
+				asm("nop");
+	NVIC_SystemReset();
 #n#t/* USER CODE END HardFault_IRQn 0 */
 #twhile (1)
 #t{
@@ -69,6 +79,7 @@ void HardFault_Handler(void)
 #t#t/* USER CODE END W1_HardFault_IRQn 0 */
 #t}
 #t/* USER CODE BEGIN HardFault_IRQn 1 */
+
 #n#t/* USER CODE END HardFault_IRQn 1 */
 }#n
 /**
@@ -77,6 +88,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
 #t/* USER CODE BEGIN MemoryManagement_IRQn 0 */
+
 #n#t/* USER CODE END MemoryManagement_IRQn 0 */
 #twhile (1)
 #t{
@@ -84,6 +96,7 @@ void MemManage_Handler(void)
 #t#t/* USER CODE END W1_MemoryManagement_IRQn 0 */
 #t}
 #t/* USER CODE BEGIN MemoryManagement_IRQn 1 */
+
 #n#t/* USER CODE END MemoryManagement_IRQn 1 */
 }#n
 /**
@@ -92,6 +105,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
 #t/* USER CODE BEGIN BusFault_IRQn 0 */
+
 #n#t/* USER CODE END BusFault_IRQn 0 */
 #twhile (1)
 #t{
@@ -99,6 +113,7 @@ void BusFault_Handler(void)
 #t#t/* USER CODE END W1_BusFault_IRQn 0 */
 #t}
 #t/* USER CODE BEGIN BusFault_IRQn 1 */
+
 #n#t/* USER CODE END BusFault_IRQn 1 */
 }#n
 /**
@@ -107,6 +122,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
 #t/* USER CODE BEGIN UsageFault_IRQn 0 */
+
 #n#t/* USER CODE END UsageFault_IRQn 0 */
 #twhile (1)
 #t{
@@ -114,6 +130,7 @@ void UsageFault_Handler(void)
 #t#t/* USER CODE END W1_UsageFault_IRQn 0 */
 #t}
 #t/* USER CODE BEGIN UsageFault_IRQn 1 */
+
 #n#t/* USER CODE END UsageFault_IRQn 1 */
 }#n
 /**
@@ -122,8 +139,10 @@ void UsageFault_Handler(void)
 void SVC_Handler(void)
 {
 #t/* USER CODE BEGIN SVCall_IRQn 0 */
+
 #n#t/* USER CODE END SVCall_IRQn 0 */
 #t/* USER CODE BEGIN SVCall_IRQn 1 */
+
 #n#t/* USER CODE END SVCall_IRQn 1 */
 }#n
 /**
@@ -132,8 +151,10 @@ void SVC_Handler(void)
 void DebugMon_Handler(void)
 {
 #t/* USER CODE BEGIN DebugMonitor_IRQn 0 */
+
 #n#t/* USER CODE END DebugMonitor_IRQn 0 */
 #t/* USER CODE BEGIN DebugMonitor_IRQn 1 */
+
 #n#t/* USER CODE END DebugMonitor_IRQn 1 */
 }#n
 /**
@@ -142,8 +163,10 @@ void DebugMon_Handler(void)
 void PendSV_Handler(void)
 {
 #t/* USER CODE BEGIN PendSV_IRQn 0 */
+
 #n#t/* USER CODE END PendSV_IRQn 0 */
 #t/* USER CODE BEGIN PendSV_IRQn 1 */
+
 #n#t/* USER CODE END PendSV_IRQn 1 */
 }#n
 /**
@@ -152,10 +175,13 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
 #t/* USER CODE BEGIN SysTick_IRQn 0 */
+
 #n#t/* USER CODE END SysTick_IRQn 0 */
 #tHAL_IncTick();
 #tHAL_SYSTICK_IRQHandler();
 #t/* USER CODE BEGIN SysTick_IRQn 1 */
+  if (HAL_GetTick() % 500 == 0)
+	  tick();
 #n#t/* USER CODE END SysTick_IRQn 1 */
 }#n
 
@@ -172,9 +198,11 @@ void SysTick_Handler(void)
 void EXTI3_IRQHandler(void)
 {
 #t/* USER CODE BEGIN EXTI3_IRQn 0 */
+
 #n#t/* USER CODE END EXTI3_IRQn 0 */
 #tHAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
 #t/* USER CODE BEGIN EXTI3_IRQn 1 */
+
 #n#t/* USER CODE END EXTI3_IRQn 1 */
 }#n
 /**
@@ -183,9 +211,11 @@ void EXTI3_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
 #t/* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
 #n#t/* USER CODE END EXTI9_5_IRQn 0 */
 #tHAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
 #t/* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
 #n#t/* USER CODE END EXTI9_5_IRQn 1 */
 }#n
 /**
@@ -194,9 +224,11 @@ void EXTI9_5_IRQHandler(void)
 void TIM1_UP_TIM10_IRQHandler(void)
 {
 #t/* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
+
 #n#t/* USER CODE END TIM1_UP_TIM10_IRQn 0 */
 #tHAL_TIM_IRQHandler(&htim10);
 #t/* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
+  _tim_irq_callback();
 #n#t/* USER CODE END TIM1_UP_TIM10_IRQn 1 */
 }#n
 /**

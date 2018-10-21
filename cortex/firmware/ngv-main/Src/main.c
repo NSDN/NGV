@@ -91,12 +91,12 @@ static void MX_FMC_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_I2C2_Init(void);
-static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_SPI5_Init(void);
-static void MX_SDIO_SD_Init(void);
 static void MX_TIM10_Init(void);
+static void MX_SDIO_SD_Init(void);
+static void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -155,14 +155,14 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI2_Init();
   MX_I2C2_Init();
-  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART6_UART_Init();
   MX_SPI5_Init();
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
-  MX_SDIO_SD_Init();
   MX_TIM10_Init();
+  MX_SDIO_SD_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   flash = FlashInit(&hspi5, SPI5_CS_GPIO_Port, SPI5_CS_Pin, W25Q128);
   ngv_setup();

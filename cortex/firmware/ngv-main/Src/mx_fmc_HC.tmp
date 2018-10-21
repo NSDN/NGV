@@ -1,0 +1,170 @@
+/* FMC initialization function */
+static void MX_FMC_Init(void)
+{
+#tFMC_NORSRAM_TimingTypeDef Timing;
+#tFMC_SDRAM_TimingTypeDef SdramTiming;
+#n
+#t/** Perform the SRAM1 memory initialization sequence#n#t*/
+#thsram1.Instance = FMC_NORSRAM_DEVICE;
+#thsram1.Extended = FMC_NORSRAM_EXTENDED_DEVICE;
+#t/* hsram1.Init */
+#thsram1.Init.NSBank = FMC_NORSRAM_BANK1;
+#thsram1.Init.DataAddressMux = FMC_DATA_ADDRESS_MUX_DISABLE;
+#thsram1.Init.MemoryType = FMC_MEMORY_TYPE_SRAM;
+#thsram1.Init.MemoryDataWidth = FMC_NORSRAM_MEM_BUS_WIDTH_8;
+#thsram1.Init.BurstAccessMode = FMC_BURST_ACCESS_MODE_DISABLE;
+#thsram1.Init.WaitSignalPolarity = FMC_WAIT_SIGNAL_POLARITY_LOW;
+#thsram1.Init.WrapMode = FMC_WRAP_MODE_DISABLE;
+#thsram1.Init.WaitSignalActive = FMC_WAIT_TIMING_BEFORE_WS;
+#thsram1.Init.WriteOperation = FMC_WRITE_OPERATION_DISABLE;
+#thsram1.Init.WaitSignal = FMC_WAIT_SIGNAL_DISABLE;
+#thsram1.Init.ExtendedMode = FMC_EXTENDED_MODE_DISABLE;
+#thsram1.Init.AsynchronousWait = FMC_ASYNCHRONOUS_WAIT_DISABLE;
+#thsram1.Init.WriteBurst = FMC_WRITE_BURST_DISABLE;
+#thsram1.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
+#thsram1.Init.PageSize = FMC_PAGE_SIZE_NONE;
+#t/* Timing */
+#tTiming.AddressSetupTime = 0;
+#tTiming.AddressHoldTime = 15;
+#tTiming.DataSetupTime = 1;
+#tTiming.BusTurnAroundDuration = 0;
+#tTiming.CLKDivision = 16;
+#tTiming.DataLatency = 17;
+#tTiming.AccessMode = FMC_ACCESS_MODE_A;
+#t/* ExtTiming */
+#n
+#tif (HAL_SRAM_Init(&hsram1, &Timing, NULL) != HAL_OK)
+#t{
+#t#t_Error_Handler(__FILE__, __LINE__);
+#t}
+#n
+#t/** Perform the SRAM2 memory initialization sequence#n#t*/
+#thsram2.Instance = FMC_NORSRAM_DEVICE;
+#thsram2.Extended = FMC_NORSRAM_EXTENDED_DEVICE;
+#t/* hsram2.Init */
+#thsram2.Init.NSBank = FMC_NORSRAM_BANK2;
+#thsram2.Init.DataAddressMux = FMC_DATA_ADDRESS_MUX_DISABLE;
+#thsram2.Init.MemoryType = FMC_MEMORY_TYPE_SRAM;
+#thsram2.Init.MemoryDataWidth = FMC_NORSRAM_MEM_BUS_WIDTH_8;
+#thsram2.Init.BurstAccessMode = FMC_BURST_ACCESS_MODE_DISABLE;
+#thsram2.Init.WaitSignalPolarity = FMC_WAIT_SIGNAL_POLARITY_LOW;
+#thsram2.Init.WrapMode = FMC_WRAP_MODE_DISABLE;
+#thsram2.Init.WaitSignalActive = FMC_WAIT_TIMING_BEFORE_WS;
+#thsram2.Init.WriteOperation = FMC_WRITE_OPERATION_DISABLE;
+#thsram2.Init.WaitSignal = FMC_WAIT_SIGNAL_DISABLE;
+#thsram2.Init.ExtendedMode = FMC_EXTENDED_MODE_DISABLE;
+#thsram2.Init.AsynchronousWait = FMC_ASYNCHRONOUS_WAIT_ENABLE;
+#thsram2.Init.WriteBurst = FMC_WRITE_BURST_DISABLE;
+#thsram2.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
+#thsram2.Init.PageSize = FMC_PAGE_SIZE_NONE;
+#t/* Timing */
+#tTiming.AddressSetupTime = 15;
+#tTiming.AddressHoldTime = 15;
+#tTiming.DataSetupTime = 255;
+#tTiming.BusTurnAroundDuration = 15;
+#tTiming.CLKDivision = 16;
+#tTiming.DataLatency = 17;
+#tTiming.AccessMode = FMC_ACCESS_MODE_A;
+#t/* ExtTiming */
+#n
+#tif (HAL_SRAM_Init(&hsram2, &Timing, NULL) != HAL_OK)
+#t{
+#t#t_Error_Handler(__FILE__, __LINE__);
+#t}
+#n
+#t/** Perform the SRAM3 memory initialization sequence#n#t*/
+#thsram3.Instance = FMC_NORSRAM_DEVICE;
+#thsram3.Extended = FMC_NORSRAM_EXTENDED_DEVICE;
+#t/* hsram3.Init */
+#thsram3.Init.NSBank = FMC_NORSRAM_BANK3;
+#thsram3.Init.DataAddressMux = FMC_DATA_ADDRESS_MUX_DISABLE;
+#thsram3.Init.MemoryType = FMC_MEMORY_TYPE_SRAM;
+#thsram3.Init.MemoryDataWidth = FMC_NORSRAM_MEM_BUS_WIDTH_8;
+#thsram3.Init.BurstAccessMode = FMC_BURST_ACCESS_MODE_DISABLE;
+#thsram3.Init.WaitSignalPolarity = FMC_WAIT_SIGNAL_POLARITY_LOW;
+#thsram3.Init.WrapMode = FMC_WRAP_MODE_DISABLE;
+#thsram3.Init.WaitSignalActive = FMC_WAIT_TIMING_BEFORE_WS;
+#thsram3.Init.WriteOperation = FMC_WRITE_OPERATION_DISABLE;
+#thsram3.Init.WaitSignal = FMC_WAIT_SIGNAL_DISABLE;
+#thsram3.Init.ExtendedMode = FMC_EXTENDED_MODE_DISABLE;
+#thsram3.Init.AsynchronousWait = FMC_ASYNCHRONOUS_WAIT_ENABLE;
+#thsram3.Init.WriteBurst = FMC_WRITE_BURST_DISABLE;
+#thsram3.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
+#thsram3.Init.PageSize = FMC_PAGE_SIZE_NONE;
+#t/* Timing */
+#tTiming.AddressSetupTime = 15;
+#tTiming.AddressHoldTime = 15;
+#tTiming.DataSetupTime = 255;
+#tTiming.BusTurnAroundDuration = 15;
+#tTiming.CLKDivision = 16;
+#tTiming.DataLatency = 17;
+#tTiming.AccessMode = FMC_ACCESS_MODE_A;
+#t/* ExtTiming */
+#n
+#tif (HAL_SRAM_Init(&hsram3, &Timing, NULL) != HAL_OK)
+#t{
+#t#t_Error_Handler(__FILE__, __LINE__);
+#t}
+#n
+#t/** Perform the SRAM4 memory initialization sequence#n#t*/
+#thsram4.Instance = FMC_NORSRAM_DEVICE;
+#thsram4.Extended = FMC_NORSRAM_EXTENDED_DEVICE;
+#t/* hsram4.Init */
+#thsram4.Init.NSBank = FMC_NORSRAM_BANK4;
+#thsram4.Init.DataAddressMux = FMC_DATA_ADDRESS_MUX_DISABLE;
+#thsram4.Init.MemoryType = FMC_MEMORY_TYPE_SRAM;
+#thsram4.Init.MemoryDataWidth = FMC_NORSRAM_MEM_BUS_WIDTH_8;
+#thsram4.Init.BurstAccessMode = FMC_BURST_ACCESS_MODE_DISABLE;
+#thsram4.Init.WaitSignalPolarity = FMC_WAIT_SIGNAL_POLARITY_LOW;
+#thsram4.Init.WrapMode = FMC_WRAP_MODE_DISABLE;
+#thsram4.Init.WaitSignalActive = FMC_WAIT_TIMING_BEFORE_WS;
+#thsram4.Init.WriteOperation = FMC_WRITE_OPERATION_DISABLE;
+#thsram4.Init.WaitSignal = FMC_WAIT_SIGNAL_DISABLE;
+#thsram4.Init.ExtendedMode = FMC_EXTENDED_MODE_DISABLE;
+#thsram4.Init.AsynchronousWait = FMC_ASYNCHRONOUS_WAIT_ENABLE;
+#thsram4.Init.WriteBurst = FMC_WRITE_BURST_DISABLE;
+#thsram4.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
+#thsram4.Init.PageSize = FMC_PAGE_SIZE_NONE;
+#t/* Timing */
+#tTiming.AddressSetupTime = 15;
+#tTiming.AddressHoldTime = 15;
+#tTiming.DataSetupTime = 255;
+#tTiming.BusTurnAroundDuration = 15;
+#tTiming.CLKDivision = 16;
+#tTiming.DataLatency = 17;
+#tTiming.AccessMode = FMC_ACCESS_MODE_A;
+#t/* ExtTiming */
+#n
+#tif (HAL_SRAM_Init(&hsram4, &Timing, NULL) != HAL_OK)
+#t{
+#t#t_Error_Handler(__FILE__, __LINE__);
+#t}
+#n
+#t/** Perform the SDRAM1 memory initialization sequence#n#t*/
+#thsdram1.Instance = FMC_SDRAM_DEVICE;
+#t/* hsdram1.Init */
+#thsdram1.Init.SDBank = FMC_SDRAM_BANK1;
+#thsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_8;
+#thsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_13;
+#thsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_16;
+#thsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
+#thsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_1;
+#thsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
+#thsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_DISABLE;
+#thsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_DISABLE;
+#thsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
+#t/* SdramTiming */
+#tSdramTiming.LoadToActiveDelay = 16;
+#tSdramTiming.ExitSelfRefreshDelay = 16;
+#tSdramTiming.SelfRefreshTime = 16;
+#tSdramTiming.RowCycleDelay = 16;
+#tSdramTiming.WriteRecoveryTime = 16;
+#tSdramTiming.RPDelay = 16;
+#tSdramTiming.RCDDelay = 16;
+#n
+#tif (HAL_SDRAM_Init(&hsdram1, &SdramTiming) != HAL_OK)
+#t{
+#t#t_Error_Handler(__FILE__, __LINE__);
+#t}
+#n
+}
