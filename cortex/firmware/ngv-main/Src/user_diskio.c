@@ -67,7 +67,6 @@
 
 #include "flash.h"
 /* Private typedef -----------------------------------------------------------*/
-extern uint8_t FS_OK;
 extern Flash* flash;
 /* Private define ------------------------------------------------------------*/
 
@@ -113,8 +112,7 @@ DSTATUS USER_initialize (
 )
 {
   /* USER CODE BEGIN INIT */
-	if (FS_OK == 0) return RES_ERROR;
-	    Stat = RES_OK;
+	Stat = RES_OK;
 	return Stat;
   /* USER CODE END INIT */
 }
@@ -129,10 +127,7 @@ DSTATUS USER_status (
 )
 {
   /* USER CODE BEGIN STATUS */
-	if (FS_OK == 1)
-		Stat = RES_OK;
-	else
-		Stat = STA_NOINIT;
+	Stat = RES_OK;
     return Stat;
   /* USER CODE END STATUS */
 }
@@ -153,10 +148,9 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
-	if (FS_OK == 0) return RES_ERROR;
-	for (UINT i = 0; i < count; i++) {
+	if (count == 1) flash->read512byte(flash->p, _MIN_SS * sector, buff);
+	else for (UINT i = 0; i < count; i++)
 		flash->read512byte(flash->p, _MIN_SS * (sector + i), buff + _MIN_SS * i);
-	}
     return RES_OK;
   /* USER CODE END READ */
 }
@@ -178,10 +172,9 @@ DRESULT USER_write (
 )
 { 
   /* USER CODE BEGIN WRITE */
-	if (FS_OK == 0) return RES_ERROR;
-	for (UINT i = 0; i < count; i++) {
+	if (count == 1) flash->write512byte(flash->p, _MIN_SS * sector, buff);
+	else for (UINT i = 0; i < count; i++)
 		flash->write512byte(flash->p, _MIN_SS * (sector + i), buff + _MIN_SS * i);
-	}
     return RES_OK;
   /* USER CODE END WRITE */
 }

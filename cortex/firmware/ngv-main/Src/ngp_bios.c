@@ -8,7 +8,7 @@
 #include "logo.h"
 #include "stg.h"
 
-#define NGP_SYS_VERSION "dev181021"
+#define NGP_SYS_VERSION "dev181022"
 
 extern LCD* lcd;
 #define dev lcd

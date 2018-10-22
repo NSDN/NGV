@@ -253,15 +253,28 @@ void _flash_erase64kBlock(pFlashR* p, uint32_t addr_start) {
 }
 
 void _flash_read512byte(pFlashR* p, uint32_t addr, uint8_t *buf) {
-	_flash_read(p, addr, buf, 0x200);
+	_flash_read(p, addr & 0x00FFFE00, buf, 0x200);
+}
+
+uint8_t __check(uint8_t* a, uint8_t* b, uint16_t len) {
+	uint16_t sum = 0;
+	for (uint16_t i = 0; i < len; i++)
+		sum += (a[i] == b[i]);
+	return sum == len;
 }
 
 void _flash_write512byte(pFlashR* p, uint32_t addr, uint8_t *buf) {
-	_flash_read(p, addr & 0x00fff000, &(p->buffer[0]), FLASH_SECTOR_SIZ);
-	_flash_eraseSector(p, addr & 0x00fff000);
-	memcpy(&(p->buffer[0]) + ((addr & 0x00fffE00) - (addr & 0x00fff000)), buf, 0x200);
-	for (uint8_t i = 0; i < FLASH_SECTOR_SIZ / FLASH_PAGE_SIZ; i++) {
-		_flash_writePage(p, addr + FLASH_PAGE_SIZ * i, &(p->buffer[0]) + FLASH_PAGE_SIZ * i);
+	_flash_read(p, addr & 0x00FFF000, p->buffer, FLASH_SECTOR_SIZ);
+	memcpy(p->buffer + ((addr & 0x00FFFE00) - (addr & 0x00FFF000)), buf, 0x200);
+	memset(p->check, 0x00, FLASH_SECTOR_SIZ);
+	uint8_t cnt = 16;
+	while (!__check(p->buffer, p->check, FLASH_SECTOR_SIZ)) {
+		_flash_eraseSector(p, addr & 0x00FFF000);
+		for (uint8_t i = 0; i < FLASH_SECTOR_SIZ / FLASH_PAGE_SIZ; i++)
+			_flash_writePage(p, (addr & 0x00FFF000) + FLASH_PAGE_SIZ * i, p->buffer + FLASH_PAGE_SIZ * i);
+		_flash_read(p, addr & 0x00FFF000, p->check, FLASH_SECTOR_SIZ);
+
+		cnt -= 1; if (cnt == 0) break;
 	}
 }
 

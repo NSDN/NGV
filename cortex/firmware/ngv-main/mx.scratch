@@ -9,6 +9,11 @@
 
 <filestoremove>
     <file>
+    <name>..\Src\bsp_driver_sd.c</name>
+    <name>..\Src\sd_diskio.c</name>
+    <name>..\Src\fatfs_platform.c</name>
+    <name>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_sdmmc.c</name>
+    <name>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sd.c</name>
     </file>
 </filestoremove>
 

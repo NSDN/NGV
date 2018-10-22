@@ -79,6 +79,7 @@ typedef struct {
 	uint16_t            CSPortIndex;
     partNumber          partno;
     uint8_t 			buffer[FLASH_SECTOR_SIZ];
+    uint8_t				check[FLASH_SECTOR_SIZ];
 } pFlashR;
 
 typedef struct {

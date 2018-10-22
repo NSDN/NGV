@@ -1,7 +1,0 @@
-            SRAM_HandleTypeDef hsram1;
-            SRAM_HandleTypeDef hsram2;
-            SRAM_HandleTypeDef hsram3;
-            SRAM_HandleTypeDef hsram4;
-            SDRAM_HandleTypeDef hsdram1;
-    #n        
-

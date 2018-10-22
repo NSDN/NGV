@@ -11,10 +11,11 @@
 #include "nsio.h"
 #include "logo.h"
 #include "lcd.h"
+#include "key.h"
 
 #include "99_8b.h"
 
-#define NGV_SYS_VERSION "181021"
+#define NGV_SYS_VERSION "181022"
 
 LCD* lcd;
 Flash* flash;
@@ -22,8 +23,10 @@ FILTYPE file;
 jmp_buf rstPos;
 uint8_t FS_OK = 0;
 
-extern USBD_HandleTypeDef hUsbDeviceFS;
+//HAL_SD_CardInfoTypeDef cardInfo;
 
+extern USBD_HandleTypeDef hUsbDeviceFS;
+//extern SD_HandleTypeDef hsd;
 extern SRAM_HandleTypeDef hsram1;
 
 void greenScreen(const char* head) {
@@ -87,6 +90,27 @@ void ngv_setup() {
 	print("\n");
 	delay(1000);
 
+	print("Press F8 to erase flash.\n");
+	delay(500);
+	if (waitKeyUp(KEY_F8)) {
+		print("Erase flash...\n");
+		flash->eraseAll(flash->p);
+		while (flash->busy(flash->p));
+		print("Erase OK\n");
+	}
+	delay(500);
+	print("\n");
+	/*
+	if (HAL_SD_Init(&hsd) == HAL_OK) {
+		print("Init SD card... OK\n");
+		HAL_SD_GetCardInfo(&hsd, &cardInfo);
+		print("Card size: %dMB\n", (cardInfo.BlockNbr * cardInfo.BlockSize) >> 20);
+	} else {
+		print("Init SD card... ERR\n");
+	}
+	print("\n");
+	delay(1000);
+	*/
 	print("Mount file system...\n");
 	result = f_mount(&USERFatFS, USERPath, 1);
 	delay(1000);
@@ -106,10 +130,9 @@ void ngv_setup() {
 	print("\n");
 	delay(1000);
 
-	if (FS_OK) {
-		print("Init USB Mass Storage...\n");
-		USBD_Start(&hUsbDeviceFS);
-	}
+	print("Init USB Mass Storage...\n");
+	USBD_Start(&hUsbDeviceFS);
+
 	print("\n");
 	/* Initialize end */
 
