@@ -25,9 +25,9 @@ char* strlwr(char* s) {
 
 uint8_t filopen(FILTYPE* file, char* name, uint8_t mode) {
 	FRESULT res = FR_OK;
-	if (mode == FIL_READ) {
+	if (mode & FIL_READ) {
 		res = f_open(file, name, FA_READ);
-	} else if (mode == FIL_WRITE) {
+	} else if (mode & FIL_WRITE) {
 		res = f_open(file, name, FA_WRITE);
 	}
 	return res == FR_OK ? FIL_OK : FIL_ERR;

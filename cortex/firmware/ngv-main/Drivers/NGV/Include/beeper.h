@@ -6,8 +6,8 @@
 
 #include "music.h"
 
-#define OUT_A LED_R_GPIO_Port,LED_R_Pin
-#define OUT_B LED_B_GPIO_Port,LED_B_Pin
+#define OUT_A BEEP_L_GPIO_Port,BEEP_L_Pin
+#define OUT_B BEEP_R_GPIO_Port,BEEP_R_Pin
 
 void beeperInerrupt();
 

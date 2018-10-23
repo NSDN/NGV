@@ -15,7 +15,7 @@
 
 #include "99_8b.h"
 
-#define NGV_SYS_VERSION "181022"
+#define NGV_SYS_VERSION "181023"
 
 LCD* lcd;
 Flash* flash;
@@ -130,8 +130,14 @@ void ngv_setup() {
 	print("\n");
 	delay(1000);
 
-	print("Init USB Mass Storage...\n");
-	USBD_Start(&hUsbDeviceFS);
+	print("Press F4 to mount USB Mass Storage.\n");
+	delay(500);
+	if (waitKeyUp(KEY_F4)) {
+		print("Init USB Mass Storage...\n");
+		USBD_Start(&hUsbDeviceFS);
+	}
+	delay(500);
+	print("\n");
 
 	print("\n");
 	/* Initialize end */

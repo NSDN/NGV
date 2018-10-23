@@ -37,6 +37,9 @@ module ngv_main(
 		.clk1_out(freq_1176)
 	);
 	
+	assign beep_l = usart_tx;
+	assign beep_r = usart_rx;
+	
 	lcd_trans lcd_conv(
 		.i_blk(ctl_blk),
 		.i_cs(ctl_cs),

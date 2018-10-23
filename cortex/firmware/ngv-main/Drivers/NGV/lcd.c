@@ -172,7 +172,7 @@ void _lcd_rotate(pLCD* p, uint8_t r) {
 			tmp = p->width; p->width = p->height; p->height = tmp;
 			break;
 	}
-	_lcd_writeReg8(p, LCD_MADCTL, t | LCD_MADCTL_BGR);
+	_lcd_writeReg8(p, LCD_MADCTL, t | LCD_MADCTL_RGB);
 	_lcd_setPosition(p, 0, 0, p->width - 1, p->height - 1);
 #else
 	p->width = 854; p->height = 480;

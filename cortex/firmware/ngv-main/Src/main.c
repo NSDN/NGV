@@ -67,7 +67,6 @@ SPI_HandleTypeDef hspi5;
 
 TIM_HandleTypeDef htim10;
 
-UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart6;
 
@@ -93,7 +92,6 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_SPI5_Init(void);
 static void MX_TIM10_Init(void);
-static void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -158,7 +156,6 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
   MX_TIM10_Init();
-  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   flash = FlashInit(&hspi5, SPI5_CS_GPIO_Port, SPI5_CS_Pin, W25Q128);
   ngv_setup();
@@ -318,8 +315,8 @@ static void MX_SPI5_Init(void)
   hspi5.Init.Mode = SPI_MODE_MASTER;
   hspi5.Init.Direction = SPI_DIRECTION_2LINES;
   hspi5.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi5.Init.CLKPolarity = SPI_POLARITY_HIGH;
-  hspi5.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi5.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi5.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi5.Init.NSS = SPI_NSS_SOFT;
   hspi5.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi5.Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -343,25 +340,6 @@ static void MX_TIM10_Init(void)
   htim10.Init.Period = 239;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
-/* USART1 init function */
-static void MX_USART1_UART_Init(void)
-{
-
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -621,7 +599,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(SYS_LED_GPIO_Port, SYS_LED_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LCD_BLK_Pin|LCD_RS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LCD_BLK_Pin|LCD_RS_Pin|BEEP_R_Pin|BEEP_L_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, LCD_CS_Pin|LCD_RST_Pin, GPIO_PIN_SET);
@@ -666,8 +644,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LCD_BLK_Pin LCD_CS_Pin LCD_RS_Pin LCD_RST_Pin */
-  GPIO_InitStruct.Pin = LCD_BLK_Pin|LCD_CS_Pin|LCD_RS_Pin|LCD_RST_Pin;
+  /*Configure GPIO pins : LCD_BLK_Pin LCD_CS_Pin LCD_RS_Pin LCD_RST_Pin 
+                           BEEP_R_Pin BEEP_L_Pin */
+  GPIO_InitStruct.Pin = LCD_BLK_Pin|LCD_CS_Pin|LCD_RS_Pin|LCD_RST_Pin 
+                          |BEEP_R_Pin|BEEP_L_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;

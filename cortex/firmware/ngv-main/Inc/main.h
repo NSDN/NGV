@@ -99,6 +99,10 @@
 #define FPGA_CONF_GPIO_Port GPIOG
 #define FPGA_RST_Pin GPIO_PIN_7
 #define FPGA_RST_GPIO_Port GPIOG
+#define BEEP_R_Pin GPIO_PIN_9
+#define BEEP_R_GPIO_Port GPIOA
+#define BEEP_L_Pin GPIO_PIN_10
+#define BEEP_L_GPIO_Port GPIOA
 #define SDIO_INS_Pin GPIO_PIN_15
 #define SDIO_INS_GPIO_Port GPIOA
 #define FPGA_INT_Pin GPIO_PIN_3

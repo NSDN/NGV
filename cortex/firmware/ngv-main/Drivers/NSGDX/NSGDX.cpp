@@ -7,7 +7,8 @@ extern LCD* lcd;
 
 #include "../NGV/Include/key.h"
 
-#define USE_FLASH_MEM
+//#define USE_FLASH_MEM
+//#define NSGDX_IS_EMU
 
 #include <algorithm>
 
@@ -25,11 +26,13 @@ static std::map<std::string, uint16_t> keymap = {
 
 #include <cstring>
 #include <cstdlib>
-const uint32_t MEM_DEFAULT = 64 * 1024; // 64KB
+//const uint32_t MEM_DEFAULT = 64 * 1024; // 64KB
+const uint32_t MEM_DEFAULT = 8 * 1024; // 8KB
 #ifdef USE_FLASH_MEM
 const uint32_t MEM_MAXSIZE = 512 * 1024; // 512KB
 #else
-const uint32_t MEM_MAXSIZE = 8 * 1024 * 1024; // 8MB
+//const uint32_t MEM_MAXSIZE = 8 * 1024 * 1024; // 8MB
+const uint32_t MEM_MAXSIZE = 32 * 1024; // 32KB
 #endif
 static uint32_t memsize = MEM_DEFAULT;
 #ifdef USE_MEM_MALLOC
@@ -42,7 +45,7 @@ static uint8_t memory[MEM_MAXSIZE] = { 0 };
 #endif
 #endif
 
-#ifdef USE_FLASH_MEM
+#ifndef NSGDX_IS_EMU
 #include "ngv_bios.h"
 #else
 extern void delay(uint32_t ms);
@@ -95,7 +98,9 @@ namespace NSGDX {
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
             if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
             if (src->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+		#ifndef USE_FLASH_MEM
             memmove(memory + dst->n.i, memory + src->n.i, regGroup[0].n.i);
+		#endif
             return Result::RES_OK;
         };
         funcList["mcpy"] = $OP_{
@@ -108,7 +113,9 @@ namespace NSGDX {
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
             if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
             if (src->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+		#ifndef USE_FLASH_MEM
             memcpy(memory + dst->n.i, memory + src->n.i, regGroup[0].n.i);
+		#endif
             return Result::RES_OK;
         };
         funcList["mset"] = $OP_{
@@ -120,7 +127,9 @@ namespace NSGDX {
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
             if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+		#ifndef USE_FLASH_MEM
             memset(memory + dst->n.i, src->type == RegType::REG_INT ? src->n.i : src->n.c, regGroup[0].n.i);
+		#endif
             return Result::RES_OK;
         };
         funcList["mld"] = $OP_{
@@ -136,7 +145,9 @@ namespace NSGDX {
             len = filsiz(&file);
             if (dst->n.i + len > memsize) return Result::RES_ERR;
             uint32_t ptr = dst->n.i;
+		#ifndef USE_FLASH_MEM
             filread(&file, memory, len, &ptr);
+		#endif
             filclose(&file);
             regGroup[0].type = RegType::REG_INT; regGroup[0].n.i = len;
             return Result::RES_OK;
@@ -153,7 +164,9 @@ namespace NSGDX {
             FILTYPE file;
             if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE | FIL_BIN) != FIL_OK)
                 return Result::RES_ERR;
+		#ifndef USE_FLASH_MEM
             filwrite(&file, memory + dst->n.i, regGroup[0].n.i);
+		#endif
             filclose(&file);
             return Result::RES_OK;
         };
@@ -174,7 +187,9 @@ namespace NSGDX {
             if (dst->n.i < 0) return Result::RES_ERR;
             if (dst->n.i >= memsize) return Result::RES_ERR;
             if (src->type != RegType::REG_CHAR) return Result::RES_ERR;
+		#ifndef USE_FLASH_MEM
             memory[dst->n.i] = src->n.c;
+		#endif
             return Result::RES_OK;
         };
         funcList["mgb"] = $OP_{
@@ -194,7 +209,9 @@ namespace NSGDX {
             if (dst->n.i < 0) return Result::RES_ERR;
             if (dst->n.i >= memsize) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
+		#ifndef USE_FLASH_MEM
             memory[dst->n.i] = src->n.i & 0xFF;
+		#endif
             return Result::RES_OK;
         };
 
