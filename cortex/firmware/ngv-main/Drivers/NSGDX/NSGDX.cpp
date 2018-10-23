@@ -138,35 +138,41 @@ namespace NSGDX {
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
             if (regGroup[0].readOnly) return Result::RES_ERR;
 
-            uint32_t len = 0; FILTYPE file;
+		#ifndef NSGDX_IS_EMU
+			if (__u(dst->n.i) >= MEM_MAXSIZE) return Result::RES_OK; // Do not load when using flash
+
+			uint32_t len = 0; FILTYPE file;
+			if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ | FIL_BIN) != FIL_OK)
+				return Result::RES_ERR;
+			len = filsiz(&file);
+			uint32_t ptr = dst->n.i;
+			if (__u(dst->n.i) + len > MEM_MAXSIZE) return Result::RES_ERR;
+			filread(&file, memory, len, &ptr);
+			filclose(&file);
+		#else
+			uint32_t len = 0; FILTYPE file;
 			if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ | FIL_BIN) != FIL_OK)
 				return Result::RES_ERR;
 			len = filsiz(&file);
 			uint32_t ptr = dst->n.i;
 
-		#ifndef NSGDX_IS_EMU
 			if (__u(dst->n.i) >= MEM_MAXSIZE) {
-				filclose(&file);
-				return Result::RES_OK; // Do not load when using flash
-			}
-			if (__u(dst->n.i) + len > MEM_MAXSIZE) {
-				filclose(&file);
-				return Result::RES_ERR;
-			}
-			filread(&file, memory, len, &ptr);
-		#else
-			if (__u(dst->n.i) >= MEM_MAXSIZE) {
-				if (__u(dst->n.i) + len > MEM_MAXSIZE + MEMEX_MAXSIZE)
+				if (__u(dst->n.i) + len > MEM_MAXSIZE + MEMEX_MAXSIZE) {
+					filclose(&file);
 					return Result::RES_ERR;
+				}
 				ptr -= MEM_MAXSIZE;
 				filread(&file, memoryex, len, &ptr);
+				filclose(&file);
 			} else {
-				if (__u(dst->n.i) + len > MEM_MAXSIZE)
+				if (__u(dst->n.i) + len > MEM_MAXSIZE) {
+					filclose(&file);
 					return Result::RES_ERR;
+				}
 				filread(&file, memory, len, &ptr);
+				filclose(&file);
 			}
 		#endif
-			filclose(&file);
 			regGroup[0].type = RegType::REG_INT; regGroup[0].n.i = len;
 
             return Result::RES_OK;
