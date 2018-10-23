@@ -8,6 +8,10 @@
 #define NSHEL_ARG_LEN 64
 #define NSHEL_ARG_MAX 8
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int _nshel_fun_help(int argc, char* argv[]);
 int _nshel_fun_exit(int argc, char* argv[]);
 int _nshel_fun_print(int argc, char* argv[]);
@@ -53,6 +57,10 @@ void NSHEL_console();
 void NSHEL_run(char* var);
 
 int nshel(int argc, char* argv[]);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

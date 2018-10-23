@@ -12,7 +12,7 @@ code c = (
         scl 1
         cmp r15, 1
         jz [END]
-        show "Press R-UP(UP Arrow) to run the next test"
+        show "Press R-UP to run the next test"
         key "ru"
         ret
     [END]

@@ -5,9 +5,6 @@
 #include "../NGV/Include/lcd.h"
 extern LCD* lcd;
 
-#include "../NGV/Include/key.h"
-
-//#define USE_FLASH_MEM
 //#define NSGDX_IS_EMU
 
 #include <algorithm>
@@ -26,39 +23,39 @@ static std::map<std::string, uint16_t> keymap = {
 
 #include <cstring>
 #include <cstdlib>
-//const uint32_t MEM_DEFAULT = 64 * 1024; // 64KB
-const uint32_t MEM_DEFAULT = 8 * 1024; // 8KB
-#ifdef USE_FLASH_MEM
-const uint32_t MEM_MAXSIZE = 512 * 1024; // 512KB
-#else
-//const uint32_t MEM_MAXSIZE = 8 * 1024 * 1024; // 8MB
-const uint32_t MEM_MAXSIZE = 32 * 1024; // 32KB
-#endif
-static uint32_t memsize = MEM_DEFAULT;
-#ifdef USE_MEM_MALLOC
-static uint8_t* memory = (uint8_t*) malloc(memsize);
-#else
-#ifdef USE_FLASH_MEM
-static uint8_t* memory = (uint8_t*) 0x08080000; //Flash memory at 512KB / 1MB
-#else
-static uint8_t memory[MEM_MAXSIZE] = { 0 };
-#endif
-#endif
 
-#ifndef NSGDX_IS_EMU
-#include "ngv_bios.h"
-#else
+#ifdef NSGDX_IS_EMU
+#include "../../util.h"
 extern void delay(uint32_t ms);
 extern void processEvent();
+#else
+#include "../NGV/Include/key.h"
+#include "ngv_bios.h"
+#endif
+
+#define __u(v) ((unsigned int) (v >= 0 ? v : -v))
+
+#ifndef NSGDX_IS_EMU
+
+const uint32_t MEM_MAXSIZE = 32 * 1024; // 32KB
+static uint8_t memory[MEM_MAXSIZE] = { 0 }; // Virtual addr: 0x000000 - 0x007FFF, 32KB
+
+const uint32_t MEMEX_MAXSIZE = 512 * 1024; // 512KB
+static uint8_t* memoryex = (uint8_t*) 0x08080000; // Virtual addr: 0x008000 - 0x087FFF, 512KB, Flash memory at 512KB / 1MB, Read-only
+
+#else
+
+const uint32_t MEM_MAXSIZE = 32 * 1024; // 32KB
+static uint8_t memory[MEM_MAXSIZE] = { 0 }; // Virtual addr: 0x000000 - 0x007FFF, 32KB
+
+const uint32_t MEMEX_MAXSIZE = 8 * 1024 * 1024; // 8MB
+static uint8_t memoryex[MEMEX_MAXSIZE] = { 0 }; // Virtual addr: 0x008000 - 0x807FFF, 8MB, Read-only
+
 #endif
 
 namespace NSGDX {
 
-    void NSGDX::dispose() {
-    #ifdef USE_MEM_MALLOC
-        free(memory);
-    #endif
-    }
+    void NSGDX::dispose() { }
 
     void NSGDX::gdxFunc() {
         funcList["pmq"] = $OP_{
@@ -75,19 +72,6 @@ namespace NSGDX {
             return Result::RES_OK;
         };
 
-        funcList["msiz"] = $OP_{
-            if (dst == nullptr) return Result::RES_ERR;
-            if (src != nullptr) return Result::RES_ERR;
-            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
-            memsize = dst->n.i;
-            if (memsize < MEM_DEFAULT) memsize = MEM_DEFAULT;
-            if (memsize > MEM_MAXSIZE) memsize = MEM_MAXSIZE;
-        #ifdef USE_MEM_MALLOC
-            free(memory); memory = NULL;
-            memory = (uint8_t*) malloc(memsize);
-        #endif
-            return Result::RES_OK;
-        };
         funcList["mmov"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;
             if (src == nullptr) return Result::RES_ERR;
@@ -96,11 +80,18 @@ namespace NSGDX {
             if (dst->n.i < 0 || src->n.i < 0) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
-            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
-            if (src->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
-		#ifndef USE_FLASH_MEM
-            memmove(memory + dst->n.i, memory + src->n.i, regGroup[0].n.i);
-		#endif
+
+            if (__u(dst->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE) return Result::RES_ERR;
+            if (__u(src->n.i) >= MEM_MAXSIZE) {
+				if (__u(src->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				memmove(memory + __u(dst->n.i), memoryex + __u(src->n.i) - MEM_MAXSIZE, __u(regGroup[0].n.i));
+            } else {
+            	if (__u(src->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE)
+					return Result::RES_ERR;
+            	memmove(memory + __u(dst->n.i), memory + __u(src->n.i), __u(regGroup[0].n.i));
+            }
+
             return Result::RES_OK;
         };
         funcList["mcpy"] = $OP_{
@@ -111,11 +102,18 @@ namespace NSGDX {
             if (dst->n.i < 0 || src->n.i < 0) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
-            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
-            if (src->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
-		#ifndef USE_FLASH_MEM
-            memcpy(memory + dst->n.i, memory + src->n.i, regGroup[0].n.i);
-		#endif
+
+            if (__u(dst->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE) return Result::RES_ERR;
+			if (__u(src->n.i) >= MEM_MAXSIZE) {
+				if (__u(src->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				memcpy(memory + __u(dst->n.i), memoryex + __u(src->n.i) - MEM_MAXSIZE, __u(regGroup[0].n.i));
+			} else {
+				if (__u(src->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE)
+					return Result::RES_ERR;
+				memcpy(memory + __u(dst->n.i), memory + __u(src->n.i), __u(regGroup[0].n.i));
+			}
+
             return Result::RES_OK;
         };
         funcList["mset"] = $OP_{
@@ -126,10 +124,10 @@ namespace NSGDX {
             if (src->type != RegType::REG_INT && src->type != RegType::REG_CHAR) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
-            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
-		#ifndef USE_FLASH_MEM
-            memset(memory + dst->n.i, src->type == RegType::REG_INT ? src->n.i : src->n.c, regGroup[0].n.i);
-		#endif
+
+            if (__u(dst->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE) return Result::RES_ERR;
+            memset(memory + __u(dst->n.i), src->type == RegType::REG_INT ? src->n.i : src->n.c, __u(regGroup[0].n.i));
+
             return Result::RES_OK;
         };
         funcList["mld"] = $OP_{
@@ -139,17 +137,38 @@ namespace NSGDX {
             if (dst->n.i < 0) return Result::RES_ERR;
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
             if (regGroup[0].readOnly) return Result::RES_ERR;
+
             uint32_t len = 0; FILTYPE file;
-            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ | FIL_BIN) != FIL_OK)
-                return Result::RES_ERR;
-            len = filsiz(&file);
-            if (dst->n.i + len > memsize) return Result::RES_ERR;
-            uint32_t ptr = dst->n.i;
-		#ifndef USE_FLASH_MEM
-            filread(&file, memory, len, &ptr);
+			if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_READ | FIL_BIN) != FIL_OK)
+				return Result::RES_ERR;
+			len = filsiz(&file);
+			uint32_t ptr = dst->n.i;
+
+		#ifndef NSGDX_IS_EMU
+			if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				filclose(&file);
+				return Result::RES_OK; // Do not load when using flash
+			}
+			if (__u(dst->n.i) + len > MEM_MAXSIZE) {
+				filclose(&file);
+				return Result::RES_ERR;
+			}
+			filread(&file, memory, len, &ptr);
+		#else
+			if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) + len > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				ptr -= MEM_MAXSIZE;
+				filread(&file, memoryex, len, &ptr);
+			} else {
+				if (__u(dst->n.i) + len > MEM_MAXSIZE)
+					return Result::RES_ERR;
+				filread(&file, memory, len, &ptr);
+			}
 		#endif
-            filclose(&file);
-            regGroup[0].type = RegType::REG_INT; regGroup[0].n.i = len;
+			filclose(&file);
+			regGroup[0].type = RegType::REG_INT; regGroup[0].n.i = len;
+
             return Result::RES_OK;
         };
         funcList["msv"] = $OP_{
@@ -160,14 +179,21 @@ namespace NSGDX {
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
             if (regGroup[0].type != RegType::REG_INT) return Result::RES_ERR;
             if (regGroup[0].n.i <= 0) return Result::RES_ERR;
-            if (dst->n.i + regGroup[0].n.i > memsize) return Result::RES_ERR;
+
             FILTYPE file;
-            if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE | FIL_BIN) != FIL_OK)
-                return Result::RES_ERR;
-		#ifndef USE_FLASH_MEM
-            filwrite(&file, memory + dst->n.i, regGroup[0].n.i);
-		#endif
+			if (filopen(&file, (char*) src->s.substr(src->sp).c_str(), FIL_WRITE | FIL_BIN) != FIL_OK)
+				return Result::RES_ERR;
+            if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				filwrite(&file, memoryex + __u(dst->n.i) - MEM_MAXSIZE, regGroup[0].n.i);
+			} else {
+				if (__u(dst->n.i) + __u(regGroup[0].n.i) > MEM_MAXSIZE)
+					return Result::RES_ERR;
+				filwrite(&file, memory + __u(dst->n.i), regGroup[0].n.i);
+			}
             filclose(&file);
+
             return Result::RES_OK;
         };
         funcList["mgc"] = $OP_{
@@ -175,9 +201,16 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
             if (src->n.i < 0) return Result::RES_ERR;
-            if (src->n.i >= memsize) return Result::RES_ERR;
             if (dst->readOnly) return Result::RES_ERR;
-            dst->type = RegType::REG_CHAR; dst->n.c = memory[src->n.i];
+
+            if (__u(src->n.i) >= MEM_MAXSIZE) {
+				if (__u(src->n.i) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				dst->type = RegType::REG_CHAR; dst->n.c = memoryex[__u(src->n.i) - MEM_MAXSIZE];
+			} else {
+				dst->type = RegType::REG_CHAR; dst->n.c = memory[__u(src->n.i)];
+			}
+
             return Result::RES_OK;
         };
         funcList["msc"] = $OP_{
@@ -185,11 +218,16 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
-            if (dst->n.i >= memsize) return Result::RES_ERR;
             if (src->type != RegType::REG_CHAR) return Result::RES_ERR;
-		#ifndef USE_FLASH_MEM
-            memory[dst->n.i] = src->n.c;
-		#endif
+
+            if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				memoryex[__u(dst->n.i) - MEM_MAXSIZE] = src->n.c;
+			} else {
+				memory[__u(dst->n.i)] = src->n.c;
+			}
+
             return Result::RES_OK;
         };
         funcList["mgb"] = $OP_{
@@ -197,9 +235,16 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
             if (src->n.i < 0) return Result::RES_ERR;
-            if (src->n.i >= memsize) return Result::RES_ERR;
             if (dst->readOnly) return Result::RES_ERR;
-            dst->type = RegType::REG_INT; dst->n.i = memory[src->n.i];
+
+            if (__u(src->n.i) >= MEM_MAXSIZE) {
+				if (__u(src->n.i) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				dst->type = RegType::REG_INT; dst->n.i = memoryex[__u(src->n.i) - MEM_MAXSIZE];
+			} else {
+				dst->type = RegType::REG_INT; dst->n.i = memory[__u(src->n.i)];
+			}
+
             return Result::RES_OK;
         };
         funcList["msb"] = $OP_{
@@ -207,11 +252,16 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
-            if (dst->n.i >= memsize) return Result::RES_ERR;
             if (src->type != RegType::REG_INT) return Result::RES_ERR;
-		#ifndef USE_FLASH_MEM
-            memory[dst->n.i] = src->n.i & 0xFF;
-		#endif
+
+			if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				memoryex[__u(dst->n.i) - MEM_MAXSIZE] = src->n.i & 0xFF;
+			} else {
+				memory[__u(dst->n.i)] = src->n.i & 0xFF;
+			}
+
             return Result::RES_OK;
         };
 
@@ -338,12 +388,25 @@ namespace NSGDX {
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
-            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
-            lcd->bitmaps(lcd->p,
-                regGroup[0].n.i, regGroup[1].n.i,
-                regGroup[2].n.i, regGroup[3].n.i,
-                memory + dst->n.i
-            );
+
+            if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->bitmaps(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memoryex + __u(dst->n.i) - MEM_MAXSIZE
+				);
+			} else {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->bitmaps(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memory + __u(dst->n.i)
+				);
+			}
+
             return Result::RES_OK;
         };
         funcList["bmpc"] = $OP_{
@@ -356,12 +419,25 @@ namespace NSGDX {
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
-            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
-            lcd->bitmapsc(lcd->p,
-                regGroup[0].n.i, regGroup[1].n.i,
-                regGroup[2].n.i, regGroup[3].n.i,
-                memory + dst->n.i
-            );
+
+            if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->bitmapsc(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memoryex + __u(dst->n.i) - MEM_MAXSIZE
+				);
+			} else {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->bitmapsc(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memory + __u(dst->n.i)
+				);
+			}
+
             return Result::RES_OK;
         };
         funcList["ico"] = $OP_{
@@ -374,12 +450,25 @@ namespace NSGDX {
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
-            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
-            lcd->icon(lcd->p,
-                regGroup[0].n.i, regGroup[1].n.i,
-                regGroup[2].n.i, regGroup[3].n.i,
-                memory + dst->n.i
-            );
+
+            if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->icon(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memoryex + __u(dst->n.i) - MEM_MAXSIZE
+				);
+			} else {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->icon(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memory + __u(dst->n.i)
+				);
+			}
+
             return Result::RES_OK;
         };
         funcList["icoc"] = $OP_{
@@ -392,12 +481,25 @@ namespace NSGDX {
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
-            if (dst->n.i + siz / 8 >= memsize) return Result::RES_ERR;
-            lcd->iconc(lcd->p,
-                regGroup[0].n.i, regGroup[1].n.i,
-                regGroup[2].n.i, regGroup[3].n.i,
-                memory + dst->n.i
-            );
+
+            if (__u(dst->n.i) >= MEM_MAXSIZE) {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->iconc(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memoryex + __u(dst->n.i) - MEM_MAXSIZE
+				);
+			} else {
+				if (__u(dst->n.i) + __u(siz / 8) > MEM_MAXSIZE)
+					return Result::RES_ERR;
+				lcd->iconc(lcd->p,
+					regGroup[0].n.i, regGroup[1].n.i,
+					regGroup[2].n.i, regGroup[3].n.i,
+					memory + __u(dst->n.i)
+				);
+			}
+
             return Result::RES_OK;
         };
         funcList["img"] = $OP_{
@@ -409,22 +511,48 @@ namespace NSGDX {
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
-            if (dst->n.i + siz * 3 >= memsize) return Result::RES_ERR;
+
             if (src != nullptr) {
-                if (src->type != RegType::REG_INT) return Result::RES_ERR;
-                if (src->n.i < 0) return Result::RES_ERR;
-                lcd->bitmapt(lcd->p,
-                    regGroup[0].n.i, regGroup[1].n.i,
-                    regGroup[2].n.i, regGroup[3].n.i,
-                    src->n.i, memory + dst->n.i
-                );
-            } else {
-                lcd->bitmap(lcd->p,
-                    regGroup[0].n.i, regGroup[1].n.i,
-                    regGroup[2].n.i, regGroup[3].n.i,
-                    (uint32_t*) (memory + dst->n.i)
-                );
-            }
+            	if (src->type != RegType::REG_INT) return Result::RES_ERR;
+				if (src->n.i < 0) return Result::RES_ERR;
+
+            	if (__u(dst->n.i) >= MEM_MAXSIZE) {
+					if (__u(dst->n.i) + __u(siz * 3) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmapt(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						__u(src->n.i), memoryex + __u(dst->n.i) - MEM_MAXSIZE
+					);
+				} else {
+					if (__u(dst->n.i) + __u(siz * 3) > MEM_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmapt(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						__u(src->n.i), memory + __u(dst->n.i)
+					);
+				}
+			} else {
+				if (__u(dst->n.i) >= MEM_MAXSIZE) {
+					if (__u(dst->n.i) + __u(siz * 4) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmap(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						(uint32_t*) (memoryex + __u(dst->n.i) - MEM_MAXSIZE)
+					);
+				} else {
+					if (__u(dst->n.i) + __u(siz * 4) > MEM_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmap(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						(uint32_t*) (memory + __u(dst->n.i))
+					);
+				}
+			}
+
             return Result::RES_OK;
         };
         funcList["imgc"] = $OP_{
@@ -436,22 +564,48 @@ namespace NSGDX {
             if (regGroup[3].type != RegType::REG_INT) return Result::RES_ERR;
             if (dst->n.i < 0) return Result::RES_ERR;
             int siz = regGroup[2].n.i * regGroup[3].n.i;
-            if (dst->n.i + siz * 3 >= memsize) return Result::RES_ERR;
+
             if (src != nullptr) {
-                if (src->type != RegType::REG_INT) return Result::RES_ERR;
-                if (src->n.i < 0) return Result::RES_ERR;
-                lcd->bitmaptc(lcd->p,
-                    regGroup[0].n.i, regGroup[1].n.i,
-                    regGroup[2].n.i, regGroup[3].n.i,
-                    src->n.i, memory + dst->n.i
-                );
-            } else {
-                lcd->bitmapc(lcd->p,
-                    regGroup[0].n.i, regGroup[1].n.i,
-                    regGroup[2].n.i, regGroup[3].n.i,
-                    (uint32_t*) (memory + dst->n.i)
-                );
-            }
+				if (src->type != RegType::REG_INT) return Result::RES_ERR;
+				if (src->n.i < 0) return Result::RES_ERR;
+
+				if (__u(dst->n.i) >= MEM_MAXSIZE) {
+					if (__u(dst->n.i) + __u(siz * 3) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmaptc(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						__u(src->n.i), memoryex + __u(dst->n.i) - MEM_MAXSIZE
+					);
+				} else {
+					if (__u(dst->n.i) + __u(siz * 3) > MEM_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmaptc(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						__u(src->n.i), memory + __u(dst->n.i)
+					);
+				}
+			} else {
+				if (__u(dst->n.i) >= MEM_MAXSIZE) {
+					if (__u(dst->n.i) + __u(siz * 4) > MEM_MAXSIZE + MEMEX_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmapc(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						(uint32_t*) (memoryex + __u(dst->n.i) - MEM_MAXSIZE)
+					);
+				} else {
+					if (__u(dst->n.i) + __u(siz * 4) > MEM_MAXSIZE)
+						return Result::RES_ERR;
+					lcd->bitmapc(lcd->p,
+						regGroup[0].n.i, regGroup[1].n.i,
+						regGroup[2].n.i, regGroup[3].n.i,
+						(uint32_t*) (memory + __u(dst->n.i))
+					);
+				}
+			}
+
             return Result::RES_OK;
         };
 
@@ -497,8 +651,8 @@ namespace NSGDX {
             if (src == nullptr) return Result::RES_ERR;
             if (dst->readOnly) return Result::RES_ERR;
             if (src->type != RegType::REG_STR) return Result::RES_ERR;
-            if (src->sp >= src->s.length()) return Result::RES_ERR;
-            uint8_t end = (src->sp == (src->s.length() - 1)) ? 1 : 0;
+            if ((size_t) src->sp >= src->s.length()) return Result::RES_ERR;
+            uint8_t end = ((size_t) src->sp == (src->s.length() - 1)) ? 1 : 0;
             uint8_t a = src->s[src->sp], b = (end != 0) ? 0 : src->s[src->sp + 1];
             int res = (a < 0xA1 || b < 0xA1) ? -1 : ((a - 0xA1) * 0x5E + (b - 0xA1));
             dst->type = RegType::REG_INT; dst->n.i = res;

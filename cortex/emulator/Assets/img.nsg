@@ -1,11 +1,10 @@
 cls
-msiz 0x100000
-var img4 = 0x000000
-mld img4, "img4.bin"
-var siz4 = r0
-var img3 = siz4
+var img3 = 0x000000
 mld img3, "img3.bin"
 var siz3 = r0
+var img4 = 0x008000
+mld img4, "img4.bin"
+var siz4 = r0
 
 mov r0, 64
 mov r1, 64

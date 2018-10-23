@@ -36,7 +36,7 @@ void setVolume(unsigned char vol) {
 
 void playMusicRaw(
 		const unsigned short* symbol,
-		const char* music, unsigned short length,
+		const uint8_t* music, unsigned short length,
 		unsigned short patternLength,
 		uint8_t withControl) {
 	unsigned short i;
@@ -63,7 +63,7 @@ void playMusicRaw(
 
 void playMusicWithSpaceRaw(
 		const unsigned short* symbol,
-		const char* music, unsigned short length,
+		const uint8_t* music, unsigned short length,
 		unsigned short patternLength,
 		unsigned short spaceLength,
 		uint8_t withControl) {
