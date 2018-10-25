@@ -55,6 +55,8 @@
 /* USER CODE BEGIN Includes */
 #define NGV_CORE_VERSION "180201"
 
+#include "ngv_bios.h"
+
 #include "usbd_core.h"
 #include <setjmp.h>
 
@@ -66,7 +68,9 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc3;
+DMA_HandleTypeDef hdma_adc1;
 
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi6;
@@ -77,7 +81,6 @@ UART_HandleTypeDef huart3;
 /* Private variables ---------------------------------------------------------*/
 SD* sd;
 LCD* lcd;
-Flash* flash;
 pIO rd = { LCD_RD_GPIO_Port, LCD_RD_Pin },
 	wr = { LCD_WR_GPIO_Port, LCD_WR_Pin },
 	rs = { LCD_RS_GPIO_Port, LCD_RS_Pin },
@@ -97,10 +100,12 @@ uint8_t FS_OK = 0;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_ADC3_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI6_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_ADC1_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -146,6 +151,19 @@ void spi1Init(char isHighSpeed) {
 	hspi1.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
 	HAL_SPI_Init(&hspi1);
 }
+
+void _lcd_ctl_blk(unsigned char state) {
+
+}
+void _lcd_ctl_cs(unsigned char state) {
+	HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, state);
+}
+void _lcd_ctl_rs(unsigned char state) {
+	HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, state);
+}
+void _lcd_ctl_rst(unsigned char state) {
+	HAL_GPIO_WritePin(LCD_RST_GPIO_Port, LCD_RST_Pin, state);
+}
 /* USER CODE END 0 */
 
 /**
@@ -156,9 +174,8 @@ void spi1Init(char isHighSpeed) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	sd = SDInit(&hspi1, SD_CS_GPIO_Port, SD_CS_Pin);
-	lcd = LCDInit(&rd, &wr, &rs, &cs, &rst, data);
-	flash = FlashInit(&hspi6, FLASH_CS_GPIO_Port, FLASH_CS_Pin, W25Q64);
+  sd = SDInit(&hspi1, SD_CS_GPIO_Port, SD_CS_Pin);
+  lcd = LCDInit(&rd, &wr, &rs, &cs, &rst, data);
   /* USER CODE END 1 */
 
   /* Enable I-Cache-------------------------------------------------------------*/
@@ -185,106 +202,24 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USB_DEVICE_Init();
   MX_FATFS_Init();
   MX_ADC3_Init();
   MX_SPI1_Init();
   MX_SPI6_Init();
   MX_USART3_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-	setjmp(rstPos);
-	USBD_Stop(&hUsbDeviceFS);
-
-  	lcd->init(lcd->p);
-  	lcd->rotate(lcd->p, LCD_LANDSCAPE);
-  	lcd->font(lcd->p, Small);
-  	lcd->colorb(lcd->p, 0xFFFFFF);
-  	lcd->colorf(lcd->p, 0x000000);
-  	lcd->clear(lcd->p);
-
-  	lcd->bitmapsc(lcd->p, lcd->p->width / 2, 140, 64, 64, getLogo());
-  	lcd->printfc(lcd->p, 180, "nyagame vita");
-  	HAL_Delay(1000);
-  	lcd->clear(lcd->p);
-
-  	lcd->printfa(lcd->p, "NyaGame Vita Factory System\n");
-  	lcd->printfa(lcd->p, "Version: %s\n\n", NGV_CORE_VERSION);
-
-  	/* Initialize device */
-  	uint8_t result = 0;
-  	result = sd->init(sd->p);
-  	uint32_t size = sd->size(sd->p);
-  	if (result == 0) {
-  		lcd->printfa(lcd->p, "Init SD card... OK, %d MB\n", size / 2048);
-	} else {
-		lcd->printfa(lcd->p, "Init SD card... ERR: %d\n", result);
-	}
-
-  	result = 0;
-  	lcd->printfa(lcd->p, "Mount SD card...\n");
-  	f_mount(&fileSystem, USERPath, 1);
-	result = f_mount(&fileSystem, USERPath, 1);
-	if(result == FR_OK) {
-		char path[] = "NGV_INFO.TXT";
-		FIL boardInfo;
-		f_open(&boardInfo, path, FA_WRITE | FA_CREATE_ALWAYS);
-		f_printf(&boardInfo, "NyaGame Vita Factory Edition with STM32F767\n");
-		f_printf(&boardInfo, "by NyaSama Developer Network\n");
-		f_printf(&boardInfo, "Firmware Version: %s\n", NGV_CORE_VERSION);
-		f_close(&boardInfo);
-		lcd->printfa(lcd->p, "Test SD card... OK\n");
-		FS_OK = 1;
-	} else {
-		lcd->printfa(lcd->p, "Test SD card... ERR: %02X\n", result);
-		FS_OK = 0;
-	}
-
-	lcd->printfa(lcd->p, "Init USB Mass Storage...\n");
-	USBD_Start(&hUsbDeviceFS);
-
-#ifdef USE_FLASH
-  	result = 0;
-  	result = flash->begin(flash->p);
-	lcd->printfa(lcd->p, "Init flash... %s\n", result ? "OK" : "ERR");
-#endif
-	/* Initialize end */
-
-	lcd->printfa(lcd->p, "\n");
-	char* args[2] = {
-			"nshel",
-			"init.d"
-	};
-	nshel(2, args);
-  	lcd->printfa(lcd->p, "\n");
-
-  	HAL_Delay(500);
-
-  	lcd->printfa(lcd->p, "Push blue button to flash.\n\n");
-  	while (HAL_GPIO_ReadPin(User_Blue_Button_GPIO_Port, User_Blue_Button_Pin) != GPIO_PIN_SET);
+  ngv_setup();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	while (1) {
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		lcd->colorb(lcd->p, 0xFF0000);
-		lcd->clear(lcd->p);
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-		lcd->colorb(lcd->p, 0x00FF00);
-		lcd->clear(lcd->p);
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-		lcd->colorb(lcd->p, 0x0000FF);
-		lcd->clear(lcd->p);
+  while (1) ngv_loop();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	}
   /* USER CODE END 3 */
 
 }
@@ -370,6 +305,43 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/* ADC1 init function */
+static void MX_ADC1_Init(void)
+{
+
+  ADC_ChannelConfTypeDef sConfig;
+
+    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
+    */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DMAContinuousRequests = ENABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SEQ_CONV;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
 }
 
 /* ADC3 init function */
@@ -479,6 +451,21 @@ static void MX_USART3_UART_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
+
+}
+
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
 
 }
 

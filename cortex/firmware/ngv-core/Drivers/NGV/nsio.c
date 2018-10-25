@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <malloc.h>
 
 #include "./Include/lcd.h"
@@ -23,10 +24,10 @@ char* strlwr(char* s) {
 }
 
 uint8_t filopen(FILTYPE* file, char* name, uint8_t mode) {
-	FRESULT res;
-	if (mode == FIL_READ) {
+	FRESULT res = FR_OK;
+	if (mode & FIL_READ) {
 		res = f_open(file, name, FA_READ);
-	} else if (mode == FIL_WRITE) {
+	} else if (mode & FIL_WRITE) {
 		res = f_open(file, name, FA_WRITE);
 	}
 	return res == FR_OK ? FIL_OK : FIL_ERR;
@@ -37,10 +38,15 @@ void filclose(FILTYPE* file) {
 }
 
 void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr) {
-	f_read(file, buf, len, ptr);
+	f_read(file, buf, len, (UINT*)ptr);
 }
 
-void filgets(FILTYPE* file, uint8_t* buf, uint32_t len) {
+void filwrite(FILTYPE* file, uint8_t* buf, uint32_t len) {
+	UINT cnt = 0;
+	f_write(file, buf, len, &cnt);
+}
+
+void filgets(FILTYPE* file, char* buf, uint32_t len) {
 	f_gets(buf, len, file);
 }
 
@@ -48,16 +54,42 @@ uint8_t fileof(FILTYPE* file) {
 	return f_eof(file);
 }
 
-#define __print(buf) lcd->printfa(lcd->p, buf)
-int print(const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF);
+uint32_t filsiz(FILTYPE* file) {
+	return f_size(file);
+}
+
+int filprint(FILTYPE* file, const char* format, ...) {
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);
 	va_end(args);
-	__print(iobuf);
+
+	f_puts(iobuf, file);
+
 	free(iobuf);
 	return result;
+}
+
+int print(const char* format, ...) {
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF);
+	va_list args;
+	va_start(args, format);
+	int result = vsprintf(iobuf, format, args);
+	va_end(args);
+
+	lcd->printfa(lcd->p, iobuf);
+
+	free(iobuf);
+	return result;
+}
+
+void pause() {
+	char tmp;
+	while (1) {
+		if (HAL_UART_Receive(&HUART, &tmp, 1, 1) == HAL_OK)
+			break;
+	}
 }
 
 int scan(char* buffer) {
@@ -107,23 +139,11 @@ char* read(char* path) {
 		print("At file: %s\n\n", path);
 		return OK;
 	}
-	int length = 0; char tmp[2];
-	while (fileof(&f) != FIL_OK) {
-		filgets(tmp, 2, &f);
-		if (tmp[0] != '\r')
-			length += 1;
-	}
-	filclose(&f);
-	res = filopen(&f, path, FIL_READ);
-	if (res != FIL_OK) {
-		print("File open failed.\n");
-		print("At file: %s\n\n", path);
-		return OK;
-	}
-	char* data = malloc(sizeof(char) * (length + 1));
+	int length = filsiz(&f); char tmp[2];
+	char* data = (char*) malloc(sizeof(char) * (length + 1));
 	length = 0;
 	while (fileof(&f) != FIL_OK) {
-		filgets(tmp, 2, &f);
+		filgets(&f, tmp, 2);
 		if (tmp[0] != '\r') {
 			data[length] = tmp[0];
 			length += 1;
@@ -145,14 +165,14 @@ int lines(char* src) {
 char* line(char* src, int index) {
 	if (index >= lines(src)) return OK;
 	int srcLen = strlen(src), cnt = 0, pos = 0;
-	char* buf = malloc(sizeof(char) * srcLen);
+	char* buf = (char*) malloc(sizeof(char) * srcLen);
 	char* result = 0;
 	for (int i = 0; i < srcLen; i++) {
 		if (index == 0) {
 			for (i = 0; src[i] != '\n'; i++)
 				buf[i] = src[i];
 			pos = i + 1;
-			result = malloc(sizeof(char) * (pos));
+			result = (char*) malloc(sizeof(char) * (pos));
 			for (i = 0; i < pos; i++) {
 				if (i == pos - 1) {
 					result[i] = '\0';
@@ -168,7 +188,7 @@ char* line(char* src, int index) {
 			for (; src[i] != '\n'; i++)
 				buf[i - pos] = src[i];
 			pos = i - pos + 1;
-			result = malloc(sizeof(char) * pos);
+			result = (char*) malloc(sizeof(char) * pos);
 			for (i = 0; i < pos; i++) {
 				if (i == pos - 1) {
 					result[i] = '\0';
@@ -197,8 +217,8 @@ char* get(char* src, int start, char* buf, int size) {
 
 char* cut(char* src, const char* head) {
 	int srcLen = strlen(src), headLen = strlen(head) + 1;
-	char* headBuf = malloc(sizeof(char) * headLen);
-	char* bodyBuf = malloc(sizeof(char) * srcLen);
+	char* headBuf = (char*) malloc(sizeof(char) * headLen);
+	char* bodyBuf = (char*) malloc(sizeof(char) * srcLen);
 	int start = 0, size, cnt; char* buf = 0; char* blk = 0;
 	for (int i = 0; i < srcLen - headLen; i++) {
 		if (strcmp(get(src, i, headBuf, headLen), head) == 0) {
@@ -214,7 +234,7 @@ char* cut(char* src, const char* head) {
 				}
 			}
 			size = i - start + 1;
-			buf = malloc(sizeof(char) * size);
+			buf = (char*) malloc(sizeof(char) * size);
 			for (cnt = i = 0; i < size; i++) {
 				if (i == size - 1) {
 					buf[i] = '\0';
@@ -247,7 +267,7 @@ char* cut(char* src, const char* head) {
 				buf[i - cnt] = bodyBuf[i];
 			}
 			size -= cnt;
-			blk = malloc(sizeof(char) * size);
+			blk = (char*) malloc(sizeof(char) * size);
 			for (i = 0; i < size; i++) {
 				if (i == size - 1) {
 					blk[i] = '\0';

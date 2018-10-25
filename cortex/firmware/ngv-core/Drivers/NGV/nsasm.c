@@ -6,10 +6,10 @@
 
 int _mm_push(pMM* p, MMBlock* blk) {
 	if (p->stackTop == 0) {
-		p->stackTop = malloc(sizeof(MMType));
+		p->stackTop = (MMType*) malloc(sizeof(MMType));
 		p->stackTop->prev = 0;
 	} else {
-		p->stackTop->next = malloc(sizeof(MMType));
+		p->stackTop->next = (MMType*) malloc(sizeof(MMType));
 		p->stackTop->next->prev = p->stackTop;
 		p->stackTop = p->stackTop->next;
 	}
@@ -49,18 +49,18 @@ MMType* _mm_search(pMM* p, char* name) {
 
 int _mm_join(pMM* p, char* name, MMBlock* blk) {
 	if (p->heapStart == 0) {
-		p->heapStart = malloc(sizeof(MMType));
+		p->heapStart = (MMType*) malloc(sizeof(MMType));
 		p->heapStart->prev = 0;
 		p->heapEnd = p->heapStart;
 	} else {
-		p->heapEnd->next = malloc(sizeof(MMType));
+		p->heapEnd->next = (MMType*) malloc(sizeof(MMType));
 		p->heapEnd->next->prev = p->heapEnd;
 		p->heapEnd = p->heapEnd->next;
 	}
 	p->heapEnd->name = 0;
 	if (p->heapCnt >= p->heapSiz) return ERR;
 	if (_mm_search(p, name) != 0) return ERR;
-	p->heapEnd->name = malloc(sizeof(char) * (strlen(name) + 1));
+	p->heapEnd->name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
 	strcpy(p->heapEnd->name, name);
 	memcpy(&(p->heapEnd->var), blk, sizeof(MMBlock));
 	p->heapCnt += 1;
@@ -114,7 +114,7 @@ void _mm_clear(pMM* p) {
 }
 
 MemoryManager* InitMemoryManager(int stackSize, int heapSize) {
-	pMM* p = malloc(sizeof(pMM));
+	pMM* p = (pMM*) malloc(sizeof(pMM));
 	p->stackSiz = stackSize;
 	p->heapSiz = heapSize;
 	p->stackCnt = 0;
@@ -123,7 +123,7 @@ MemoryManager* InitMemoryManager(int stackSize, int heapSize) {
 	p->heapStart = 0;
 	p->heapEnd = 0;
 
-	MemoryManager* c = malloc(sizeof(MemoryManager));
+	MemoryManager* c = (MemoryManager*) malloc(sizeof(MemoryManager));
 	c->p = p;
 	c->push = &_mm_push;
 	c->pop = &_mm_pop;
@@ -187,7 +187,7 @@ static NSASM_Function NSASM_funList[] = {
 };
 
 NSASM_Instance* NSASM_NewInstance(int stackSiz, int heapSiz) {
-	NSASM_Instance* ptr = malloc(sizeof(NSASM_Instance));
+	NSASM_Instance* ptr = (NSASM_Instance*) malloc(sizeof(NSASM_Instance));
 	ptr->mm = InitMemoryManager(stackSiz, heapSiz);
 	memset(ptr->reg, 0, sizeof(Register) * REG_CNT);
 	memset(&ptr->state, 0, sizeof(Register));
@@ -649,7 +649,7 @@ int NSASM_getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 			if (var[strlen(var) - 1] != '\'') return ERR;
 			char tmp = 0;
 			if (sscanf(var, "%*[\'\\]%[^\']c", &tmp)) {
-				*ptr = malloc(sizeof(Register));
+				*ptr = (Register*) malloc(sizeof(Register));
 				switch (tmp) {
 					case 'n': (*ptr)->data.vChar = '\n'; break;
 					case 'r': (*ptr)->data.vChar = '\r'; break;
@@ -661,7 +661,7 @@ int NSASM_getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 				(*ptr)->readOnly = 0;
 				return ETC;
 			} else if (sscanf(var, "%*[\']%[^\']c", &tmp)) {
-				*ptr = malloc(sizeof(Register));
+				*ptr = (Register*) malloc(sizeof(Register));
 				(*ptr)->data.vChar = tmp;
 				(*ptr)->type = RegChar;
 				(*ptr)->readOnly = 0;
@@ -678,16 +678,16 @@ int NSASM_getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 					return ERR;
 				}
 			}
-			*ptr = malloc(sizeof(Register));
+			*ptr = (Register*) malloc(sizeof(Register));
 			if (repeat == 0) {
-				(*ptr)->data.vPtr = malloc(sizeof(char) * (len - 1));
+				(*ptr)->data.vPtr = (char*) malloc(sizeof(char) * (len - 1));
 				memcpy((*ptr)->data.vPtr, var + 1, len - 2);
 				(*ptr)->data.vPtr[len - 2] = '\0';
 			} else {
-				char* buf = malloc(sizeof(char) * len);
+				char* buf = (char*) malloc(sizeof(char) * len);
 				if(sscanf(var, "%*[\"]%[^\"]s", buf)) {
 					int bufLen = strlen(buf);
-					(*ptr)->data.vPtr = malloc(sizeof(char) * (bufLen * (repeat + 1)));
+					(*ptr)->data.vPtr = (char*) malloc(sizeof(char) * (bufLen * (repeat + 1)));
 					(*ptr)->data.vPtr[0] = '\0';
 					for (int i = 0; i < repeat; i++) {
 						strcat((*ptr)->data.vPtr, buf);
@@ -706,7 +706,7 @@ int NSASM_getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 				) || strchr(var, '.') > 0) {
 				float tmp = 0;
 				if (sscanf(var, "%f", &tmp)) {
-					*ptr = malloc(sizeof(Register));
+					*ptr = (Register*) malloc(sizeof(Register));
 					(*ptr)->data.vFloat = tmp;
 					(*ptr)->type = RegFloat;
 					(*ptr)->readOnly = 0;
@@ -720,7 +720,7 @@ int NSASM_getRegister(NSASM_Instance* inst, char* var, Register** ptr) {
 				} else {
 					sscanf(var, "%d", &tmp);
 				}
-				*ptr = malloc(sizeof(Register));
+				*ptr = (Register*) malloc(sizeof(Register));
 				(*ptr)->data.vInt = tmp;
 				(*ptr)->type = RegInt;
 				(*ptr)->readOnly = 0;
@@ -745,7 +745,7 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 		if (index == ETC) return ERR;
 		if (NSASM_verifyVarName(dst)) return ERR;
 		Register dr;
-		dr.data.vPtr = malloc(sizeof(char) * (strlen(dst) + 1));
+		dr.data.vPtr = (char*) malloc(sizeof(char) * (strlen(dst) + 1));
 		dr.type = RegPtr;
 		strcpy(dr.data.vPtr, dst);
 		Register* sr;
@@ -771,8 +771,8 @@ int NSASM_execute(NSASM_Instance* inst, char* var, char type) {
 				dr = 0;
 			} else {
 				if (NSASM_verifyTag(dst) == OK) {
-					dr = malloc(sizeof(Register));
-					dr->data.vPtr = malloc(sizeof(char) * (strlen(dst) + 1));
+					dr = (Register*) malloc(sizeof(Register));
+					dr->data.vPtr = (char*) malloc(sizeof(char) * (strlen(dst) + 1));
 					dr->type = RegPtr;
 					dr->readOnly = 1;
 					strcpy(dr->data.vPtr, dst);

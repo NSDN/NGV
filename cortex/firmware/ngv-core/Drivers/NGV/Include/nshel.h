@@ -2,15 +2,20 @@
 #define __NSHEL_H_
 
 
-#define NSHEL_VERSION 0.02
+#define NSHEL_VERSION 0.03
 
 #define NSHEL_HED_LEN 32
 #define NSHEL_ARG_LEN 64
 #define NSHEL_ARG_MAX 8
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int _nshel_fun_help(int argc, char* argv[]);
 int _nshel_fun_exit(int argc, char* argv[]);
 int _nshel_fun_print(int argc, char* argv[]);
+int _nshel_fun_pause(int argc, char* argv[]);
 int _nshel_fun_clear(int argc, char* argv[]);
 int _nshel_fun_logo(int argc, char* argv[]);
 int _nshel_fun_ver(int argc, char* argv[]);
@@ -20,6 +25,7 @@ int _nshel_fun_delay(int argc, char* argv[]);
 int _nshel_fun_colorb(int argc, char* argv[]);
 int _nshel_fun_colorf(int argc, char* argv[]);
 int _nshel_fun_font(int argc, char* argv[]);
+int _nshel_fun_scale(int argc, char* argv[]);
 int _nshel_fun_style(int argc, char* argv[]);
 int _nshel_fun_rotate(int argc, char* argv[]);
 #ifdef USE_FLASH
@@ -34,6 +40,9 @@ int _nshel_fun_graph(int argc, char* argv[]);
 int _nshel_fun_nshel(int argc, char* argv[]);
 int _nshel_fun_nsasm(int argc, char* argv[]);
 int _nshel_fun_nsasmpp(int argc, char* argv[]);
+int _nshel_fun_nsgdx(int argc, char* argv[]);
+
+int _nshel_fun_bmp(int argc, char* argv[]);
 
 typedef struct {
 	char name[NSHEL_HED_LEN];
@@ -48,6 +57,10 @@ void NSHEL_console();
 void NSHEL_run(char* var);
 
 int nshel(int argc, char* argv[]);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

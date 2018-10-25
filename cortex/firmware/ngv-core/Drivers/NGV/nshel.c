@@ -3,13 +3,19 @@
 #include "./Include/nsasm.h"
 
 #include "./Include/lcd.h"
+#include "./Include/bmp.h"
 #include "./Include/logo.h"
-#include "./Include/flash.h"
 
-#include "nsasmpp.h"
+#include "../NSASM/Include/nsasmpp.h"
+#include "../NSGDX/Include/nsgdxpp.h"
 
 #include <malloc.h>
 #include <string.h>
+#include <setjmp.h>
+
+extern jmp_buf rstPos;
+
+extern void delay(uint32_t ms);
 
 extern LCD* lcd;
 #ifdef USE_FLASH
@@ -23,6 +29,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "help", &_nshel_fun_help },
 	{ "exit", &_nshel_fun_exit },
 	{ "print", &_nshel_fun_print },
+	{ "pause", &_nshel_fun_pause },
 	{ "clear", &_nshel_fun_clear },
 	{ "logo", &_nshel_fun_logo },
 	{ "ver", &_nshel_fun_ver },
@@ -32,6 +39,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "colorb", &_nshel_fun_colorb },
 	{ "colorf", &_nshel_fun_colorf },
 	{ "font", &_nshel_fun_font },
+	{ "scale", &_nshel_fun_scale },
 	{ "style", &_nshel_fun_style },
 	{ "rotate", &_nshel_fun_rotate },
 #ifdef USE_FLASH
@@ -46,6 +54,18 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "nshel", &_nshel_fun_nshel },
 	{ "nsasm", &_nshel_fun_nsasm },
 	{ "nsasm++", &_nshel_fun_nsasmpp },
+	{ "nsgdx", &_nshel_fun_nsgdx },
+
+	{ "bmp", &_nshel_fun_bmp },
+
+	{ "\0", 0 }
+};
+
+static NSHEL_Function NSHEL_interList[] = {
+	{ "e", &_nshel_fun_nshel },
+	{ "nso", &_nshel_fun_nsasm },
+	{ "ns", &_nshel_fun_nsasmpp },
+	{ "nsg", &_nshel_fun_nsgdx },
 
 	{ "\0", 0 }
 };
@@ -54,7 +74,6 @@ int nshel(int argc, char* argv[]) {
 	print("NyaSama Hardware Environment Language\n");
 	print("Version: %1.2f\n\n", NSHEL_VERSION);
 	if (argc < 2) {
-		print("Usage: nshel [FILE]\n\n");
 		NSHEL_console();
 		return OK;
 	} else {
@@ -83,6 +102,12 @@ int _nshel_fun_print(int argc, char* argv[]) {
 	print("\n");
 	return OK;
 }
+int _nshel_fun_pause(int argc, char* argv[]) {
+	print("Press any key to continue.");
+	pause();
+	print("\n");
+	return OK;
+}
 int _nshel_fun_clear(int argc, char* argv[]) {
 	lcd->clear(lcd->p);
 	return OK;
@@ -92,12 +117,12 @@ int _nshel_fun_logo(int argc, char* argv[]) {
 	lcd->colorf(lcd->p, 0x000000);
 	lcd->clear(lcd->p);
 
-	lcd->bitmapsc(lcd->p, 240, 140, 64, 64, getLogo());
+	lcd->bitmapsc(lcd->p, lcd->p->width / 2, 140, 64, 64, getLogo());
 	lcd->printfc(lcd->p, 180, "nyagame vita");
 	lcd->printfc(lcd->p, 200, "this is a factory system");
-	HAL_Delay(1000);
+	delay(1000);
 	uint8_t buf = 0;
-	while (HAL_UART_Receive(&HUART, &buf, 1, 1) != HAL_OK);
+	scan((char*) &buf);
 	lcd->clear(lcd->p);
 	return OK;
 }
@@ -135,7 +160,7 @@ int _nshel_fun_delay(int argc, char* argv[]) {
 	} else {
 		int time = 0;
 		if (__getvar__(argv[1], &time) == ERR) return ERR;
-		HAL_Delay(time);
+		delay(time);
 	}
 	return OK;
 }
@@ -172,6 +197,17 @@ int _nshel_fun_font(int argc, char* argv[]) {
 		} else {
 			return ERR;
 		}
+	}
+	return OK;
+}
+int _nshel_fun_scale(int argc, char* argv[]) {
+	if (argc == 1) {
+		print("Font scale: %d\n", lcd->p->scale);
+	} else {
+		int scale = 0;
+		if (__getvar__(argv[1], &scale) == ERR) return ERR;
+		lcd->scale(lcd->p, scale);
+		lcd->clear(lcd->p);
 	}
 	return OK;
 }
@@ -338,6 +374,13 @@ int _nshel_fun_nsasm(int argc, char* argv[]) {
 int _nshel_fun_nsasmpp(int argc, char* argv[]) {
 	return nsasmpp(argc, argv);
 }
+int _nshel_fun_nsgdx(int argc, char* argv[]) {
+	return nsgdx(argc, argv);
+}
+
+int _nshel_fun_bmp(int argc, char* argv[]) {
+	return bmp_main(argc, argv);
+}
 
 /* -------------------------------- */
 
@@ -358,18 +401,18 @@ int NSHEL_getArgs(char* arg, char* argv[]) {
 		result = sscanf(tmp, "%s %[^\n]", buf, tmp);
 		if (result <= 0) break;
 		else if (result == 1) {
-			argv[argc] = malloc(sizeof(char) * (strlen(buf) + 1));
+			argv[argc] = (char*) malloc(sizeof(char) * (strlen(buf) + 1));
 			strcpy(argv[argc], buf);
 			argc += 1;
 			if (argc < NSHEL_ARG_MAX) {
 				result = sscanf(tmp, "%s %[^\n]", buf, tmp);
 				if (result <= 0) break;
-				argv[argc] = malloc(sizeof(char) * (strlen(buf) + 1));
+				argv[argc] = (char*) malloc(sizeof(char) * (strlen(buf) + 1));
 				strcpy(argv[argc], buf);
 			}
 			break;
 		} else {
-			argv[argc] = malloc(sizeof(char) * (strlen(buf) + 1));
+			argv[argc] = (char*) malloc(sizeof(char) * (strlen(buf) + 1));
 			strcpy(argv[argc], buf);
 		}
 	}
@@ -378,16 +421,32 @@ int NSHEL_getArgs(char* arg, char* argv[]) {
 
 int NSHEL_execute(char* var) {
 	char head[NSHEL_HED_LEN] = "\0", arg[NSHEL_ARG_LEN] = "\0";
+	if (strlen(var) == 0) return OK;
+	
 	sscanf(var, "%s %[^\n]", head, arg);
 	int index = NSHEL_getSymbolIndex(NSHEL_funList, head);
-	if (index == ETC) return ERR;
-	int argc = 0; char* argv[NSHEL_ARG_MAX];
-	argv[0] = malloc(sizeof(char) * (strlen(head) + 1));
-	strcpy(argv[0], head);
-	argc =  NSHEL_getArgs(arg, argv);
-	int result = NSHEL_funList[index].fun(argc, argv);
-	for (int i = 0; i < argc; i++) free(argv[i]);
-	return result;
+	if (index == ETC) {
+		char ext[NSHEL_HED_LEN];
+		sscanf(head, "%*[^.] %*[. \t]%[^\n]", ext);
+		index = NSHEL_getSymbolIndex(NSHEL_interList, ext);
+		if (index == ETC) return ERR;
+		char* args[2];
+		args[0] = (char*) malloc(sizeof(char) * NSHEL_HED_LEN);
+		strcpy(args[0], NSHEL_interList[index].name);
+		args[1] = (char*) malloc(sizeof(char) * NSHEL_HED_LEN);
+		strcpy(args[1], head);
+		int result = NSHEL_interList[index].fun(2, args);
+		free(args[0]); free(args[1]);
+		return result;
+	} else {
+		int argc = 0; char* argv[NSHEL_ARG_MAX];
+		argv[0] = (char*) malloc(sizeof(char) * (strlen(head) + 1));
+		strcpy(argv[0], head);
+		argc =  NSHEL_getArgs(arg, argv);
+		int result = NSHEL_funList[index].fun(argc, argv);
+		for (int i = 0; i < argc; i++) free(argv[i]);
+		return result;
+	}
 }
 
 void NSHEL_console() {
@@ -411,16 +470,19 @@ void NSHEL_run(char* var) {
 	char* _gcvar = 0;
 
 	int varLines = lines(var);
+	int result = 0;
 	print("NSHEL: %d line(s), running...\n", varLines);
-	for (int i = 0; i < varLines; i++)
-		if (NSHEL_execute(_gcvar = line(var, i))) {
-			free(_gcvar);
+	for (int i = 0; i < varLines; i++) {
+		result = NSHEL_execute(_gcvar = line(var, i));
+		free(_gcvar);
+		if (result == ERR) {
 			print("\nNSHEL running error!\n");
 			print("At line %d: %s\n\n", i, _gcvar = line(var, i));
 			free(_gcvar);
 			return;
-		} else free(_gcvar);
-	free(_gcvar);
+		} else if (result == ETC)
+			break;
+	}
 
 	print("\nNSHEL running finished.\n\n");
 }

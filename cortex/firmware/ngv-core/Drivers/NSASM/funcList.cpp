@@ -383,6 +383,18 @@ namespace NSASM {
 			} else return calc(dst, src, '/');
 		};
 
+		funcList["mod"] = $OP_{
+			if (src == nullptr) return Result::RES_ERR;
+			if (dst == nullptr) return Result::RES_ERR;
+			if (dst->readOnly) return Result::RES_ERR;
+			if (src->type == RegType::REG_CODE) {
+				Register* reg = eval(src);
+				Result res = calc(dst, reg, '%');
+				if (reg != nullptr) if (reg->gcFlag) delete reg;
+				return res;
+			} else return calc(dst, src, '%');
+		};
+
 		funcList["and"] = $OP_{
 			if (src == nullptr) return Result::RES_ERR;
 			if (dst == nullptr) return Result::RES_ERR;

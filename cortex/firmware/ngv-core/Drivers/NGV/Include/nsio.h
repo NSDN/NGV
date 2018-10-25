@@ -22,6 +22,8 @@ extern UART_HandleTypeDef HUART;
 
 char* strlwr(char* s);
 
+void pause();
+
 int scan(char* buffer);
 int fscan(char* buffer, const char* format, ...);
 int print(const char* format, ...);
@@ -38,14 +40,18 @@ char* get(char* src, int start, char* buf, int size);
 
 #define FIL_ERR     0
 #define FIL_OK      1
-#define FIL_READ    0
-#define FIL_WRITE   1
+#define FIL_READ    1
+#define FIL_WRITE   2
+#define FIL_BIN     4
 
 uint8_t filopen(FILTYPE* file, char* name, uint8_t mode);
 void filclose(FILTYPE* file);
 void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr);
-void filgets(FILTYPE* file, uint8_t* buf, uint32_t len);
+void filwrite(FILTYPE* file, uint8_t* buf, uint32_t len);
+void filgets(FILTYPE* file, char* buf, uint32_t len);
+int filprint(FILTYPE* file, const char* format, ...);
 uint8_t fileof(FILTYPE* file);
+uint32_t filsiz(FILTYPE* file);
 
 #ifdef __cplusplus
 }

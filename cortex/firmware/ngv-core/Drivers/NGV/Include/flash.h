@@ -42,6 +42,10 @@
 
 #define DUMMY_BYTE 0xFF
 
+#define FLASH_SECTOR_NUM	0x1000
+#define FLASH_SECTOR_SIZ	0x1000
+#define FLASH_PAGE_SIZ		0x100
+
 typedef enum {
     custom = -1,
     autoDetect = 0,
@@ -74,55 +78,60 @@ typedef struct {
 	GPIO_TypeDef*       CSPortGroup;
 	uint16_t            CSPortIndex;
     partNumber          partno;
-} pFlash;
+    uint8_t 			buffer[FLASH_SECTOR_SIZ];
+    uint8_t				check[FLASH_SECTOR_SIZ];
+} pFlashR;
 
 typedef struct {
-    pFlash* p;
+    pFlashR* p;
 
-    uint8_t     (*begin)            (pFlash* p);
-    void        (*end)              (pFlash* p);
+    uint8_t     (*begin)            (pFlashR* p);
+    void        (*end)              (pFlashR* p);
 #ifdef FLASH_USE_PRIVATE
-    void        (*select)           (pFlash* p);
-    void        (*deselect)         (pFlash* p);
-    uint8_t     (*transfer)         (pFlash* p, uint8_t x);
-    uint8_t     (*checkPartNo)      (pFlash* p, partNumber _partno);
+    void        (*select)           (pFlashR* p);
+    void        (*deselect)         (pFlashR* p);
+    uint8_t     (*transfer)         (pFlashR* p, uint8_t x);
+    uint8_t     (*checkPartNo)      (pFlashR* p, partNumber _partno);
 #endif
-    long        (*bytes)            (pFlash* p);
-    uint16_t    (*pages)            (pFlash* p);
-    uint16_t    (*sectors)          (pFlash* p);
-    uint16_t    (*blocks)           (pFlash* p);
+    long        (*bytes)            (pFlashR* p);
+    uint16_t    (*pages)            (pFlashR* p);
+    uint16_t    (*sectors)          (pFlashR* p);
+    uint16_t    (*blocks)           (pFlashR* p);
 
-    uint16_t    (*read)             (pFlash* p, uint32_t addr, uint8_t *buf, uint16_t n);
+    uint16_t    (*read)             (pFlashR* p, uint32_t addr, uint8_t *buf, uint16_t n);
 
     //WE() every time before write or erase
-    void        (*setWriteEnable)   (pFlash* p, uint8_t cmd);
+    void        (*setWriteEnable)   (pFlashR* p, uint8_t cmd);
 
     //write a page, sizeof(buf) is 256 bytes
     //addr is 8bit-aligned, 0x00ffff00
-    void        (*writePage)        (pFlash* p, uint32_t addr_start, uint8_t *buf);
+    void        (*writePage)        (pFlashR* p, uint32_t addr_start, uint8_t *buf);
 
     //erase a sector ( 4096bytes ), return false if error
     //addr is 12bit-aligned, 0x00fff000
-    void        (*eraseSector)      (pFlash* p, uint32_t addr);
+    void        (*eraseSector)      (pFlashR* p, uint32_t addr);
 
     //erase a 32k block ( 32768b )
     //addr is 15bit-aligned, 0x00ff8000
-    void        (*erase32kBlock)    (pFlash* p, uint32_t addr);
+    void        (*erase32kBlock)    (pFlashR* p, uint32_t addr);
 
     //erase a 64k block ( 65536b )
     //addr is 16bit-aligned, 0x00ff0000
-    void        (*erase64kBlock)    (pFlash* p, uint32_t addr);
+    void        (*erase64kBlock)    (pFlashR* p, uint32_t addr);
+
+    void		(*read512byte)		(pFlashR* p, uint32_t addr, uint8_t *buf);
+    void		(*write512byte)		(pFlashR* p, uint32_t addr, uint8_t *buf);
 
     //chip erase, return true if successfully started, busy()==false -> erase complete
-    void        (*eraseAll)         (pFlash* p);
-    void        (*eraseSuspend)     (pFlash* p);
-    void        (*eraseResume)      (pFlash* p);
-    uint8_t     (*busy)             (pFlash* p);
+    void        (*eraseAll)         (pFlashR* p);
+    void        (*eraseSuspend)     (pFlashR* p);
+    void        (*eraseResume)      (pFlashR* p);
+    uint8_t     (*busy)             (pFlashR* p);
 
-    uint8_t     (*readManufacturer) (pFlash* p);
-    uint16_t    (*readPartID)       (pFlash* p);
-    uint64_t    (*readUniqueID)     (pFlash* p);
-    uint16_t    (*readSR)           (pFlash* p);
+    uint8_t     (*readManufacturer) (pFlashR* p);
+    uint16_t    (*readPartID)       (pFlashR* p);
+    uint64_t    (*readUniqueID)     (pFlashR* p);
+    uint16_t    (*readSR)           (pFlashR* p);
 } Flash;
 
 Flash* FlashInit(SPI_HandleTypeDef* hspi, GPIO_TypeDef* CSGroup, uint16_t CSIndex, partNumber partnum);

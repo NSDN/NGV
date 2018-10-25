@@ -82,8 +82,10 @@ namespace NSASM {
 			}
 			return var.find('.') == var.npos && (
 				(var[0] >= '0' && var[0] <= '9') ||
-				var[0] == '-' || var[0] == '+' ||
-				var[var.length() - 1] == 'h' || var[var.length() - 1] == 'H'
+				var[0] == '-' || var[0] == '+' || (
+					((var[0] >= '0' && var[0] <= '9') || var[0] == '-' || var[0] == '+') &&
+					 (var[var.length() - 1] == 'h' || var[var.length() - 1] == 'H')
+				)
 			);
 		case WordType::WD_FLOAT:
 			return (
@@ -290,6 +292,7 @@ namespace NSASM {
 		return Result::RES_OK;
 	}
 	void NSASM::copyRegGroup(NSASM& super) {
+		super.regGroup[super.regCnt] = *super.useReg;
 		for (int i = 0; i < super.regGroup.size(); i++)
 			this->regGroup[i] = super.regGroup[i];
 	}
@@ -300,6 +303,7 @@ namespace NSASM {
 		case '-': *dst -= src; break;
 		case '*': *dst *= src; break;
 		case '/': *dst /= src; break;
+		case '%': *dst %= src; break;
 		case '&': *dst &= src; break;
 		case '|': *dst |= src; break;
 		case '~': *dst = ~(*dst); break;
@@ -316,6 +320,7 @@ namespace NSASM {
 		case '-': *dst -= src; break;
 		case '*': *dst *= src; break;
 		case '/': *dst /= src; break;
+		case '%': *dst %= src; break;
 		case '&': *dst &= src; break;
 		case '|': *dst |= src; break;
 		case '~': *dst = ~(*dst); break;
@@ -402,9 +407,10 @@ namespace NSASM {
 		if (reg == nullptr) return nullptr;
 		if (reg->type != RegType::REG_CODE) return nullptr;
 		map<string, string> code = Util::getSegments(reg->s);
-		NSASM nsasm(*this, code);
-		Register* result = new Register(*nsasm.run());
+		NSASM* nsasm = instance(*this, code);
+		Register* result = new Register(*nsasm->run());
 		result->gcFlag = true;
+		delete nsasm;
 		return result;
 	}
 

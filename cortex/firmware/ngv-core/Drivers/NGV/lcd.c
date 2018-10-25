@@ -7,124 +7,125 @@
 #include <string.h>
 #include <stdlib.h>
 
-static uint16_t _buf[] = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
+#ifdef LCD_IS_EMU
+#include "../../sdl.h"
+static uint8_t cmdBuf;
+extern void processEvent();
+#endif
+
+static uint32_t _buf[512] = { 0 };
+
+#ifndef LCD_IS_EMU
+
+#include "ngv_bios.h"
 
 void _io_cpy(pIO* dst, pIO* src) {
 	dst->port = src->port;
 	dst->pin = src->pin;
 }
 
-void _write_(pLCD* p, uint8_t v) {
-#ifdef LCD_USE_REG_ACCESS
-#define __output(n, s) p->data[n].port->BSRR = (v & s) ? p->data[n].pin : p->cdata[n]
-	__output(0, 0x01); __output(1, 0x02); __output(2, 0x04); __output(3, 0x08);
-	__output(4, 0x10); __output(5, 0x20); __output(6, 0x40); __output(7, 0x80);
+#define __output(v, n, s) (p->data[n].port->BSRR = (v & s) ? p->data[n].pin : p->cdata[n])
 
-	p->wr.port->BSRR = (uint32_t) p->wr.pin << 16; // always @(negedge wr) begin "Lock" end
-	asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop");
-	p->wr.port->BSRR = p->wr.pin;
+#define _data(v) do {\
+	__output(v, 0, 0x01); __output(v, 1, 0x02); __output(v, 2, 0x04); __output(v, 3, 0x08); \
+	__output(v, 4, 0x10); __output(v, 5, 0x20); __output(v, 6, 0x40); __output(v, 7, 0x80); \
+	p->wr.port->BSRR = (uint32_t) p->wr.pin << 16; \
+	asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop"); \
+	p->wr.port->BSRR = p->wr.pin; \
+	} while (0)
+
+#define _da16(v) do { _data(v >> 8); _data(v & 0xFF); } while (0)
+
+#endif
+
+void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
+#ifndef LCD_IS_EMU
+	_lcd_ctl_rs(0); //CMD
+	_lcd_ctl_cs(0); //NCS
+	_data(cmd);
+	_lcd_ctl_cs(1); //CS
 #else
-	for (uint8_t i = 0; i < 8; i++) {
-		HAL_GPIO_WritePin(p->data[i].port, p->data[i].pin, (v & (1 << i)) > 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
-	}
-	HAL_GPIO_WritePin(p->wr.port, p->wr.pin, GPIO_PIN_RESET); // always @(negedge wr) begin "Lock" end
-	HAL_GPIO_WritePin(p->wr.port, p->wr.pin, GPIO_PIN_SET);
+	cmdBuf = cmd;
 #endif
 }
 
-void _lcd_writeCommand(pLCD* p, uint8_t cmd) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, cmd);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-}
-
 void _lcd_writeData(pLCD* p, uint8_t data) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+#ifndef LCD_IS_EMU
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
+	_data(data);
+	_lcd_ctl_cs(1); //CS
+#endif
 }
 
 void _lcd_writeReg8(pLCD* p, uint8_t cmd, uint8_t data) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, cmd);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-}
+#ifndef LCD_IS_EMU
+	_lcd_ctl_rs(0); //CMD
+	_lcd_ctl_cs(0); //NCS
+	_data(cmd);
+	_lcd_ctl_cs(1); //CS
 
-void _lcd_writeReg16(pLCD* p, uint8_t cmd, uint16_t data) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, cmd);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data >> 8);
-	_write_(p, data & 0xFF);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
+	_data(data);
+	_lcd_ctl_cs(1); //CS
+#endif
 }
 
 void _lcd_writeReg32(pLCD* p, uint8_t cmd, uint32_t data) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, cmd);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, (data >> 24) & 0xFF);
-	_write_(p, (data >> 16) & 0xFF);
-	_write_(p, (data >> 8 ) & 0xFF);
-	_write_(p, (data      ) & 0xFF);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+#ifndef LCD_IS_EMU
+	_lcd_ctl_rs(0); //CMD
+	_lcd_ctl_cs(0); //NCS
+	_data(cmd);
+	_lcd_ctl_cs(1); //CS
+
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
+	_data((data >> 24) & 0xFF);
+	_data((data >> 16) & 0xFF);
+	_data((data >> 8 ) & 0xFF);
+	_data((data      ) & 0xFF);
+	_lcd_ctl_cs(1); //CS
+#endif
 }
 
-void _lcd_writeData16(pLCD* p, uint16_t data) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	_write_(p, data >> 8);
-	_write_(p, data & 0xFF);
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+void _lcd_writeData32(pLCD* p, uint32_t data) {
+#ifndef LCD_IS_EMU
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
+	_da16(data);
+	_lcd_ctl_cs(1); //CS
+#else
+	if (cmdBuf == LCD_MEMWR) write(data);
+#endif
 }
 
-void _lcd_writeData16s(pLCD* p, uint16_t* data, uint32_t length) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	for (uint32_t i = 0; i < length; i++) {
-		_write_(p, data[i] >> 8);
-		_write_(p, data[i] & 0xFF);
-	}
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+void _lcd_writeData32s(pLCD* p, uint32_t* data, uint32_t length) {
+#ifndef LCD_IS_EMU
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
+	for (uint32_t i = 0; i < length; i++)
+		_da16(data[i]);
+	_lcd_ctl_cs(1); //CS
+#else
+	if (cmdBuf == LCD_MEMWR) writes(data, length);
+#endif
 }
 
-void _lcd_flashData16(pLCD* p, uint16_t data, uint32_t count) {
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-	HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-	for (uint32_t i = 0; i < count; i++) {
-		_write_(p, data >> 8);
-		_write_(p, data & 0xFF);
-	}
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+void _lcd_flashData32(pLCD* p, uint32_t data, uint32_t count) {
+#ifndef LCD_IS_EMU
+	_lcd_ctl_rs(1); //DATA
+	_lcd_ctl_cs(0); //NCS
+	for (uint32_t i = 0; i < count; i++)
+		_da16(data);
+	_lcd_ctl_cs(1); //CS
+#else
+	if (cmdBuf == LCD_MEMWR) flash(data, count);
+#endif
 }
 
-void _lcd_setPosition(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) { 
+void _lcd_setPosition(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
+#ifndef LCD_IS_EMU
 	uint32_t t;
 
     t = x1;
@@ -135,65 +136,84 @@ void _lcd_setPosition(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y
     t <<= 16;
     t |= y2;
     _lcd_writeReg32(p, LCD_PADDR, t);
+#else
+	pos(x1, y1, x2, y2);
+#endif
 }
 
 void _lcd_reset(pLCD* p) {
-	HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->wr.port, p->wr.pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(p->rst.port, p->rst.pin, GPIO_PIN_RESET);
+#ifndef LCD_IS_EMU
+	_lcd_ctl_cs(1); //CS
+	_lcd_ctl_rst(0); //NRST
 	HAL_Delay(10);
-	HAL_GPIO_WritePin(p->rst.port, p->rst.pin, GPIO_PIN_SET);
+	_lcd_ctl_rst(1); //RST
 	HAL_Delay(100);
+
+	_lcd_ctl_blk(1);
+#else
+	p->backColor = 0x000000;
+	p->foreColor = 0xFFFFFF;
+	_lcd_setPosition(p, 0, 0, p->width - 1, p->height - 1);
+	_lcd_writeCommand(p, LCD_MEMWR);
+	_lcd_flashData32(p, p->backColor, p->width * p->height);
+	p->ptrX = p->ptrY = 0;
+#endif
 }
 
 void _lcd_rotate(pLCD* p, uint8_t r) {
+#ifndef LCD_IS_EMU
 	uint8_t t = 0; uint16_t tmp;
 	p->rotate = r;
 	switch (r) {
-		case LCD_PORTRAIT:
-			t = LCD_MADCTL_HF;
-			break;
-		case LCD_LANDSCAPE:
-			t = LCD_MADCTL_MV;
-			tmp = p->width; p->width = p->height; p->height = tmp;
-			break;
-		case LCD_PORTRAIT_ANTI:
-			t = LCD_MADCTL_VF;
-			break;
-		case LCD_LANDSCAPE_ANTI:
-			t = LCD_MADCTL_MV | LCD_MADCTL_HF | LCD_MADCTL_VF;
-			tmp = p->width; p->width = p->height; p->height = tmp;
-			break;
+	case LCD_PORTRAIT:
+		t = LCD_MADCTL_HF;
+		break;
+	case LCD_LANDSCAPE:
+		t = LCD_MADCTL_MV;
+		tmp = p->width; p->width = p->height; p->height = tmp;
+		break;
+	case LCD_PORTRAIT_ANTI:
+		t = LCD_MADCTL_VF;
+		break;
+	case LCD_LANDSCAPE_ANTI:
+		t = LCD_MADCTL_MV | LCD_MADCTL_HF | LCD_MADCTL_VF;
+		tmp = p->width; p->width = p->height; p->height = tmp;
+		break;
 	}
 	_lcd_writeReg8(p, LCD_MADCTL, t | LCD_MADCTL_BGR);
 	_lcd_setPosition(p, 0, 0, p->width - 1, p->height - 1);
+#else
+	p->width = 854; p->height = 480;
+#endif
 }
 
 void _lcd_init(pLCD* p) {
 	_lcd_reset(p);
 	
 	uint32_t i = 0;
-	uint8_t r = 0, len = 0, x = 0;
-	while(i < sizeof(_regValues)) {
+	uint16_t r = 0, len = 0, x = 0;
+	uint16_t size = sizeof(_regValues) / sizeof(unsigned short);
+	while(i < size) {
 		r = _regValues[i++];
 		len = _regValues[i++];
-		if(r == TFTLCD_DELAY) {
+	#ifndef LCD_IS_EMU
+		if(r == LCD_DELAY) {
 			HAL_Delay(len);
 		} else {
-			HAL_GPIO_WritePin(p->rd.port, p->rd.pin, GPIO_PIN_SET);   //!RD
-			HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_RESET); //CMD
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-			_write_(p, r);
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(p->rs.port, p->rs.pin, GPIO_PIN_SET);   //DATA
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_RESET); //CS
-			for (uint8_t d = 0; d < len; d++) {
+			_lcd_ctl_rs(0); //CMD
+			_lcd_ctl_cs(0); //NCS
+			_data(r & 0xFF);
+			_lcd_ctl_cs(1); //CS
+
+			_lcd_ctl_rs(1); //DATA
+			_lcd_ctl_cs(0); //NCS
+			for (uint16_t d = 0; d < len; d++) {
 				x = _regValues[i++];
-				_write_(p, x);
+				_data(x & 0xFF);
 			}
-			HAL_GPIO_WritePin(p->cs.port, p->cs.pin, GPIO_PIN_SET);
+			_lcd_ctl_cs(1); //CS
 		}
+	#endif
     }
 	
 	_lcd_rotate(p, p->rotate);
@@ -212,10 +232,12 @@ void _lcd_fore_color(pLCD* p, uint32_t color) { p->foreColor = _color_conv(color
 
 void _lcd_font(pLCD* p, LCDFont f) { p->Font = f; }
 
+void _lcd_scale(pLCD* p, uint8_t scale) { p->scale = scale > 1 ? 2 : 1; }
+
 void _lcd_clear(pLCD* p) {
 	_lcd_setPosition(p, 0, 0, p->width - 1, p->height - 1);
 	_lcd_writeCommand(p, LCD_MEMWR);
-	_lcd_flashData16(p, p->backColor, p->width * p->height);
+	_lcd_flashData32(p, p->backColor, p->width * p->height);
 	p->ptrX = p->ptrY = 0;
 }
 
@@ -223,66 +245,126 @@ float _lcd_abs(float v) {
 	return v > 0 ? v : -v;
 }
 
+int _lcd_absi(int v) {
+	return v > 0 ? v : -v;
+}
+
+float _lcd_round(float v) {
+	if (v - (float) ((int) v) > 0)
+		return (float) ((int) v + 1);
+	if (v - (float) ((int) v) < 0)
+		return (float) ((int) v - 1);
+	return v;
+}
+
 void _lcd_pixel(pLCD* p, uint16_t x, uint16_t y) {  
 	_lcd_setPosition(p, x, y, x, y);
 	_lcd_writeCommand(p, LCD_MEMWR);
-	_lcd_writeData16(p, p->foreColor);
+	_lcd_writeData32(p, p->foreColor);
 }
 
 void _lcd_line(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
-	if (x1 == x2) {
-		float absY = _lcd_abs(y2 - y1), sig = (y2 - y1) / absY;
-		for (float dy = 0; _lcd_abs(dy) <= absY; dy += sig) {
-			_lcd_setPosition(p, x1, y1 + dy, x1, y1 + dy);
-			_lcd_writeCommand(p, LCD_MEMWR);
-			_lcd_writeData16(p, p->foreColor);
-		}
+	float tx = x2 - x1, ty = y2 - y1;
+	if (tx == 0) {
+		_lcd_setPosition(p, x1, ty > 0 ? y1 : y2, x1, ty > 0 ? y2 : y1);
+		_lcd_writeCommand(p, LCD_MEMWR);
+		_lcd_flashData32(p, p->foreColor, _lcd_absi(ty));
+	} else if (ty == 0) {
+		_lcd_setPosition(p, tx > 0 ? x1 : x2, y1, tx > 0 ? x2 : x1, y1);
+		_lcd_writeCommand(p, LCD_MEMWR);
+		_lcd_flashData32(p, p->foreColor, _lcd_absi(tx));
 	} else {
-		float k = (float)(y2 - y1) / (float)(x2 - x1), absX = _lcd_abs(x2 - x1);
-		float sig = (x2 - x1) / absX;
-		for (float dx = 0, dy = 0; _lcd_abs(dx) <= absX; dx += sig, dy += k) {
-			for (float dk = 0; _lcd_abs(dk) <= _lcd_abs(k); dk += (k > 0 ? 1 : -1)) {
-				_lcd_setPosition(p, x1 + dx, y1 + dy + dk, x1 + dx, y1 + dy + dk);
+		if (_lcd_abs(tx) > _lcd_abs(ty)) {
+			float dx = tx / _lcd_abs(ty), dy = ty / _lcd_abs(ty);
+			for (float x = x1, y = y1; y != y2; x += dx, y += dy) {
+				_lcd_setPosition(p, dx > 0 ? x : x + dx, y, dx > 0 ? x + dx : x, y);
 				_lcd_writeCommand(p, LCD_MEMWR);
-				_lcd_writeData16(p, p->foreColor);
+				_lcd_flashData32(p, p->foreColor, _lcd_absi(_lcd_round(dx)));
+			}
+		} else {
+			float dx = tx / _lcd_abs(tx), dy = ty / _lcd_abs(tx);
+			for (float x = x1, y = y1; x != x2; x += dx, y += dy) {
+				_lcd_setPosition(p, x, dy > 0 ? y : y + dy, x, dy > 0 ? y + dy : y);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_flashData32(p, p->foreColor, _lcd_absi(_lcd_round(dy)));
 			}
 		}
 	}
 }
 
+float _lcd_line_func(char v, float i, float x1, float y1, float x2, float y2) {
+	if (v == 'x') 
+		return (y2 - y1) / (x2 - x1) * (i - x1) + y1;
+	else if (v == 'y')
+		return (x2 - x1) / (y2 - y1) * (i - y1) + x1;
+	return i;
+}
+
+int _lcd_tri_min(int a, int b, int c) {
+	return a > b ? (b > c ? c : b) : (a > c ? c : a);
+}
+
+char _lcd_tri_judge(int x1, int y1, int x2, int y2, int x3, int y3) {
+	int xs[] = {
+		_lcd_absi(x2 - x1) + _lcd_absi(x3 - x1),
+		_lcd_absi(x1 - x2) + _lcd_absi(x3 - x2),
+		_lcd_absi(x1 - x3) + _lcd_absi(x2 - x3)
+	};
+	int ys[] = {
+		_lcd_absi(y2 - y1) + _lcd_absi(y3 - y1),
+		_lcd_absi(y1 - y2) + _lcd_absi(y3 - y2),
+		_lcd_absi(y1 - y3) + _lcd_absi(y2 - y3)
+	};
+	int xm = _lcd_tri_min(xs[0], xs[1], xs[2]);
+	int ym = _lcd_tri_min(ys[0], ys[1], ys[2]);
+
+	if (xm >= ym) return 'x';
+	else return 'y';
+}
+
 void _lcd_tri(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint8_t fill) {
 	if (fill) {
-		uint16_t maxy = (y1 > y2) ? ((y1 > y3) ? y1 : y3) : ((y1 > y3) ? (y2) : ((y2 > y3) ? y2 : y3));
-		uint16_t miny = (y1 < y2) ? ((y1 < y3) ? y1 : y3) : ((y1 < y3) ? (y2) : ((y2 < y3) ? y2 : y3));
-		uint16_t midy = (y1 == maxy) ? ((y2 == miny) ? y3 : y2) : ((y1 == miny) ? ((y2 == maxy) ? y3 : y2) : y1);
-		uint16_t maxx = (x1 > x2) ? ((x1 > x3) ? x1 : x3) : ((x1 > x3) ? (x2) : ((x2 > x3) ? x2 : x3));
-		uint16_t minx = (x1 < x2) ? ((x1 < x3) ? x1 : x3) : ((x1 < x3) ? (x2) : ((x2 < x3) ? x2 : x3));
-		uint16_t midx = (x1 == maxx) ? ((x2 == minx) ? x3 : x2) : ((x1 == minx) ? ((x2 == maxx) ? x3 : x2) : x1);
+		int xs = 0, ys = _lcd_tri_min(y1, y2, y3), xe = 0, ye = 0;
+		int xa, ya, xb, yb;
+		if (ys == y1) { xs = x1; xa = x2; ya = y2; xb = x3; yb = y3; }
+		else if (ys == y2) { xs = x2; xa = x1; ya = y1; xb = x3; yb = y3; }
+		else { xs = x3; xa = x1; ya = y1; xb = x2; yb = y2; }
 		
-		float k1, k2; uint16_t xs, xe, tmp;
-		k1 = (float)(maxy - miny) / (float)(maxx - minx);
-		
-		k2 = (float)(midy - miny) / (float)(midx - minx);
-		for (uint16_t i = miny; i <= midy - miny; i++) {
-			xs = (float)(i - miny) / k1 + (float)minx;
-			xe = (float)(i - miny) / k2 + (float)minx;
-			if (xe < xs) { tmp = xe; xe = xs; xs = tmp; }
-			_lcd_setPosition(p, xs, i, xe, i);
-			_lcd_writeCommand(p, LCD_MEMWR);
-			for (uint16_t j = 0; j <= xe - xs; j++) {
-				_lcd_writeData16(p, p->foreColor);
+		if (_lcd_tri_judge(x1, y1, x2, y2, x3, y3) == 'x') {
+			int y = ys; float xl, xr;
+			for (; y != ya && y != yb; y++) {
+				xl = _lcd_line_func('y', y, xs, ys, xa, ya);
+				xr = _lcd_line_func('y', y, xs, ys, xb, yb);
+				_lcd_setPosition(p, xl > xr ? xr : xl, y, xl > xr ? xl : xr, y);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_flashData32(p, p->foreColor, _lcd_absi(xl - xr));
 			}
-		}
-		
-		k2 = (float)(maxy - midy) / (float)(maxx - midx);
-		for (uint16_t i = midy; i <= maxy - midy; i++) {
-			xs = (i - miny) / k1 + minx;
-			xe = (i - midy) / k2 + midx;
-			if (xe < xs) { tmp = xe; xe = xs; xs = tmp; }
-			_lcd_setPosition(p, xs, i, xe, i);
-			_lcd_writeCommand(p, LCD_MEMWR);
-			for (uint16_t j = 0; j <= xe - xs; j++) {
-				_lcd_writeData16(p, p->foreColor);
+			if (y == ya) { xe = xb; ye = yb; }
+			else if (y == yb) { xe = xa; ye = ya; }
+			for (; y != ye; y++) {
+				xl = _lcd_line_func('y', y, xs, ys, xe, ye);
+				xr = _lcd_line_func('y', y, xa, ya, xb, yb);
+				_lcd_setPosition(p, xl > xr ? xr : xl, y, xl > xr ? xl : xr, y);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_flashData32(p, p->foreColor, _lcd_absi(xl - xr));
+			}
+		} else {
+			int x = xs; float yl, yr;
+			for (; x != xa && x != xb; x++) {
+				yl = _lcd_line_func('x', x, xs, ys, xa, ya);
+				yr = _lcd_line_func('x', x, xs, ys, xb, yb);
+				_lcd_setPosition(p, x, yl > yr ? yr : yl, x, yl > yr ? yl : yr);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_flashData32(p, p->foreColor, _lcd_absi(yl - yr));
+			}
+			if (x == xa) { xe = xb; ye = yb; }
+			else if (x == xb) { xe = xa; ye = ya; }
+			for (; x != xe; x++) {
+				yl = _lcd_line_func('x', x, xs, ys, xe, ye);
+				yr = _lcd_line_func('x', x, xa, ya, xb, yb);
+				_lcd_setPosition(p, x, yl > yr ? yr : yl, x, yl > yr ? yl : yr);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_flashData32(p, p->foreColor, _lcd_absi(yl - yr));
 			}
 		}
 	} else {
@@ -296,8 +378,10 @@ void _lcd_rect(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint
 	if (fill) {
 		_lcd_setPosition(p, x1, y1, x2, y2);
 		_lcd_writeCommand(p, LCD_MEMWR);
-		_lcd_flashData16(p, p->foreColor, 
-		(_lcd_abs((char)x2 - (char)x1) + 1) * (_lcd_abs((char)y2 - (char)y1) + 1));
+		_lcd_flashData32(
+			p, p->foreColor,
+			(_lcd_absi((int) x2 - (int) x1) + 1) * (_lcd_absi((int) y2 - (int) y1) + 1)
+		);
 	} else {
 		_lcd_line(p, x1, y1, x2, y1);
 		_lcd_line(p, x2, y1, x2, y2);
@@ -306,52 +390,38 @@ void _lcd_rect(pLCD* p, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint
 	}
 }
 
-void _lcd_bitmap(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* data) {
+void _lcd_bitmap(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t* data) {
 	_lcd_setPosition(p, x, y, x + w - 1, y + h - 1);
 	_lcd_writeCommand(p, LCD_MEMWR);
-	uint32_t c = 0;
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			_lcd_writeData16(p, data[c]);
-			c += 1;
+	_lcd_writeData32s(p, data, w * h);
+}
+
+void _lcd_bitmapc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t* data) {
+	_lcd_bitmap(p, x - w / 2, y - h / 2, w, h, data);
+}
+
+void _lcd_bitmapt(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, const unsigned char* data) {
+	uint32_t c = 0; uint32_t colort = trans & 0xFFFFFF, color = 0;
+	for (uint16_t j = 0; j < h; j++) {
+		for (uint16_t i = 0; i < w; i++) {
+			color = data[c + 2] << 16;
+			color |= data[c + 1] << 8;
+			color |= data[c];
+			if (color != colort) {
+				_lcd_setPosition(p, x + i, y + j, x + i, y + j);
+				_lcd_writeCommand(p, LCD_MEMWR);
+				_lcd_writeData32(p, color);
+			}
+			c += 3;
+		#ifdef LCD_IS_EMU
+			if (((c / 3) % 16) == 0) processEvent();
+		#endif
 		}
 	}
 }
 
-void _lcd_bitmapc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* data) {
-	_lcd_setPosition(p, x - w / 2, y - h / 2, x + w / 2 - 1, y + h / 2 - 1);
-	_lcd_writeCommand(p, LCD_MEMWR);
-	uint32_t c = 0;
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			_lcd_writeData16(p, data[c]);
-			c += 1;
-		}
-	}
-}
-
-void _lcd_bitmapt(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, uint16_t* data) {
-	_lcd_setPosition(p, x, y, x + w - 1, y + h - 1);
-	_lcd_writeCommand(p, LCD_MEMWR);
-	uint32_t c = 0; uint16_t colort = _color_conv(trans);
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			if (data[c] != colort) _lcd_writeData16(p, data[c]);
-			c += 1;
-		}
-	}
-}
-
-void _lcd_bitmaptc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, uint16_t* data) {
-	_lcd_setPosition(p, x - w / 2, y - h / 2, x + w / 2 - 1, y + h / 2 - 1);
-	_lcd_writeCommand(p, LCD_MEMWR);
-	uint32_t c = 0; uint16_t colort = _color_conv(trans);
-	for (uint16_t i = 0; i < w; i++) {
-		for (uint16_t j = 0; j < h; j++) {
-			if (data[c] != colort) _lcd_writeData16(p, data[c]);
-			c += 1;
-		}
-	}
+void _lcd_bitmaptc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t trans, const unsigned char* data) {
+	_lcd_bitmapt(p, x - w / 2, y - h / 2, w, h, trans, data);
 }
 
 void _lcd_bitmaps(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data) {
@@ -368,7 +438,7 @@ void _lcd_bitmaps(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const
 			}
 			_lcd_setPosition(p, x + n, y + m, x + n + 7, y + m + 7);
 			_lcd_writeCommand(p, LCD_MEMWR);
-			_lcd_writeData16s(p, _buf, 64);
+			_lcd_writeData32s(p, _buf, 64);
 		}
 	}
 }
@@ -377,68 +447,153 @@ void _lcd_bitmapsc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, cons
 	_lcd_bitmaps(p, x - w / 2, y - h / 2, w, h, data);
 }
 
+void _lcd_icon(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data) {
+	if (h % 8 != 0) return;
+
+	for (uint16_t i = 0; i < w; i++) {
+		for (uint16_t j = 0; j < h; j++) {
+			if (data[i * h / 8 + j / 8] & (1 << (j % 8)))
+				_buf[j] = p->foreColor;
+			else
+				_buf[j] = p->backColor;
+		}
+		_lcd_setPosition(p, x + i, y, x + i, y + h - 1);
+		_lcd_writeCommand(p, LCD_MEMWR);
+		_lcd_writeData32s(p, _buf, h);
+	}
+}
+
+void _lcd_iconc(pLCD* p, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const unsigned char* data) {
+	_lcd_icon(p, x - w / 2, y - h / 2, w, h, data);
+}
+
 void _lcd_draw(pLCD* p, uint16_t x, uint16_t y, char character) {
 	char c = character - ' ';
-	if (p->Font == Big) {
-		if (x >= p->width) { x = 0; y = y + 16; }
-		for (uint8_t i = 0; i < 8; i++) {
-			for (uint8_t j = 0; j < 8; j++) {
-				if (__FONTS_BIG_[c * 16 + i] & (1 << j))
-					_buf[i + j * 8] = p->foreColor;
-				else 
-					_buf[i + j * 8] = p->backColor;
+	if (p->scale == 1) {
+		if (p->Font == Big) {
+			if (x >= p->width) { x = 0; y = y + 16; }
+			for (uint8_t i = 0; i < 8; i++) {
+				for (uint8_t j = 0; j < 8; j++) {
+					if (getFont(1)[c * 16 + i] & (1 << j))
+						_buf[i + j * 8] = p->foreColor;
+					else
+						_buf[i + j * 8] = p->backColor;
+				}
 			}
-		}
-		for (uint8_t i = 0; i < 8; i++) {
-			for (uint8_t j = 0; j < 8; j++) {
-				if (__FONTS_BIG_[c * 16 + i + 8] & (1 << j))
-					_buf[i + j * 8 + 64] = p->foreColor;
-				else 
-					_buf[i + j * 8 + 64] = p->backColor;
+			for (uint8_t i = 0; i < 8; i++) {
+				for (uint8_t j = 0; j < 8; j++) {
+					if (getFont(1)[c * 16 + i + 8] & (1 << j))
+						_buf[i + j * 8 + 64] = p->foreColor;
+					else
+						_buf[i + j * 8 + 64] = p->backColor;
+				}
 			}
-		}
-		_lcd_setPosition(p, x, y, x + 7, y + 15);
-		_lcd_writeCommand(p, LCD_MEMWR);
-		_lcd_writeData16s(p, _buf, 128);
-	} else {
-		if (x >= p->width) { x = 0; y = y + 8; }
-		for (uint8_t i = 0; i < 6; i++) {
-			for (uint8_t j = 0; j < 8; j++) {
-				if (__FONTS_SMALL_[c][i] & (1 << j))
-					_buf[i + j * 6] = p->foreColor;
-				else 
-					_buf[i + j * 6] = p->backColor;
+			_lcd_setPosition(p, x, y, x + 7, y + 15);
+			_lcd_writeCommand(p, LCD_MEMWR);
+			_lcd_writeData32s(p, _buf, 128);
+		} else {
+			if (x >= p->width) { x = 0; y = y + 8; }
+			for (uint8_t i = 0; i < 6; i++) {
+				for (uint8_t j = 0; j < 8; j++) {
+					if (getFont(0)[c * 6 + i] & (1 << j))
+						_buf[i + j * 6] = p->foreColor;
+					else
+						_buf[i + j * 6] = p->backColor;
+				}
 			}
+			_lcd_setPosition(p, x, y, x + 5, y + 7);
+			_lcd_writeCommand(p, LCD_MEMWR);
+			_lcd_writeData32s(p, _buf, 48);
 		}
-		_lcd_setPosition(p, x, y, x + 5, y + 7);
-		_lcd_writeCommand(p, LCD_MEMWR);
-		_lcd_writeData16s(p, _buf, 48);
+	} else if (p->scale == 2) {
+		if (p->Font == Big) {
+			if (x >= p->width) { x = 0; y = y + 32; }
+			for (uint8_t i = 0; i < 8; i++) {
+				for (uint8_t j = 0; j < 8; j++) {
+					if (getFont(1)[c * 16 + i] & (1 << j)) {
+						_buf[i * 2 + j * 2 * 16] = p->foreColor;
+						_buf[i * 2 + 1 + j * 2 * 16] = p->foreColor;
+						_buf[i * 2 + (j * 2 + 1) * 16] = p->foreColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 16] = p->foreColor;
+					} else {
+						_buf[i * 2 + j * 2 * 16] = p->backColor;
+						_buf[i * 2 + 1 + j * 2 * 16] = p->backColor;
+						_buf[i * 2 + (j * 2 + 1) * 16] = p->backColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 16] = p->backColor;
+					}
+				}
+			}
+			for (uint8_t i = 0; i < 8; i++) {
+				for (uint8_t j = 0; j < 8; j++) {
+					if (getFont(1)[c * 16 + i + 8] & (1 << j)) {
+						_buf[i * 2 + j * 2 * 16 + 256] = p->foreColor;
+						_buf[i * 2 + 1 + j * 2 * 16 + 256] = p->foreColor;
+						_buf[i * 2 + (j * 2 + 1) * 16 + 256] = p->foreColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 16 + 256] = p->foreColor;
+					} else {
+						_buf[i * 2 + j * 2 * 16 + 256] = p->backColor;
+						_buf[i * 2 + 1 + j * 2 * 16 + 256] = p->backColor;
+						_buf[i * 2 + (j * 2 + 1) * 16 + 256] = p->backColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 16 + 256] = p->backColor;
+					}
+				}
+			}
+			_lcd_setPosition(p, x, y, x + 15, y + 31);
+			_lcd_writeCommand(p, LCD_MEMWR);
+			_lcd_writeData32s(p, _buf, 512);
+		} else {
+			if (x >= p->width) { x = 0; y = y + 16; }
+			for (uint8_t i = 0; i < 6; i++) {
+				for (uint8_t j = 0; j < 8; j++) {
+					if (getFont(0)[c * 6 + i] & (1 << j)) {
+						_buf[i * 2 + j * 2 * 12] = p->foreColor;
+						_buf[i * 2 + 1 + j * 2 * 12] = p->foreColor;
+						_buf[i * 2 + (j * 2 + 1) * 12] = p->foreColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 12] = p->foreColor;
+					} else {
+						_buf[i * 2 + j * 2 * 12] = p->backColor;
+						_buf[i * 2 + 1 + j * 2 * 12] = p->backColor;
+						_buf[i * 2 + (j * 2 + 1) * 12] = p->backColor;
+						_buf[i * 2 + 1 + (j * 2 + 1) * 12] = p->backColor;
+					}
+				}
+			}
+			_lcd_setPosition(p, x, y, x + 11, y + 15);
+			_lcd_writeCommand(p, LCD_MEMWR);
+			_lcd_writeData32s(p, _buf, 192);
+		}
 	}
 }
 
 void _lcd_scroll(pLCD* p, uint16_t pos) {
 	_lcd_setPosition(p, 0, 0, p->width - 1, p->height - 1);
 	_lcd_writeCommand(p, LCD_MEMWR);
-	_lcd_flashData16(p, p->backColor, p->width * p->height);
-	if (pos > 60) pos = 60;
+	_lcd_flashData32(p, p->backColor, p->width * p->height);
+	if (pos > IOBUF_HEIGHT) pos = IOBUF_HEIGHT;
 	if (p->Font == Big) {
-		for (uint8_t i = 0; i < p->height / 16 - pos; i++) {
+		for (uint16_t i = 0; i < p->height / 16 / p->scale - pos; i++) {
 			memcpy(p->buffer[i], p->buffer[i + pos], IOBUF_WIDTH);
-			for (uint8_t j = 0; p->buffer[i][j] != '\0'; j++) {
+			for (uint16_t j = 0; p->buffer[i][j] != '\0'; j++) {
 				if (j >= IOBUF_WIDTH) break;
-				_lcd_draw(p, j * 8, i * 16, p->buffer[i][j]);
+				_lcd_draw(p, j * 8 * p->scale, i * 16 * p->scale, p->buffer[i][j]);
 			}
+		#ifdef LCD_IS_EMU
+			processEvent();
+		#endif
 		}
-		memset(p->buffer[p->height / 16 - pos], 0, IOBUF_WIDTH * pos);
+		memset(p->buffer[p->height / 16 / p->scale - pos], 0, IOBUF_WIDTH * pos);
 	} else {
-		for (uint8_t i = 0; i < p->height / 8 - pos; i++) {
+		for (uint16_t i = 0; i < p->height / 8 / p->scale - pos; i++) {
 			memcpy(p->buffer[i], p->buffer[i + pos], IOBUF_WIDTH);
-			for (uint8_t j = 0; p->buffer[i][j] != '\0'; j++) {
+			for (uint16_t j = 0; p->buffer[i][j] != '\0'; j++) {
 				if (j >= IOBUF_WIDTH) break;
-				_lcd_draw(p, j * 6, i * 8, p->buffer[i][j]);
+				_lcd_draw(p, j * 6 * p->scale, i * 8 * p->scale, p->buffer[i][j]);
 			}
+		#ifdef LCD_IS_EMU
+			processEvent();
+		#endif
 		}
-		memset(p->buffer[p->height / 8 - pos], 0, IOBUF_WIDTH * pos);
+		memset(p->buffer[p->height / 8 / p->scale - pos], 0, IOBUF_WIDTH * pos);
 	}
 }
 
@@ -446,70 +601,70 @@ void _lcd_printa_(pLCD* p, char* string) {
 	int i = 0;
 	if (p->Font == Big) {
 		while (string[i] != '\0') {
-			if (p->ptrY > p->height - 16) {
+			if (p->ptrY > p->height - 16 * p->scale) {
 				p->ptrX = 0;
-				p->ptrY = p->height - 16;
+				p->ptrY = p->height - 16 * p->scale;
 				_lcd_scroll(p, 1);
 			}
 			if (string[i] == '\n') {
 				i++;
 				p->ptrX = 0;
-				p->ptrY += 16;
+				p->ptrY += 16 * p->scale;
 				continue;
 			}
 			if (string[i] == 0x08) {
 				i++;
-				if (p->ptrX >= 8) p->ptrX -= 8;
+				if (p->ptrX >= 8 * p->scale) p->ptrX -= 8 * p->scale;
 				else {
-					p->ptrX = p->width - 8;
-					p->ptrY -= 16;
+					p->ptrX = p->width - 8 * p->scale;
+					p->ptrY -= 16 * p->scale;
 				}
 				_lcd_draw(p, p->ptrX, p->ptrY, ' ');
 				continue;
 			}
 			_lcd_draw(p, p->ptrX, p->ptrY, string[i]);
-			p->buffer[p->ptrY / 16][p->ptrX / 8] = string[i];
-			p->ptrX += 8;
-			if (p->ptrX > p->width - 8) {
+			p->buffer[p->ptrY / 16 / p->scale][p->ptrX / 8 / p->scale] = string[i];
+			p->ptrX += 8 * p->scale;
+			if (p->ptrX > p->width - 8 * p->scale) {
 				p->ptrX = 0;
-				p->ptrY += 16;
+				p->ptrY += 16 * p->scale;
 			}
 			i++;
 		}
-		if (string[i] == '\0') p->buffer[p->ptrY / 16][p->ptrX / 8] = string[i];
+		if (string[i] == '\0') p->buffer[p->ptrY / 16 / p->scale][p->ptrX / 8 / p->scale] = string[i];
 	} else {
 		while (string[i] != '\0') {
-			if (p->ptrY > p->height - 8) {
+			if (p->ptrY > p->height - 8 * p->scale) {
 				p->ptrX = 0;
-				p->ptrY = p->height - 8;
+				p->ptrY = p->height - 8 * p->scale;
 				_lcd_scroll(p, 1);
 			}
 			if (string[i] == '\n') {
 				i++;
 				p->ptrX = 0;
-				p->ptrY += 8;
+				p->ptrY += 8 * p->scale;
 				continue;
 			}
 			if (string[i] == 0x08) {
 				i++;
-				if (p->ptrX >= 6) p->ptrX -= 6;
+				if (p->ptrX >= 6 * p->scale) p->ptrX -= 6 * p->scale;
 				else {
-					p->ptrX = p->width - 6;
-					p->ptrY -= 8;
+					p->ptrX = p->width - 6 * p->scale;
+					p->ptrY -= 8 * p->scale;
 				}
 				_lcd_draw(p, p->ptrX, p->ptrY, ' ');
 				continue;
 			}
 			_lcd_draw(p, p->ptrX, p->ptrY, string[i]);
-			p->buffer[p->ptrY / 8][p->ptrX / 6] = string[i];
-			p->ptrX += 6;
-			if (p->ptrX >= p->width - 6) {
+			p->buffer[p->ptrY / 8 / p->scale][p->ptrX / 6 / p->scale] = string[i];
+			p->ptrX += 6 * p->scale;
+			if (p->ptrX >= p->width - 6 * p->scale) {
 				p->ptrX = 0;
-				p->ptrY += 8;
+				p->ptrY += 8 * p->scale;
 			}
 			i++;
 		}
-		if (string[i] == '\0') p->buffer[p->ptrY / 8][p->ptrX / 6] = string[i];
+		if (string[i] == '\0') p->buffer[p->ptrY / 8 / p->scale][p->ptrX / 6 / p->scale] = string[i];
 	}
 }
 
@@ -517,7 +672,7 @@ void _lcd_print(pLCD* p, uint16_t x, uint16_t y, char* string) {
 	int i = 0;
 	if (p->Font == Big) {
 		while (string[i] != '\0') {
-			if (y > p->height - 16) {
+			if (y > p->height - 16 * p->scale) {
 				x = 0;
 				y = 0;
 				_lcd_clear(p);
@@ -525,30 +680,30 @@ void _lcd_print(pLCD* p, uint16_t x, uint16_t y, char* string) {
 			if (string[i] == '\n') {
 				i++;
 				x = 0;
-				y += 16;
+				y += 16 * p->scale;
 				continue;
 			}
 			if (string[i] == 0x08) {
 				i++;
-				if (x >= 8) x -= 8;
+				if (x >= 8 * p->scale) x -= 8 * p->scale;
 				else {
-					x = p->width - 8;
-					y -= 16;
+					x = p->width - 8 * p->scale;
+					y -= 16 * p->scale;
 				}
 				_lcd_draw(p, x, y, ' ');
 				continue;
 			}
 			_lcd_draw(p, x, y, string[i]);
-			x += 8;
-			if (x > p->width - 8) {
+			x += 8 * p->scale;
+			if (x > p->width - 8 * p->scale) {
 				x = 0;
-				y += 16;
+				y += 16 * p->scale;
 			}
 			i++;
 		}
 	} else {
 		while (string[i] != '\0') {
-			if (y > p->height - 8) {
+			if (y > p->height - 8 * p->scale) {
 				x = 0;
 				y = 0;
 				_lcd_clear(p);
@@ -556,24 +711,24 @@ void _lcd_print(pLCD* p, uint16_t x, uint16_t y, char* string) {
 			if (string[i] == '\n') {
 				i++;
 				x = 0;
-				y += 8;
+				y += 8 * p->scale;
 				continue;
 			}
 			if (string[i] == 0x08) {
 				i++;
-				if (x >= 6) x -= 6;
+				if (x >= 6 * p->scale) x -= 6 * p->scale;
 				else {
-					x = p->width - 6;
-					y -= 8;
+					x = p->width - 6 * p->scale;
+					y -= 8 * p->scale;
 				}
 				_lcd_draw(p, x, y, ' ');
 				continue;
 			}
 			_lcd_draw(p, x, y, string[i]);
-			x += 6;
-			if (x >= p->width - 6) {
+			x += 6 * p->scale;
+			if (x >= p->width - 6 * p->scale) {
 				x = 0;
-				y += 8;
+				y += 8 * p->scale;
 			}
 			i++;
 		}
@@ -581,7 +736,7 @@ void _lcd_print(pLCD* p, uint16_t x, uint16_t y, char* string) {
 }
 
 int _lcd_printf(pLCD* p, uint16_t x, uint16_t y, const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF_SIZE);
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);
@@ -592,19 +747,32 @@ int _lcd_printf(pLCD* p, uint16_t x, uint16_t y, const char* format, ...) {
 }
 
 int _lcd_printfc(pLCD* p, uint16_t y, const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF_SIZE);
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);
 	va_end(args);
-	uint8_t x = (p->width - strlen(iobuf) * ((p->Font == Big) ? 8 : 6)) / 2;
+	uint16_t x = (p->width - strlen(iobuf) * (((p->Font == Big) ? 8 : 6 ) * p->scale)) / 2;
+	_lcd_print(p, x, y, iobuf);
+	free(iobuf);
+	return result;
+}
+
+int _lcd_printfcp(pLCD* p, uint16_t x, uint16_t y, const char* format, ...) {
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
+	va_list args;
+	va_start(args, format);
+	int result = vsprintf(iobuf, format, args);
+	va_end(args);
+	x = x - (strlen(iobuf) * (((p->Font == Big) ? 8 : 6 ) * p->scale)) / 2;
+	y = y - (((p->Font == Big) ? 16 : 8) * p->scale);
 	_lcd_print(p, x, y, iobuf);
 	free(iobuf);
 	return result;
 }
 
 int _lcd_printfa(pLCD* p, const char* format, ...) {
-	char* iobuf = malloc(sizeof(char) * IOBUF_SIZE);
+	char* iobuf = (char*) malloc(sizeof(char) * IOBUF_SIZE);
 	va_list args;
 	va_start(args, format);
 	int result = vsprintf(iobuf, format, args);
@@ -614,9 +782,9 @@ int _lcd_printfa(pLCD* p, const char* format, ...) {
 	return result;
 }
 
-LCD* LCDInit(pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST,
-			 pIO data[]) {
-	pLCD* p = malloc(sizeof(pLCD));
+LCD* LCDInit(pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST, pIO data[]) {
+	pLCD* p = (pLCD*) malloc(sizeof(pLCD));
+
 	_io_cpy(&p->rd, RD);
 	_io_cpy(&p->wr, WR);
 	_io_cpy(&p->rs, RS);
@@ -630,18 +798,19 @@ LCD* LCDInit(pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST,
 	p->width = 320;
 	p->height = 480;
 	p->Font = Small;
+	p->scale = 1;
 	p->backColor = 0x0000;
 	p->foreColor = 0xFFFF;
 	p->rotate = LCD_PORTRAIT;
 	p->ptrX = p->ptrY = 0;
 	memset(p->buffer, 0, IOBUF_WIDTH * IOBUF_HEIGHT);
 			
-	LCD* c = malloc(sizeof(LCD));
+	LCD* c = (LCD*) malloc(sizeof(LCD));
 	c->p = p;
 	#ifdef LCD_USE_PRIVATE_FUN
 	c->writeCommand = &_lcd_writeCommand;
 	c->writeData = &_lcd_writeData;
-	c->writeData16 = &_lcd_writeData16;
+	c->writeData32 = &_lcd_writeData32;
 	c->setPosition = &_lcd_setPosition;
 	#endif
 	c->init = &_lcd_init;
@@ -649,6 +818,7 @@ LCD* LCDInit(pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST,
 	c->colorb = &_lcd_back_color;
 	c->colorf = &_lcd_fore_color;
 	c->font = &_lcd_font;
+	c->scale = &_lcd_scale;
 	c->clear = &_lcd_clear;
 	c->scroll = *_lcd_scroll;
 	c->rotate = &_lcd_rotate;
@@ -662,10 +832,13 @@ LCD* LCDInit(pIO* RD, pIO* WR, pIO* RS, pIO* CS, pIO* RST,
 	c->bitmaptc = &_lcd_bitmaptc;
 	c->bitmaps = &_lcd_bitmaps;
 	c->bitmapsc = &_lcd_bitmapsc;
+	c->icon = &_lcd_icon;
+	c->iconc = &_lcd_iconc;
 	c->draw = &_lcd_draw;
 	c->print = &_lcd_print;
 	c->printf = &_lcd_printf;
 	c->printfc = &_lcd_printfc;
+	c->printfcp = &_lcd_printfcp;
 	c->printfa = &_lcd_printfa;
 	
 	return c;
