@@ -24,10 +24,10 @@ char* strlwr(char* s) {
 }
 
 uint8_t filopen(FILTYPE* file, char* name, uint8_t mode) {
-	FRESULT res;
-	if (mode == FIL_READ) {
+	FRESULT res = FR_OK;
+	if (mode & FIL_READ) {
 		res = f_open(file, name, FA_READ);
-	} else if (mode == FIL_WRITE) {
+	} else if (mode & FIL_WRITE) {
 		res = f_open(file, name, FA_WRITE);
 	}
 	return res == FR_OK ? FIL_OK : FIL_ERR;
@@ -38,11 +38,11 @@ void filclose(FILTYPE* file) {
 }
 
 void filread(FILTYPE* file, uint8_t* buf, uint32_t len, uint32_t* ptr) {
-	f_read(file, buf, len, ptr);
+	f_read(file, buf, len, (UINT*)ptr);
 }
 
 void filwrite(FILTYPE* file, uint8_t* buf, uint32_t len) {
-	uint32_t cnt = 0;
+	UINT cnt = 0;
 	f_write(file, buf, len, &cnt);
 }
 
@@ -139,19 +139,7 @@ char* read(char* path) {
 		print("At file: %s\n\n", path);
 		return OK;
 	}
-	int length = 0; char tmp[2];
-	while (fileof(&f) != FIL_OK) {
-		filgets(&f, tmp, 2);
-		if (tmp[0] != '\r')
-			length += 1;
-	}
-	filclose(&f);
-	res = filopen(&f, path, FIL_READ);
-	if (res != FIL_OK) {
-		print("File open failed.\n");
-		print("At file: %s\n\n", path);
-		return OK;
-	}
+	int length = filsiz(&f); char tmp[2];
 	char* data = (char*) malloc(sizeof(char) * (length + 1));
 	length = 0;
 	while (fileof(&f) != FIL_OK) {

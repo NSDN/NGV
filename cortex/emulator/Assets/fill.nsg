@@ -1,7 +1,7 @@
 cls
 
-var width = 854
-var height = 480
+var width = 128
+var height = 64
 
 fore 0xFF9800
 
@@ -18,8 +18,6 @@ inc r1
 cmp r1, height
 jnz [HEAD]
 
-fore 0xFFFFFF
-back 0xFF9800
 mov r0, 64
 mov r1, 480
 sub r1, 64

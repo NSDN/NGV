@@ -2,7 +2,7 @@
 #define __LOGO_H_
 
 
-unsigned char* getLogo();
+const unsigned char* getLogo();
 
 
 #endif

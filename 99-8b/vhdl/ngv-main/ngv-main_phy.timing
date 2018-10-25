@@ -1,7 +1,7 @@
 =========================================================================================================
-Auto created by the td v4.1.389
+Auto created by the td v4.2.511
 @Copy Right: Shanghai Anlogic Infotech, 2011 - 2021.
-Tue Oct 16 22:12:30 2018
+Tue Oct 23 12:00:03 2018
 =========================================================================================================
 
 
@@ -16,7 +16,7 @@ Timing constraint:        clock: core_pll/pll_inst.refclk
 Clock = core_pll/pll_inst.refclk, period 41.667ns, rising at 0ns, falling at 20.833ns
 
 0 endpoints analyzed totally, and 0 paths analyzed
-0 errors detected : 0 setup errors (TNS = 0), 0 hold errors (TNS = 0)
+0 errors detected : 0 setup errors (TNS = 0.000), 0 hold errors (TNS = 0.000)
 ---------------------------------------------------------------------------------------------------------
 
 Hold checks:
@@ -26,636 +26,622 @@ Hold checks:
 Timing constraint:        clock: core_pll/pll_inst.clkc[0]                                
 Clock = core_pll/pll_inst.clkc[0], period 5.952ns, rising at 0ns, falling at 2.976ns
 
-68 endpoints analyzed totally, and 3170 paths analyzed
-0 errors detected : 0 setup errors (TNS = 0), 0 hold errors (TNS = 0)
-Minimum period is 4.134ns
+68 endpoints analyzed totally, and 3200 paths analyzed
+0 errors detected : 0 setup errors (TNS = 0.000), 0 hold errors (TNS = 0.000)
+Minimum period is 4.26ns
 ---------------------------------------------------------------------------------------------------------
 
-Paths for end point bi_blink/reg0_b17|bi_blink/reg0_b3.F (50 paths)
+Paths for end point bi_blink/reg0_b17|bi_blink/reg0_b3.F (51 paths)
 ---------------------------------------------------------------------------------------------------------
- Slack (setup check)      1.818 ns                                                        
- StartPoint:              bi_blink/reg0_b2|bi_blink/reg0_b23.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- Clock group:             core_pll/pll_inst.refclk                                        
-
- Point                                                       Type                     Incr
----------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b2|bi_blink/reg0_b23.clk                      clock                   1.087
- bi_blink/reg0_b2|bi_blink/reg0_b23.q[1]                     cell                    0.146
- bi_blink/lt0/u2|bi_blink/lt0/u1.a[1]                        net (fanout = 2)        0.695
- bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.570
- bi_blink/lt0/u4|bi_blink/lt0/u3.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
- bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
- bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b17|bi_blink/reg0_b3.b[1]                     net (fanout = 33)       1.211
- Arrival time                                                                        4.956 (3 lvl)
-                                                                                          (62% logic, 38% net)
-
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
----------------------------------------------------------------------------------------------------------
- Slack                                                                            1.818 ns
-
----------------------------------------------------------------------------------------------------------
-
- Slack (setup check)      1.860 ns                                                        
+ Slack (setup check)      1.692 ns                                                        
  StartPoint:              bi_blink/reg0_b1|bi_blink/reg0_b27.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
  bi_blink/reg0_b1|bi_blink/reg0_b27.clk                      clock                   1.087
  bi_blink/reg0_b1|bi_blink/reg0_b27.q[1]                     cell                    0.146
- bi_blink/lt0/u2|bi_blink/lt0/u1.a[0]                        net (fanout = 2)        0.581
+ bi_blink/lt0/u2|bi_blink/lt0/u1.a[0] (bi_blink/cnt[1])      net (fanout = 2)        0.977 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
  bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.642
- bi_blink/lt0/u4|bi_blink/lt0/u3.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fci (bi_blink/lt0/c3)       net (fanout = 1)        0.000               
  bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
  bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
  bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
  bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
  bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
  bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
  bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
  bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
  bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
  bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
  bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
  bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
  bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
  bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
  bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b17|bi_blink/reg0_b3.b[1]                     net (fanout = 33)       1.211
- Arrival time                                                                        4.914 (3 lvl)
-                                                                                          (64% logic, 36% net)
+ bi_blink/reg0_b17|bi_blink/reg0_b3.b[1] (bi_blink/n1)       net (fanout = 33)       1.054 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        5.153 (3 lvl)
+                                                                                          (61% logic, 39% net)
 
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.845
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.860 ns
+ Slack                                                                            1.692 ns
 
 ---------------------------------------------------------------------------------------------------------
 
- Slack (setup check)      1.936 ns                                                        
+ Slack (setup check)      1.730 ns                                                        
+ StartPoint:              bi_blink/reg0_b2|bi_blink/reg0_b23.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Clock group:             core_pll/pll_inst.refclk                                        
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ bi_blink/reg0_b2|bi_blink/reg0_b23.clk                      clock                   1.087
+ bi_blink/reg0_b2|bi_blink/reg0_b23.q[1]                     cell                    0.146
+ bi_blink/lt0/u2|bi_blink/lt0/u1.a[1] (bi_blink/cnt[2])      net (fanout = 2)        1.011 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.570
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fci (bi_blink/lt0/c3)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
+ bi_blink/reg0_b17|bi_blink/reg0_b3.b[1] (bi_blink/n1)       net (fanout = 33)       1.054 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        5.115 (3 lvl)
+                                                                                          (60% logic, 40% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.845
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.730 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      2.054 ns                                                        
  StartPoint:              bi_blink/reg0_b17|bi_blink/reg0_b3.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
  bi_blink/reg0_b17|bi_blink/reg0_b3.clk                      clock                   1.087
  bi_blink/reg0_b17|bi_blink/reg0_b3.q[0]                     cell                    0.146
- bi_blink/lt0/u4|bi_blink/lt0/u3.a[0]                        net (fanout = 2)        0.571
+ bi_blink/lt0/u4|bi_blink/lt0/u3.a[0] (bi_blink/cnt[3])      net (fanout = 2)        0.681 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
  bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.642
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
  bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
  bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
  bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
  bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
  bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
  bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
  bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
  bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
  bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
  bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
  bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
  bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
  bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
  bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b17|bi_blink/reg0_b3.b[1]                     net (fanout = 33)       1.211
- Arrival time                                                                        4.838 (3 lvl)
+ bi_blink/reg0_b17|bi_blink/reg0_b3.b[1] (bi_blink/n1)       net (fanout = 33)       1.054 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        4.791 (3 lvl)
                                                                                           (64% logic, 36% net)
 
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.845
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.936 ns
+ Slack                                                                            2.054 ns
 
 ---------------------------------------------------------------------------------------------------------
 
-Paths for end point bi_blink/reg0_b17|bi_blink/reg0_b3.F (36 paths)
+Paths for end point bi_blink/reg0_b17|bi_blink/reg0_b3.F (37 paths)
 ---------------------------------------------------------------------------------------------------------
- Slack (setup check)      1.818 ns                                                        
- StartPoint:              bi_blink/reg0_b2|bi_blink/reg0_b23.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- Clock group:             core_pll/pll_inst.refclk                                        
-
- Point                                                       Type                     Incr
----------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b2|bi_blink/reg0_b23.clk                      clock                   1.087
- bi_blink/reg0_b2|bi_blink/reg0_b23.q[1]                     cell                    0.146
- bi_blink/lt0/u2|bi_blink/lt0/u1.a[1]                        net (fanout = 2)        0.695
- bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.570
- bi_blink/lt0/u4|bi_blink/lt0/u3.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
- bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
- bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b17|bi_blink/reg0_b3.b[0]                     net (fanout = 33)       1.211
- Arrival time                                                                        4.956 (3 lvl)
-                                                                                          (62% logic, 38% net)
-
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
----------------------------------------------------------------------------------------------------------
- Slack                                                                            1.818 ns
-
----------------------------------------------------------------------------------------------------------
-
- Slack (setup check)      1.860 ns                                                        
+ Slack (setup check)      1.692 ns                                                        
  StartPoint:              bi_blink/reg0_b1|bi_blink/reg0_b27.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
  bi_blink/reg0_b1|bi_blink/reg0_b27.clk                      clock                   1.087
  bi_blink/reg0_b1|bi_blink/reg0_b27.q[1]                     cell                    0.146
- bi_blink/lt0/u2|bi_blink/lt0/u1.a[0]                        net (fanout = 2)        0.581
+ bi_blink/lt0/u2|bi_blink/lt0/u1.a[0] (bi_blink/cnt[1])      net (fanout = 2)        0.977 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
  bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.642
- bi_blink/lt0/u4|bi_blink/lt0/u3.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fci (bi_blink/lt0/c3)       net (fanout = 1)        0.000               
  bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
  bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
  bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
  bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
  bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
  bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
  bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
  bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
  bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
  bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
  bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
  bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
  bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
  bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
  bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b17|bi_blink/reg0_b3.b[0]                     net (fanout = 33)       1.211
- Arrival time                                                                        4.914 (3 lvl)
-                                                                                          (64% logic, 36% net)
+ bi_blink/reg0_b17|bi_blink/reg0_b3.b[0] (bi_blink/n1)       net (fanout = 33)       1.054 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        5.153 (3 lvl)
+                                                                                          (61% logic, 39% net)
 
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.845
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.860 ns
+ Slack                                                                            1.692 ns
 
 ---------------------------------------------------------------------------------------------------------
 
- Slack (setup check)      1.936 ns                                                        
+ Slack (setup check)      1.730 ns                                                        
+ StartPoint:              bi_blink/reg0_b2|bi_blink/reg0_b23.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Clock group:             core_pll/pll_inst.refclk                                        
+
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ bi_blink/reg0_b2|bi_blink/reg0_b23.clk                      clock                   1.087
+ bi_blink/reg0_b2|bi_blink/reg0_b23.q[1]                     cell                    0.146
+ bi_blink/lt0/u2|bi_blink/lt0/u1.a[1] (bi_blink/cnt[2])      net (fanout = 2)        1.011 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.570
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fci (bi_blink/lt0/c3)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
+ bi_blink/reg0_b17|bi_blink/reg0_b3.b[0] (bi_blink/n1)       net (fanout = 33)       1.054 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        5.115 (3 lvl)
+                                                                                          (60% logic, 40% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.845
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.730 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      2.054 ns                                                        
  StartPoint:              bi_blink/reg0_b17|bi_blink/reg0_b3.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.b[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
  bi_blink/reg0_b17|bi_blink/reg0_b3.clk                      clock                   1.087
  bi_blink/reg0_b17|bi_blink/reg0_b3.q[0]                     cell                    0.146
- bi_blink/lt0/u4|bi_blink/lt0/u3.a[0]                        net (fanout = 2)        0.571
+ bi_blink/lt0/u4|bi_blink/lt0/u3.a[0] (bi_blink/cnt[3])      net (fanout = 2)        0.681 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
  bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.642
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
  bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
  bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
  bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
  bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
  bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
  bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
  bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
  bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
  bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
  bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
  bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
  bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
  bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
  bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b17|bi_blink/reg0_b3.b[0]                     net (fanout = 33)       1.211
- Arrival time                                                                        4.838 (3 lvl)
+ bi_blink/reg0_b17|bi_blink/reg0_b3.b[0] (bi_blink/n1)       net (fanout = 33)       1.054 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        4.791 (3 lvl)
                                                                                           (64% logic, 36% net)
 
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.845
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.936 ns
+ Slack                                                                            2.054 ns
 
 ---------------------------------------------------------------------------------------------------------
 
-Paths for end point bi_blink/reg0_b11|bi_blink/reg0_b7.F (40 paths)
+Paths for end point bi_blink/reg0_b16|bi_blink/reg0_b30.F (49 paths)
 ---------------------------------------------------------------------------------------------------------
- Slack (setup check)      1.855 ns                                                        
- StartPoint:              bi_blink/reg0_b2|bi_blink/reg0_b23.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b11|bi_blink/reg0_b7.a[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- Clock group:             core_pll/pll_inst.refclk                                        
-
- Point                                                       Type                     Incr
----------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b2|bi_blink/reg0_b23.clk                      clock                   1.087
- bi_blink/reg0_b2|bi_blink/reg0_b23.q[1]                     cell                    0.146
- bi_blink/lt0/u2|bi_blink/lt0/u1.a[1]                        net (fanout = 2)        0.695
- bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.570
- bi_blink/lt0/u4|bi_blink/lt0/u3.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
- bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
- bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
- bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
- bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b11|bi_blink/reg0_b7.a[0]                     net (fanout = 33)       1.174
- Arrival time                                                                        4.919 (3 lvl)
-                                                                                          (63% logic, 37% net)
-
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
----------------------------------------------------------------------------------------------------------
- Slack                                                                            1.855 ns
-
----------------------------------------------------------------------------------------------------------
-
- Slack (setup check)      1.897 ns                                                        
+ Slack (setup check)      1.707 ns                                                        
  StartPoint:              bi_blink/reg0_b1|bi_blink/reg0_b27.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b11|bi_blink/reg0_b7.a[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b16|bi_blink/reg0_b30.a[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
  bi_blink/reg0_b1|bi_blink/reg0_b27.clk                      clock                   1.087
  bi_blink/reg0_b1|bi_blink/reg0_b27.q[1]                     cell                    0.146
- bi_blink/lt0/u2|bi_blink/lt0/u1.a[0]                        net (fanout = 2)        0.581
+ bi_blink/lt0/u2|bi_blink/lt0/u1.a[0] (bi_blink/cnt[1])      net (fanout = 2)        0.977 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
  bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.642
- bi_blink/lt0/u4|bi_blink/lt0/u3.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fci (bi_blink/lt0/c3)       net (fanout = 1)        0.000               
  bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
  bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
  bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
  bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
  bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
  bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
  bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
  bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
  bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
  bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
  bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
  bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
  bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
  bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
  bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b11|bi_blink/reg0_b7.a[0]                     net (fanout = 33)       1.174
- Arrival time                                                                        4.877 (3 lvl)
-                                                                                          (65% logic, 35% net)
+ bi_blink/reg0_b16|bi_blink/reg0_b30.a[1] (bi_blink/n1)      net (fanout = 33)       1.098 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        5.197 (3 lvl)
+                                                                                          (61% logic, 39% net)
 
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.904
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.897 ns
+ Slack                                                                            1.707 ns
 
 ---------------------------------------------------------------------------------------------------------
 
- Slack (setup check)      1.973 ns                                                        
- StartPoint:              bi_blink/reg0_b17|bi_blink/reg0_b3.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b11|bi_blink/reg0_b7.a[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (setup check)      1.745 ns                                                        
+ StartPoint:              bi_blink/reg0_b2|bi_blink/reg0_b23.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b16|bi_blink/reg0_b30.a[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
+---------------------------------------------------------------------------------------------------------
+ bi_blink/reg0_b2|bi_blink/reg0_b23.clk                      clock                   1.087
+ bi_blink/reg0_b2|bi_blink/reg0_b23.q[1]                     cell                    0.146
+ bi_blink/lt0/u2|bi_blink/lt0/u1.a[1] (bi_blink/cnt[2])      net (fanout = 2)        1.011 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/lt0/u2|bi_blink/lt0/u1.fco                         cell                    0.570
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fci (bi_blink/lt0/c3)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.066
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
+ bi_blink/reg0_b16|bi_blink/reg0_b30.a[1] (bi_blink/n1)      net (fanout = 33)       1.098 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        5.159 (3 lvl)
+                                                                                          (60% logic, 40% net)
+
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.904
+---------------------------------------------------------------------------------------------------------
+ Slack                                                                            1.745 ns
+
+---------------------------------------------------------------------------------------------------------
+
+ Slack (setup check)      2.069 ns                                                        
+ StartPoint:              bi_blink/reg0_b17|bi_blink/reg0_b3.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b16|bi_blink/reg0_b30.a[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Clock group:             core_pll/pll_inst.refclk                                        
+
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
  bi_blink/reg0_b17|bi_blink/reg0_b3.clk                      clock                   1.087
  bi_blink/reg0_b17|bi_blink/reg0_b3.q[0]                     cell                    0.146
- bi_blink/lt0/u4|bi_blink/lt0/u3.a[0]                        net (fanout = 2)        0.571
+ bi_blink/lt0/u4|bi_blink/lt0/u3.a[0] (bi_blink/cnt[3])      net (fanout = 2)        0.681 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
  bi_blink/lt0/u4|bi_blink/lt0/u3.fco                         cell                    0.642
- bi_blink/lt0/u6|bi_blink/lt0/u5.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u6|bi_blink/lt0/u5.fci (bi_blink/lt0/c5)       net (fanout = 1)        0.000               
  bi_blink/lt0/u6|bi_blink/lt0/u5.fco                         cell                    0.066
- bi_blink/lt0/u8|bi_blink/lt0/u7.fci                         net (fanout = 1)        0.000
+ bi_blink/lt0/u8|bi_blink/lt0/u7.fci (bi_blink/lt0/c7)       net (fanout = 1)        0.000               
  bi_blink/lt0/u8|bi_blink/lt0/u7.fco                         cell                    0.066
- bi_blink/lt0/u10|bi_blink/lt0/u9.fci                        net (fanout = 1)        0.000
+ bi_blink/lt0/u10|bi_blink/lt0/u9.fci (bi_blink/lt0/c9)      net (fanout = 1)        0.000               
  bi_blink/lt0/u10|bi_blink/lt0/u9.fco                        cell                    0.066
- bi_blink/lt0/u12|bi_blink/lt0/u11.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u12|bi_blink/lt0/u11.fci (bi_blink/lt0/c11)    net (fanout = 1)        0.000               
  bi_blink/lt0/u12|bi_blink/lt0/u11.fco                       cell                    0.066
- bi_blink/lt0/u14|bi_blink/lt0/u13.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u14|bi_blink/lt0/u13.fci (bi_blink/lt0/c13)    net (fanout = 1)        0.000               
  bi_blink/lt0/u14|bi_blink/lt0/u13.fco                       cell                    0.066
- bi_blink/lt0/u16|bi_blink/lt0/u15.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u16|bi_blink/lt0/u15.fci (bi_blink/lt0/c15)    net (fanout = 1)        0.000               
  bi_blink/lt0/u16|bi_blink/lt0/u15.fco                       cell                    0.066
- bi_blink/lt0/u18|bi_blink/lt0/u17.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u18|bi_blink/lt0/u17.fci (bi_blink/lt0/c17)    net (fanout = 1)        0.000               
  bi_blink/lt0/u18|bi_blink/lt0/u17.fco                       cell                    0.066
- bi_blink/lt0/u20|bi_blink/lt0/u19.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u20|bi_blink/lt0/u19.fci (bi_blink/lt0/c19)    net (fanout = 1)        0.000               
  bi_blink/lt0/u20|bi_blink/lt0/u19.fco                       cell                    0.066
- bi_blink/lt0/u22|bi_blink/lt0/u21.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u22|bi_blink/lt0/u21.fci (bi_blink/lt0/c21)    net (fanout = 1)        0.000               
  bi_blink/lt0/u22|bi_blink/lt0/u21.fco                       cell                    0.066
- bi_blink/lt0/u24|bi_blink/lt0/u23.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u24|bi_blink/lt0/u23.fci (bi_blink/lt0/c23)    net (fanout = 1)        0.000               
  bi_blink/lt0/u24|bi_blink/lt0/u23.fco                       cell                    0.066
- bi_blink/lt0/u26|bi_blink/lt0/u25.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u26|bi_blink/lt0/u25.fci (bi_blink/lt0/c25)    net (fanout = 1)        0.000               
  bi_blink/lt0/u26|bi_blink/lt0/u25.fco                       cell                    0.066
- bi_blink/lt0/u28|bi_blink/lt0/u27.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u28|bi_blink/lt0/u27.fci (bi_blink/lt0/c27)    net (fanout = 1)        0.000               
  bi_blink/lt0/u28|bi_blink/lt0/u27.fco                       cell                    0.066
- bi_blink/lt0/u30|bi_blink/lt0/u29.fci                       net (fanout = 1)        0.000
+ bi_blink/lt0/u30|bi_blink/lt0/u29.fci (bi_blink/lt0/c29)    net (fanout = 1)        0.000               
  bi_blink/lt0/u30|bi_blink/lt0/u29.fco                       cell                    0.066
- bi_blink/lt0/ucout|bi_blink/lt0/u31.fci                     net (fanout = 1)        0.000
+ bi_blink/lt0/ucout|bi_blink/lt0/u31.fci (bi_blink/lt0/c31)  net (fanout = 1)        0.000               
  bi_blink/lt0/ucout|bi_blink/lt0/u31.f[1]                    cell                    0.323
- bi_blink/reg0_b11|bi_blink/reg0_b7.a[0]                     net (fanout = 33)       1.174
- Arrival time                                                                        4.801 (3 lvl)
+ bi_blink/reg0_b16|bi_blink/reg0_b30.a[1] (bi_blink/n1)      net (fanout = 33)       1.098 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        4.835 (3 lvl)
                                                                                           (64% logic, 36% net)
 
- Required time (t_capture_clk - setup_time - uncertainty_s)                          6.774
+ Required time (t_capture_clk - setup_time - uncertainty_s + crp)                    6.904
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.973 ns
+ Slack                                                                            2.069 ns
 
 ---------------------------------------------------------------------------------------------------------
 
 Hold checks:
 ---------------------------------------------------------------------------------------------------------
-Paths for end point _al_u109|bi_blink/state_reg.F (1 paths)
+Paths for end point bi_blink/state_reg.F (1 paths)
 ---------------------------------------------------------------------------------------------------------
- Slack (hold check)       0.497 ns                                                        
- StartPoint:              _al_u109|bi_blink/state_reg.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                _al_u109|bi_blink/state_reg.a[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (hold check)       0.646 ns                                                        
+ StartPoint:              bi_blink/state_reg.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/state_reg.a[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
- _al_u109|bi_blink/state_reg.clk                             clock                   0.938
- _al_u109|bi_blink/state_reg.q[0]                            cell                    0.140
- _al_u109|bi_blink/state_reg.a[0]                            net (fanout = 2)        0.580
+ bi_blink/state_reg.clk                                      clock                   0.938
+ bi_blink/state_reg.q[0]                                     cell                    0.140
+ bi_blink/state_reg.a[0] (led_w_pad)                         net (fanout = 2)        0.580 E:/Works/NGV/99-8b/vhdl/ngv-main/ngv_main.v(19)
  Arrival time                                                                        1.658 (1 lvl)
                                                                                           (66% logic, 34% net)
 
- Required time (t_capture_clk + hold_time + uncertainty_h)                           1.161
+ Required time (t_capture_clk + hold_time + uncertainty_h + crp)                     1.012
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            0.497 ns
+ Slack                                                                            0.646 ns
 
 ---------------------------------------------------------------------------------------------------------
 
-Paths for end point bi_blink/reg0_b22|bi_blink/reg0_b24.F (57 paths)
+Paths for end point bi_blink/reg0_b17|bi_blink/reg0_b3.F (37 paths)
 ---------------------------------------------------------------------------------------------------------
- Slack (hold check)       1.086 ns                                                        
- StartPoint:              bi_blink/reg0_b22|bi_blink/reg0_b24.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b22|bi_blink/reg0_b24.d[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (hold check)       0.917 ns                                                        
+ StartPoint:              bi_blink/reg0_b14|bi_blink/reg0_b4.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.c[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b22|bi_blink/reg0_b24.clk                     clock                   0.938
- bi_blink/reg0_b22|bi_blink/reg0_b24.q[0]                    cell                    0.140
- bi_blink/add0/u24|bi_blink/add0/u23.b[1]                    net (fanout = 2)        0.246
- bi_blink/add0/u24|bi_blink/add0/u23.f[1]                    cell                    0.363
- bi_blink/reg0_b22|bi_blink/reg0_b24.d[0]                    net (fanout = 1)        0.560
- Arrival time                                                                        2.247 (2 lvl)
-                                                                                          (65% logic, 35% net)
+ bi_blink/reg0_b14|bi_blink/reg0_b4.clk                      clock                   0.938
+ bi_blink/reg0_b14|bi_blink/reg0_b4.q[0]                     cell                    0.140
+ bi_blink/add0/u3_al_u122.b[0] (bi_blink/cnt[4])             net (fanout = 2)        0.246 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/add0/u3_al_u122.f[0]                               cell                    0.000
+ bi_blink/reg0_b17|bi_blink/reg0_b3.c[0] (bi_blink/n2[3])    net (fanout = 1)        0.683 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        2.007 (2 lvl)
+                                                                                          (54% logic, 46% net)
 
- Required time (t_capture_clk + hold_time + uncertainty_h)                           1.161
+ Required time (t_capture_clk + hold_time + uncertainty_h + crp)                     1.090
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.086 ns
+ Slack                                                                            0.917 ns
 
 ---------------------------------------------------------------------------------------------------------
 
- Slack (hold check)       1.448 ns                                                        
- StartPoint:              bi_blink/reg0_b20|bi_blink/reg0_b26.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b22|bi_blink/reg0_b24.d[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (hold check)       1.633 ns                                                        
+ StartPoint:              bi_blink/reg0_b17|bi_blink/reg0_b3.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.c[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b20|bi_blink/reg0_b26.clk                     clock                   0.938
- bi_blink/reg0_b20|bi_blink/reg0_b26.q[1]                    cell                    0.140
- bi_blink/add0/u20|bi_blink/add0/u19.b[1]                    net (fanout = 2)        0.246
- bi_blink/add0/u20|bi_blink/add0/u19.fco                     cell                    0.372
- bi_blink/add0/u22|bi_blink/add0/u21.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u22|bi_blink/add0/u21.fco                     cell                    0.063
- bi_blink/add0/u24|bi_blink/add0/u23.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u24|bi_blink/add0/u23.f[1]                    cell                    0.290
- bi_blink/reg0_b22|bi_blink/reg0_b24.d[0]                    net (fanout = 1)        0.560
- Arrival time                                                                        2.609 (3 lvl)
-                                                                                          (70% logic, 30% net)
+ bi_blink/reg0_b17|bi_blink/reg0_b3.clk                      clock                   0.938
+ bi_blink/reg0_b17|bi_blink/reg0_b3.q[0]                     cell                    0.140
+ bi_blink/add0/u3_al_u122.a[0] (bi_blink/cnt[3])             net (fanout = 2)        0.378 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/add0/u3_al_u122.f[0]                               cell                    0.584
+ bi_blink/reg0_b17|bi_blink/reg0_b3.c[0] (bi_blink/n2[3])    net (fanout = 1)        0.683 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        2.723 (2 lvl)
+                                                                                          (62% logic, 38% net)
 
- Required time (t_capture_clk + hold_time + uncertainty_h)                           1.161
+ Required time (t_capture_clk + hold_time + uncertainty_h + crp)                     1.090
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.448 ns
+ Slack                                                                            1.633 ns
 
 ---------------------------------------------------------------------------------------------------------
 
- Slack (hold check)       1.525 ns                                                        
- StartPoint:              bi_blink/reg0_b19|bi_blink/reg0_b28.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b22|bi_blink/reg0_b24.d[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (hold check)       1.981 ns                                                        
+ StartPoint:              bi_blink/reg0_b2|bi_blink/reg0_b23.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b17|bi_blink/reg0_b3.c[0] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b19|bi_blink/reg0_b28.clk                     clock                   0.938
- bi_blink/reg0_b19|bi_blink/reg0_b28.q[1]                    cell                    0.140
- bi_blink/add0/u20|bi_blink/add0/u19.b[0]                    net (fanout = 2)        0.246
- bi_blink/add0/u20|bi_blink/add0/u19.fco                     cell                    0.449
- bi_blink/add0/u22|bi_blink/add0/u21.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u22|bi_blink/add0/u21.fco                     cell                    0.063
- bi_blink/add0/u24|bi_blink/add0/u23.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u24|bi_blink/add0/u23.f[1]                    cell                    0.290
- bi_blink/reg0_b22|bi_blink/reg0_b24.d[0]                    net (fanout = 1)        0.560
- Arrival time                                                                        2.686 (3 lvl)
-                                                                                          (70% logic, 30% net)
+ bi_blink/reg0_b2|bi_blink/reg0_b23.clk                      clock                   0.938
+ bi_blink/reg0_b2|bi_blink/reg0_b23.q[1]                     cell                    0.140
+ bi_blink/add0/ucin_al_u121.b[1] (bi_blink/cnt[2])           net (fanout = 2)        0.465 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/add0/ucin_al_u121.fco                              cell                    0.672
+ bi_blink/add0/u3_al_u122.fci (bi_blink/add0/c3)             net (fanout = 1)        0.000               
+ bi_blink/add0/u3_al_u122.f[0]                               cell                    0.173
+ bi_blink/reg0_b17|bi_blink/reg0_b3.c[0] (bi_blink/n2[3])    net (fanout = 1)        0.683 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        3.071 (3 lvl)
+                                                                                          (63% logic, 37% net)
 
- Required time (t_capture_clk + hold_time + uncertainty_h)                           1.161
+ Required time (t_capture_clk + hold_time + uncertainty_h + crp)                     1.090
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.525 ns
+ Slack                                                                            1.981 ns
 
 ---------------------------------------------------------------------------------------------------------
 
-Paths for end point bi_blink/reg0_b18|bi_blink/reg0_b29.F (51 paths)
+Paths for end point bi_blink/reg0_b13|bi_blink/reg0_b5.F (47 paths)
 ---------------------------------------------------------------------------------------------------------
- Slack (hold check)       1.086 ns                                                        
- StartPoint:              bi_blink/reg0_b18|bi_blink/reg0_b29.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b18|bi_blink/reg0_b29.d[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (hold check)       0.981 ns                                                        
+ StartPoint:              bi_blink/reg0_b14|bi_blink/reg0_b4.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b13|bi_blink/reg0_b5.c[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b18|bi_blink/reg0_b29.clk                     clock                   0.938
- bi_blink/reg0_b18|bi_blink/reg0_b29.q[1]                    cell                    0.140
- bi_blink/add0/u18|bi_blink/add0/u17.b[1]                    net (fanout = 2)        0.246
- bi_blink/add0/u18|bi_blink/add0/u17.f[1]                    cell                    0.363
- bi_blink/reg0_b18|bi_blink/reg0_b29.d[1]                    net (fanout = 1)        0.560
- Arrival time                                                                        2.247 (2 lvl)
-                                                                                          (65% logic, 35% net)
+ bi_blink/reg0_b14|bi_blink/reg0_b4.clk                      clock                   0.938
+ bi_blink/reg0_b14|bi_blink/reg0_b4.q[1]                     cell                    0.140
+ bi_blink/add0/u11_al_u124.b[1] (bi_blink/cnt[14])           net (fanout = 2)        0.378 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/add0/u11_al_u124.f[1]                              cell                    0.000
+ bi_blink/reg0_b13|bi_blink/reg0_b5.c[1] (bi_blink/n2[13])   net (fanout = 1)        0.615 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        2.071 (2 lvl)
+                                                                                          (53% logic, 47% net)
 
- Required time (t_capture_clk + hold_time + uncertainty_h)                           1.161
+ Required time (t_capture_clk + hold_time + uncertainty_h + crp)                     1.090
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.086 ns
+ Slack                                                                            0.981 ns
 
 ---------------------------------------------------------------------------------------------------------
 
- Slack (hold check)       1.385 ns                                                        
- StartPoint:              bi_blink/reg0_b16|bi_blink/reg0_b30.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b18|bi_blink/reg0_b29.d[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (hold check)       1.444 ns                                                        
+ StartPoint:              bi_blink/reg0_b13|bi_blink/reg0_b5.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b13|bi_blink/reg0_b5.c[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b16|bi_blink/reg0_b30.clk                     clock                   0.938
- bi_blink/reg0_b16|bi_blink/reg0_b30.q[1]                    cell                    0.140
- bi_blink/add0/u16|bi_blink/add0/u15.b[1]                    net (fanout = 2)        0.246
- bi_blink/add0/u16|bi_blink/add0/u15.fco                     cell                    0.372
- bi_blink/add0/u18|bi_blink/add0/u17.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u18|bi_blink/add0/u17.f[1]                    cell                    0.290
- bi_blink/reg0_b18|bi_blink/reg0_b29.d[1]                    net (fanout = 1)        0.560
- Arrival time                                                                        2.546 (3 lvl)
-                                                                                          (69% logic, 31% net)
+ bi_blink/reg0_b13|bi_blink/reg0_b5.clk                      clock                   0.938
+ bi_blink/reg0_b13|bi_blink/reg0_b5.q[1]                     cell                    0.140
+ bi_blink/add0/u11_al_u124.a[1] (bi_blink/cnt[13])           net (fanout = 2)        0.257 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/add0/u11_al_u124.f[1]                              cell                    0.584
+ bi_blink/reg0_b13|bi_blink/reg0_b5.c[1] (bi_blink/n2[13])   net (fanout = 1)        0.615 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        2.534 (2 lvl)
+                                                                                          (66% logic, 34% net)
 
- Required time (t_capture_clk + hold_time + uncertainty_h)                           1.161
+ Required time (t_capture_clk + hold_time + uncertainty_h + crp)                     1.090
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.385 ns
+ Slack                                                                            1.444 ns
 
 ---------------------------------------------------------------------------------------------------------
 
- Slack (hold check)       1.588 ns                                                        
- StartPoint:              bi_blink/reg0_b11|bi_blink/reg0_b7.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
- EndPoint:                bi_blink/reg0_b18|bi_blink/reg0_b29.d[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ Slack (hold check)       1.826 ns                                                        
+ StartPoint:              bi_blink/reg0_b12|bi_blink/reg0_b6.clk (rising edge triggered by clock core_pll/pll_inst.clkc[0])
+ EndPoint:                bi_blink/reg0_b13|bi_blink/reg0_b5.c[1] (rising edge triggered by clock core_pll/pll_inst.clkc[0])
  Clock group:             core_pll/pll_inst.refclk                                        
 
- Point                                                       Type                     Incr
+ Point                                                       Type                     Incr           Info
 ---------------------------------------------------------------------------------------------------------
- bi_blink/reg0_b11|bi_blink/reg0_b7.clk                      clock                   0.938
- bi_blink/reg0_b11|bi_blink/reg0_b7.q[1]                     cell                    0.140
- bi_blink/add0/u12|bi_blink/add0/u11.b[0]                    net (fanout = 2)        0.246
- bi_blink/add0/u12|bi_blink/add0/u11.fco                     cell                    0.449
- bi_blink/add0/u14|bi_blink/add0/u13.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u14|bi_blink/add0/u13.fco                     cell                    0.063
- bi_blink/add0/u16|bi_blink/add0/u15.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u16|bi_blink/add0/u15.fco                     cell                    0.063
- bi_blink/add0/u18|bi_blink/add0/u17.fci                     net (fanout = 1)        0.000
- bi_blink/add0/u18|bi_blink/add0/u17.f[1]                    cell                    0.290
- bi_blink/reg0_b18|bi_blink/reg0_b29.d[1]                    net (fanout = 1)        0.560
- Arrival time                                                                        2.749 (3 lvl)
-                                                                                          (71% logic, 29% net)
+ bi_blink/reg0_b12|bi_blink/reg0_b6.clk                      clock                   0.938
+ bi_blink/reg0_b12|bi_blink/reg0_b6.q[1]                     cell                    0.140
+ bi_blink/add0/u11_al_u124.b[0] (bi_blink/cnt[12])           net (fanout = 2)        0.378 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ bi_blink/add0/u11_al_u124.f[1]                              cell                    0.845
+ bi_blink/reg0_b13|bi_blink/reg0_b5.c[1] (bi_blink/n2[13])   net (fanout = 1)        0.615 E:/Works/NGV/99-8b/vhdl/ngv-main/blink.v(8)
+ Arrival time                                                                        2.916 (2 lvl)
+                                                                                          (66% logic, 34% net)
 
- Required time (t_capture_clk + hold_time + uncertainty_h)                           1.161
+ Required time (t_capture_clk + hold_time + uncertainty_h + crp)                     1.090
 ---------------------------------------------------------------------------------------------------------
- Slack                                                                            1.588 ns
+ Slack                                                                            1.826 ns
 
 ---------------------------------------------------------------------------------------------------------
 
@@ -665,7 +651,7 @@ Timing constraint:        clock: stm_clk
 Clock = stm_clk, period 24ns, rising at 0ns, falling at 12ns
 
 0 endpoints analyzed totally, and 0 paths analyzed
-0 errors detected : 0 setup errors (TNS = 0), 0 hold errors (TNS = 0)
+0 errors detected : 0 setup errors (TNS = 0.000), 0 hold errors (TNS = 0.000)
 ---------------------------------------------------------------------------------------------------------
 
 Hold checks:
@@ -674,14 +660,14 @@ Hold checks:
 =========================================================================================================
 Timing summary:                                                                           
 ---------------------------------------------------------------------------------------------------------
-Constraint path number: 3170 (STA coverage = 68.71%)
+Constraint path number: 3200 (STA coverage = 72.32%)
 Timing violations: 0 setup errors, and 0 hold errors.
-Minimal setup slack: 1.818, minimal hold slack: 0.497
+Minimal setup slack: 1.692, minimal hold slack: 0.646
 
 Timing group statistics: 
 	Clock constraints: 
-	  Clock Name                             Min Period     Max Freq           Skew      Fanout            TNS
-	  core_pll/pll_inst.clkc[0] (5.952 ns)        4.134ns     241.896MHz        0.015ns        17        0.000ns
+	  Clock Name                                  Min Period     Max Freq           Skew      Fanout            TNS
+	  core_pll/pll_inst.clkc[0] (168.011MHz)         4.260ns     234.742MHz        0.015ns        17        0.000ns
 	Minimum input arrival time before clock: no constraint path
 	Maximum output required time after clock: no constraint path
 	Maximum combinational path delay: no constraint path

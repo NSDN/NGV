@@ -52,7 +52,6 @@
 / Additional user header to be used  
 /-----------------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "bsp_driver_sd.h"
 
 /*-----------------------------------------------------------------------------/
 / Function Configurations

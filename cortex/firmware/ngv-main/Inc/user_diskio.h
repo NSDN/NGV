@@ -1,7 +1,8 @@
 /**
-  ******************************************************************************
-  * @file    sd_diskio.h (based on sd_diskio_template.h v2.0.2)
-  * @brief   Header for sd_diskio.c module
+ ******************************************************************************
+  * @file    user_diskio.h
+  * @brief   This file contains the common defines and functions prototypes for  
+  *          the user_diskio driver.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -45,27 +46,29 @@
   *
   ******************************************************************************
   */
-
+  
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __SD_DISKIO_H
-#define __SD_DISKIO_H
+#ifndef __USER_DISKIO_H
+#define __USER_DISKIO_H
 
-/* USER CODE BEGIN firstSection */ 
-/* can be used to modify / undefine following code or add new definitions */
-/* USER CODE END firstSection */
+#ifdef __cplusplus
+ extern "C" {
+#endif 
+
+/* USER CODE BEGIN 0 */
 
 /* Includes ------------------------------------------------------------------*/
-#include "bsp_driver_sd.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-extern const Diskio_drvTypeDef  SD_Driver;
+extern Diskio_drvTypeDef  USER_Driver;
 
-/* USER CODE BEGIN lastSection */ 
-/* can be used to modify / undefine previous code or add new definitions */
-/* USER CODE END lastSection */
+/* USER CODE END 0 */
+   
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* __SD_DISKIO_H */
+#endif /* __USER_DISKIO_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-

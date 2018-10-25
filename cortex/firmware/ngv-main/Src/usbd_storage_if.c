@@ -51,7 +51,7 @@
 #include "usbd_storage_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "flash.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,7 +60,6 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -136,8 +135,23 @@ const int8_t STORAGE_Inquirydata_FS[] = {/* 36 */
   0x00,
   'N', 'S', 'D', 'N', ' ', ' ', ' ', ' ', /* Manufacturer : 8 bytes */
   'N', 'y', 'a', 'G', 'a', 'm', 'e', ' ', /* Product      : 16 Bytes */
-  'V', 'i', 't', 'a', ' ', ' ', ' ', ' ',
+  'V', 'i', 't', 'a', ' ', 'S', 'P', 'I',
+  '1', '.', '0' ,'0',                     /* Version      : 4 Bytes */
+
+  /* LUN 1 */
+  0x00,
+  0x80,
+  0x02,
+  0x02,
+  (STANDARD_INQUIRY_DATA_LEN - 5),
+  0x00,
+  0x00,
+  0x00,
+  'N', 'S', 'D', 'N', ' ', ' ', ' ', ' ', /* Manufacturer : 8 bytes */
+  'N', 'y', 'a', 'G', 'a', 'm', 'e', ' ', /* Product      : 16 Bytes */
+  'V', 'i', 't', 'a', ' ', 'S', 'D', ' ',
   '1', '.', '0' ,'0'                      /* Version      : 4 Bytes */
+
 }; 
 /* USER CODE END INQUIRY_DATA_FS */
 
@@ -157,9 +171,9 @@ const int8_t STORAGE_Inquirydata_FS[] = {/* 36 */
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
-extern uint8_t FS_OK;
-extern SD_HandleTypeDef hsd;
-extern HAL_SD_CardInfoTypeDef cardInfo;
+//extern HAL_SD_CardInfoTypeDef cardInfo;
+//extern SD_HandleTypeDef hsd;
+extern Flash* flash;
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -208,7 +222,6 @@ USBD_StorageTypeDef USBD_Storage_Interface_fops_FS =
 int8_t STORAGE_Init_FS(uint8_t lun)
 {
   /* USER CODE BEGIN 2 */
-  if (FS_OK == 0) return USBD_FAIL;
   return (USBD_OK);
   /* USER CODE END 2 */
 }
@@ -223,9 +236,13 @@ int8_t STORAGE_Init_FS(uint8_t lun)
 int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 3 */
-  if (FS_OK == 0) return USBD_FAIL;
-  *block_num  = cardInfo.BlockNbr;
-  *block_size = cardInfo.BlockSize;
+  if (lun == 0) {
+	  *block_num  = 0x8000;
+	  *block_size = 0x200;
+  } else {
+	  //*block_num  = cardInfo.BlockNbr;
+	  //*block_size = cardInfo.BlockSize;
+  }
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -238,7 +255,6 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 int8_t STORAGE_IsReady_FS(uint8_t lun)
 {
   /* USER CODE BEGIN 4 */
-  if (FS_OK == 0) return USBD_FAIL;
   return (USBD_OK);
   /* USER CODE END 4 */
 }
@@ -263,8 +279,13 @@ int8_t STORAGE_IsWriteProtected_FS(uint8_t lun)
 int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 6 */
-  if (FS_OK == 0) return USBD_FAIL;
-  HAL_SD_ReadBlocks(&hsd, buf, blk_addr, blk_len, 1000);
+  if (lun == 0) {
+	if (blk_len == 1) flash->read512byte(flash->p, STORAGE_BLK_SIZ * blk_addr, buf);
+	else for (uint16_t i = 0; i < blk_len; i++)
+	  flash->read512byte(flash->p, STORAGE_BLK_SIZ * (blk_addr + i), buf + STORAGE_BLK_SIZ * i);
+  } else {
+	  //HAL_SD_ReadBlocks(&hsd, buf, blk_addr, blk_len, 1000);
+  }
   return (USBD_OK);
   /* USER CODE END 6 */
 }
@@ -277,8 +298,13 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */
-  if (FS_OK == 0) return USBD_FAIL;
-  HAL_SD_WriteBlocks(&hsd, buf, blk_addr, blk_len, 1000);
+  if (lun == 0) {
+	if (blk_len == 1) flash->write512byte(flash->p, STORAGE_BLK_SIZ * blk_addr, buf);
+	else for (uint16_t i = 0; i < blk_len; i++)
+	  flash->write512byte(flash->p, STORAGE_BLK_SIZ * (blk_addr + i), buf + STORAGE_BLK_SIZ * i);
+  } else {
+	  //HAL_SD_WriteBlocks(&hsd, buf, blk_addr, blk_len, 1000);
+  }
   return (USBD_OK);
   /* USER CODE END 7 */
 }

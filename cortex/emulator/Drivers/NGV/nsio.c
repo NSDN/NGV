@@ -169,19 +169,7 @@ char* read(char* path) {
 		print("At file: %s\n\n", path);
 		return OK;
 	}
-	int length = 0; char tmp[2];
-	while (fileof(&f) != FIL_OK) {
-		filgets(&f, tmp, 2);
-		if (tmp[0] != '\r')
-			length += 1;
-	}
-	filclose(&f);
-	res = filopen(&f, path, FIL_READ);
-	if (res != FIL_OK) {
-		print("File open failed.\n");
-		print("At file: %s\n\n", path);
-		return OK;
-	}
+	int length = filsiz(&f); char tmp[2];
 	char* data = (char*) malloc(sizeof(char) * (length + 1));
 	length = 0;
 	while (fileof(&f) != FIL_OK) {

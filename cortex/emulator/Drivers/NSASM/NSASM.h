@@ -152,7 +152,9 @@ namespace NSASM {
 		vector<Register> regGroup;
 		map<string, Operator> funcList;
 
-		virtual NSASM* instance(NSASM& super, map<string, string>& code);
+		virtual NSASM* instance(NSASM& super, map<string, string>& code) {
+			return new NSASM(super, code);
+		}
 		Register* eval(Register* reg);
 		void loadFuncList();
 

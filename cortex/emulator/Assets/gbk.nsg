@@ -1,6 +1,5 @@
 cls
-msiz 0x100000
-var fnt = 0x000000
+var fnt = 0x008000
 mld fnt, "gb2312_song.bin"
 var siz = r0
 
@@ -26,6 +25,14 @@ code drawGBK = (
 
 [ASCII]
     mov chr, s
+
+    mov r0, 0
+    add r0, chr
+    mov r1, 0
+    add r1, '\n'
+    cmp r0, r1
+    jz [NLIN]
+    
     font 2
     scl 1
     mov r0, x
@@ -58,6 +65,10 @@ code drawGBK = (
     jg [ORIX]
     jmp [NEXT]
 
+[NLIN]
+    add s, 1
+    add cnt, 1
+
 [ORIX]
     mov x, ox
     add y, 16
@@ -85,8 +96,13 @@ scl 2
 show "GBK Char Drawing Test"
 scl 1
 
-var text = "要注意一个问题, 由于NSASM的设计, 目标操作数不能是字符型, 字符串型, 函数型和映射型立即数. 因此要将这些立即数用为键的话, 需要使用通用寄存器做次替代. 或者说, 这里的目标操作数仅支持寄存器寻址和数值型立即数寻址. ---- 来自NSASM映射型变量介绍"
-gbkShow<128, 96, text>
+mov r9, "太田顺也 于1977年3月18日生于长野县 白马村 ，毕业于东京电机大学 主修数学（Amusement Makers所在）。"
+prt r9, "之后常住神奈川海老名市，并于2012年搬家至东京。"
+prt r9, "他自己的作品东方风神录就是以传承故乡长野县的文化为主题。老家有经营咖啡店。小时候有接触过桌面游戏机，据说这是对游戏产生兴趣的契机。开始写程序是进入大学以后，据说在加入AmusementMakers的最初是为了创作游戏音乐。"
+prt r9, "曾作为程序员参与Taito公司的游戏开发，之后辞职。"
+prt r9, "TAITO出品的游戏「涂鸦王国」以及「涂鸦王国2」（日语：ラクガキ王国）当中的隐藏角色“博丽的巫女”（ハクレイノミコ）就是ZUN以在东方Project中登场的博丽灵梦为蓝本，亲自为此游戏参与设计的。"
+
+gbkShow<96, 96, r9>
 
 mov r0, 64
 mov r1, 400
