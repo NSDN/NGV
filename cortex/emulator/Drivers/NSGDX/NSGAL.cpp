@@ -1,5 +1,7 @@
 #include "NSGDX.h"
 
+#include "../NSASM/Util.h"
+
 namespace NSGDX {
 
     void NSGDX::loadNSGAL() {
@@ -15,19 +17,29 @@ namespace NSGDX {
             _icon.s = "__icon_renderer";
             _char.type = RegType::REG_STR;
             _char.s = "__char_renderer";
-
-            _font.type = RegType::REG_INT;
-            _font.n.i = 0x000000;
+            _font.type = RegType::REG_STR;
+            _font.s = "__gbk_font_addr";
 
             return Result::RES_OK;
         };
-        funcList["gal.debug"] = $OP_{
+        funcList["gal.debug.get"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;
             if (dst->readOnly) return Result::RES_ERR;
             *dst = nsgal;
             return Result::RES_OK;
         };
+        funcList["gal.debug.prt"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            string s = ""; *dst >> s;
+            for (int i = 0; i < s.length(); i++) {
+                Util::print(s[i]);
+                funcList["pmq"](nullptr, nullptr);
+            }
+            return Result::RES_OK;
+        };
+
         funcList["gal.render.back"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;

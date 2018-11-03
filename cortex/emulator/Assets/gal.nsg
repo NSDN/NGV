@@ -1,0 +1,69 @@
+cls
+var fnt = 0x008000
+mld fnt, "gb2312_song.bin"
+var siz = r0
+
+code drawBack = (
+    prt "drawBack"
+    ret 0
+)
+code drawIcon = (
+    prt "drawIcon"
+    ret 1
+)
+code drawChar = (
+    prt "drawChar"
+    ret 2
+)
+
+gal.init
+
+gal.render.back drawBack
+gal.render.icon drawIcon
+gal.render.char drawChar
+gal.render.font fnt
+
+gal.scene.begin "title"
+    mov r0, 854
+    mov r1, 480
+    gal.scene.back 0x001234
+
+    gal.scene.icon.begin
+
+        gal.scene.icon.new
+            gal.scene.icon.addr 0x003200
+            gal.scene.icon.pos 128, 320
+            gal.scene.icon.size 32, 32
+        gal.scene.icon.put
+
+        gal.scene.icon.new
+            gal.scene.icon.addr 0x003201
+            gal.scene.icon.pos 128, 320
+            gal.scene.icon.size 32, 32
+        gal.scene.icon.put
+
+    gal.scene.icon.end
+
+    gal.scene.text.begin
+
+        gal.scene.text.new
+            gal.scene.text.show "Test text 1"
+            gal.scene.text.jump "title"
+        gal.scene.text.put
+
+        gal.scene.text.new
+            gal.scene.text.show "Test text 2"
+            gal.scene.text.jump "music"
+        gal.scene.text.put
+
+    gal.scene.text.end
+
+gal.scene.end
+
+prt "NSGAL Core state:"
+out '\n'
+gal.debug.get r0
+gal.debug.prt r0
+out '\n'
+prt "Press R-UP to exit"
+key "RU"
