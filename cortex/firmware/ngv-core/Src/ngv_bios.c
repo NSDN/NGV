@@ -13,7 +13,7 @@
 #include "lcd.h"
 #include "sd.h"
 
-#define NGV_SYS_VERSION "181025"
+#define NGV_SYS_VERSION "181026"
 
 FILTYPE file;
 
@@ -83,7 +83,7 @@ void ngv_setup() {
 	if(result == FR_OK) {
 		char path[] = "NGV_INFO.TXT";
 		f_open(&file, path, FA_WRITE | FA_CREATE_ALWAYS);
-		f_printf(&file, "NyaGame Vita v1.0 with STM32F429ZGT6 and AL3S10LG144\n");
+		f_printf(&file, "NyaGame Vita Core Edition with STM32F767ZIT6\n");
 		f_printf(&file, "by NyaSama Developer Network\n");
 		f_printf(&file, "Firmware Version: %s\n", NGV_SYS_VERSION);
 		f_close(&file);
@@ -132,6 +132,8 @@ void work() {
 			now = HAL_GetTick() - now;
 			t = (float) now / 1000.0F;
 			print("ADC with DMA finished. It tooks %f ms\n", t);
+			t = 1000.0F / t * 1024.0F / 1000.0F / 1000.0F;
+			print("ADC with DMA speed: %f MSPS\n", t);
 			break;
 		}
 	}

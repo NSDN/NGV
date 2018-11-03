@@ -89,6 +89,7 @@ namespace NSASM {
 				return *this;
 			}
 			friend bool operator<(const Register& left, const Register& right) {
+				hash<string> h;
 				switch (left.type) {
 				case RegType::REG_INT:
 					switch (right.type) {
@@ -107,12 +108,12 @@ namespace NSASM {
 					}
 				case RegType::REG_STR:
 					switch (right.type) {
-					case RegType::REG_STR: return left.s != right.s;
+					case RegType::REG_STR: return h(left.s) < h(right.s);
 					default: return false;
 					}
 				case RegType::REG_CODE:
 					switch (right.type) {
-					case RegType::REG_CODE: return left.s != right.s;
+					case RegType::REG_CODE: return h(left.s) < h(right.s);
 					default: return false;
 					}
 				case RegType::REG_MAP:
