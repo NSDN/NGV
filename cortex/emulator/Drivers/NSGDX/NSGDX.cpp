@@ -53,11 +53,14 @@ static uint8_t memoryex[MEMEX_MAXSIZE] = { 0 }; // Virtual addr: 0x008000 - 0x80
 
 #endif
 
+
 namespace NSGDX {
 
     void NSGDX::dispose() { }
 
     void NSGDX::gdxFunc() {
+        loadNSGAL();
+
         funcList["pmq"] = $OP_{
             if (dst != nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;
