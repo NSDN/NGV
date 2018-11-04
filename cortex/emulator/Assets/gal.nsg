@@ -2,19 +2,16 @@ cls
 var fnt = 0x008000
 mld fnt, "gb2312_song.bin"
 var siz = r0
+add siz, fnt
+var backWall = siz
+mld backWall, "back_wall.bin"
+add siz, r0
+var hinaHead = siz
+mld hinaHead, "hina_head.bin"
+add siz, r0
 
-code drawBack = (
-    prt "drawBack"
-    ret 0
-)
-code drawIcon = (
-    prt "drawIcon"
-    ret 1
-)
-code drawChar = (
-    prt "drawChar"
-    ret 2
-)
+ld "gal_base.nsg"
+call <galBase>
 
 gal.init
 
@@ -24,36 +21,38 @@ gal.render.char drawChar
 gal.render.font fnt
 
 gal.scene.begin "title"
-    mov r0, 854
-    mov r1, 480
-    gal.scene.back 0x001234
+    mov r0, 128
+    mov r1, 128
+    gal.scene.back backWall
 
     gal.scene.icon.begin
 
         gal.scene.icon.new
-            gal.scene.icon.addr 0x003200
+            gal.scene.icon.addr hinaHead
             gal.scene.icon.pos 128, 320
-            gal.scene.icon.size 32, 32
+            gal.scene.icon.size 64, 64
         gal.scene.icon.put
 
         gal.scene.icon.new
-            gal.scene.icon.addr 0x003201
-            gal.scene.icon.pos 128, 320
-            gal.scene.icon.size 32, 32
+            gal.scene.icon.addr hinaHead
+            gal.scene.icon.pos 640, 320
+            gal.scene.icon.size 64, 64
         gal.scene.icon.put
 
     gal.scene.icon.end
 
     gal.scene.text.begin
+        gal.scene.text.pos 128, 128
+        gal.scene.text.ptr "¡ô"
 
         gal.scene.text.new
-            gal.scene.text.show "Test text 1"
+            gal.scene.text.show "Title | ±êÌâ"
             gal.scene.text.jump "title"
         gal.scene.text.put
 
         gal.scene.text.new
-            gal.scene.text.show "Test text 2"
-            gal.scene.text.jump "music"
+            gal.scene.text.show "Exit | ÍË³ö"
+            gal.scene.text.jump "__exit"
         gal.scene.text.put
 
     gal.scene.text.end
@@ -63,7 +62,11 @@ gal.scene.end
 prt "NSGAL Core state:"
 out '\n'
 gal.debug.get r0
-gal.debug.prt r0
+type r1, r0
+gal.debug.prt r1
 out '\n'
-prt "Press R-UP to exit"
+prt "Press R-UP to continue"
 key "RU"
+
+cls
+gal.run "title"

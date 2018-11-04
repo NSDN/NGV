@@ -2,6 +2,8 @@
 
 #include "../NSASM/Util.h"
 
+#define __GREG_NRO(n) (regGroup[n].readOnly = false)
+
 namespace NSGDX {
 
     void NSGDX::loadNSGAL() {
@@ -22,6 +24,147 @@ namespace NSGDX {
 
             return Result::RES_OK;
         };
+        funcList["gal.run"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_STR) return Result::RES_ERR;
+            if (nsgal.m.count(*dst) == 0) return Result::RES_ERR;
+            
+            Register nowScene = *dst;
+            Register reg, tmp; int val;
+            reg.type = RegType::REG_STR;
+            tmp.type = RegType::REG_INT;
+            while (1) {
+                funcList["pmq"](nullptr, nullptr);
+                reg.s = "f1"; funcList["key"](&tmp, &reg);
+                val = tmp.n.i;
+                reg.s = "f8"; funcList["key"](&tmp, &reg);
+                val += tmp.n.i;
+                if (val > 1) break;
+
+                nowScene = nsgal.m[nowScene];
+                if (nowScene.m.size() == 0) break;
+
+                //Draw back
+                if (nsgal.m.count(_back) != 0) {
+                    reg.s = "backAddr";
+                    regGroup[0] = nowScene.m[reg];
+                    reg.s = "backWidth";
+                    regGroup[1] = nowScene.m[reg];
+                    reg.s = "backHeight";
+                    regGroup[2] = nowScene.m[reg];
+                    __GREG_NRO(0); __GREG_NRO(1); __GREG_NRO(2);
+                    funcList["eval"](&nsgal.m[_back], nullptr);
+                }
+
+                //Draw icon
+                reg.s = "icons";
+                if (nowScene.m.count(reg) > 0) {
+                    if (nowScene.m[reg].m.size() > 0) {
+                        if (nsgal.m.count(_icon) == 0) break;
+                        for (
+                            auto it = nowScene.m[reg].m.begin();
+                            it != nowScene.m[reg].m.end(); it++
+                        ) {
+                            if (it->second.m.empty()) continue;
+                            reg.s = "iconAddr";
+                            regGroup[0] = it->second.m[reg];
+                            reg.s = "iconX";
+                            regGroup[1] = it->second.m[reg];
+                            reg.s = "iconY";
+                            regGroup[2] = it->second.m[reg];
+                            reg.s = "iconWidth";
+                            regGroup[3] = it->second.m[reg];
+                            reg.s = "iconHeight";
+                            regGroup[4] = it->second.m[reg];
+                            __GREG_NRO(0); __GREG_NRO(1); __GREG_NRO(2);
+                            __GREG_NRO(3); __GREG_NRO(4);
+                            funcList["eval"](&nsgal.m[_icon], nullptr);
+                        }
+                    }
+                }
+
+                //Draw text
+                reg.s = "texts";
+                if (nowScene.m.count(reg) > 0) {
+                    if (nowScene.m[reg].m.size() > 0) {
+                        Register txt = nowScene.m[reg];
+                        int posX = 64, posY = 64, textCnt = 0;
+
+                        if (nsgal.m.count(_font) == 0) break;
+                        if (nsgal.m.count(_char) == 0) break;
+
+                        reg.s = "posX";
+                        if (txt.m.count(reg) > 0) posX = txt.m[reg].n.i;
+                        reg.s = "posY";
+                        if (txt.m.count(reg) > 0) posY = txt.m[reg].n.i;
+                        for (
+                            auto it = txt.m.begin();
+                            it != txt.m.end(); it++
+                        ) {
+                            if (it->first.type != RegType::REG_INT) 
+                                continue;
+                            if (it->second.m.empty()) continue;
+                            regGroup[0] = nsgal.m[_font];
+                            regGroup[1].type = RegType::REG_INT;
+                            regGroup[1].n.i = posX;
+                            regGroup[2].type = RegType::REG_INT;
+                            regGroup[2].n.i = posY + textCnt * 16;
+                            reg.s = "textShow";
+                            regGroup[3] = it->second.m[reg];
+                            __GREG_NRO(0); __GREG_NRO(1);
+                            __GREG_NRO(2); __GREG_NRO(3);
+                            funcList["eval"](&nsgal.m[_char], nullptr);
+                            textCnt += 1;
+                        }
+
+                        //Handle input
+                        reg.s = "ptrS"; int ptrPos = 0;
+                        Register ptrS; ptrS.s = "->";
+                        ptrS.type = RegType::REG_STR;
+                        if (txt.m.count(reg) > 0) ptrS = txt.m[reg];
+                        while (1) {
+                            funcList["pmq"](nullptr, nullptr);
+                            reg.s = "f1"; funcList["key"](&tmp, &reg);
+                            val = tmp.n.i;
+                            reg.s = "f8"; funcList["key"](&tmp, &reg);
+                            val += tmp.n.i;
+                            if (val > 1) return Result::RES_OK;
+
+                            regGroup[0] = nsgal.m[_font];
+                            regGroup[1].type = RegType::REG_INT;
+                            regGroup[1].n.i = posX - 32;
+                            regGroup[2].type = RegType::REG_INT;
+                            regGroup[2].n.i = posY + ptrPos * 16;
+                            regGroup[3] = ptrS;
+                            __GREG_NRO(0); __GREG_NRO(1);
+                            __GREG_NRO(2); __GREG_NRO(3);
+                            funcList["eval"](&nsgal.m[_char], nullptr);
+
+                            reg.s = "lu"; funcList["kup"](&tmp, &reg);
+                            if (tmp.n.i > 0) ptrPos += 1;
+                            reg.s = "ld"; funcList["kup"](&tmp, &reg);
+                            if (tmp.n.i > 0) ptrPos -= 1;
+                            if (ptrPos >= textCnt) ptrPos = 0;
+                            if (ptrPos < 0) ptrPos = textCnt - 1;
+                            
+                            reg.s = "ru"; funcList["kup"](&tmp, &reg);
+                            if (tmp.n.i > 0) {
+                                tmp.n.i = ptrPos;
+                                reg.s = "textJump";
+                                nowScene = txt.m[tmp].m[reg];
+                                if (nowScene.s == "__exit")
+                                    return Result::RES_OK;
+                                else break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Result::RES_OK;
+        };
+
         funcList["gal.debug.get"] = $OP_{
             if (dst == nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;
@@ -37,6 +180,7 @@ namespace NSGDX {
                 Util::print(s[i]);
                 funcList["pmq"](nullptr, nullptr);
             }
+            Util::print("\n");
             return Result::RES_OK;
         };
 
@@ -169,6 +313,24 @@ namespace NSGDX {
             if (src != nullptr) return Result::RES_ERR;
             Register reg; reg.type = RegType::REG_STR;
             reg.s = "texts"; _scene.m[reg] = _texts;
+            return Result::RES_OK;
+        };
+        funcList["gal.scene.text.pos"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src == nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            if (src->type != RegType::REG_INT) return Result::RES_ERR;
+            Register reg; reg.type = RegType::REG_STR;
+            reg.s = "posX"; _texts.m[reg] = *dst;
+            reg.s = "posY"; _texts.m[reg] = *src;
+            return Result::RES_OK;
+        };
+        funcList["gal.scene.text.ptr"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_STR) return Result::RES_ERR;
+            Register reg; reg.type = RegType::REG_STR;
+            reg.s = "ptrS"; _texts.m[reg] = *dst;
             return Result::RES_OK;
         };
 

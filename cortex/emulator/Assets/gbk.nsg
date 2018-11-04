@@ -38,6 +38,7 @@ code drawGBK = (
     mov r0, x
     mov r1, y
     draw chr
+    pmq
     font 1
 
     add x, 8
@@ -56,6 +57,7 @@ code drawGBK = (
     mov r2, 16
     mov r3, 16
     ico addr
+    pmq
     
     add x, 16
     add s, 2

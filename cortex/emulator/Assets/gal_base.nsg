@@ -1,0 +1,126 @@
+<galBase> {
+    code drawBack = (
+        var addr = r0
+        var w = r1
+        var h = r2
+
+        mov r0, 0
+        mov r1, 0
+        mov r2, w
+        mov r3, h
+
+    [HEAD]
+        img addr
+        add r0, w
+        cmp r0, 854
+        jg [ORIGX]
+        jmp [HEAD]
+
+    [ORIGX]
+        mov r0, 0
+        add r1, h
+        cmp r1, 480
+        jg [END]
+        jmp [HEAD]
+
+    [END]
+        ret 0
+    )
+
+    code drawIcon = (
+        var addr = r0
+        var x = r1
+        var y = r2
+        var w = r3
+        var h = r4
+
+        mov r0, x
+        mov r1, y
+        mov r2, w
+        mov r3, h
+        img addr, 0x000000
+
+        ret 0
+    )
+
+    code drawChar = (
+        var baseAddr = r0
+        var x = r1
+        var y = r2
+        var s = r3
+
+        len r0, s
+        var siz = r0
+
+        var cnt = 0
+        var addr = 0
+        var chr = '\0'
+        var ox = x
+
+    [HEAD]
+        gbk addr, s
+        cmp addr, 0
+        jl [ASCII]
+        jmp [GBK]
+
+    [ASCII]
+        mov chr, s
+
+        mov r0, 0
+        add r0, chr
+        mov r1, 0
+        add r1, '\n'
+        cmp r0, r1
+        jz [NLIN]
+        
+        font 2
+        scl 1
+        mov r0, x
+        mov r1, y
+        draw chr
+        pmq
+        font 1
+
+        add x, 8
+        add s, 1
+        add cnt, 1
+        rem "854 - 8 - 8 = 838"
+        cmp x, 838
+        jg [ORIX]
+        jmp [NEXT]
+
+    [GBK]
+        mul addr, 32
+        add addr, baseAddr
+        mov r0, x
+        mov r1, y
+        mov r2, 16
+        mov r3, 16
+        ico addr
+        pmq
+        
+        add x, 16
+        add s, 2
+        add cnt, 2
+        rem "854 - 16 - 8 = 830"
+        cmp x, 830
+        jg [ORIX]
+        jmp [NEXT]
+
+    [NLIN]
+        add s, 1
+        add cnt, 1
+
+    [ORIX]
+        mov x, ox
+        add y, 16
+
+    [NEXT]
+        cmp cnt, siz
+        jnz [HEAD]
+
+        ret 1
+    [END]
+        ret 0
+    )
+}
