@@ -89,38 +89,40 @@ namespace NSASM {
 				return *this;
 			}
 			friend bool operator<(const Register& left, const Register& right) {
-				hash<string> h;
+				hash<string> h; float l, r;
 				switch (left.type) {
 				case RegType::REG_INT:
-					switch (right.type) {
-					case RegType::REG_INT: return left.n.i < right.n.i;
-					default: return false;
-					}
+					l = (float) left.n.i; break;
 				case RegType::REG_CHAR:
-					switch (right.type) {
-					case RegType::REG_CHAR: return left.n.c < right.n.c;
-					default: return false;
-					}
+					l = (float) left.n.c; break;
 				case RegType::REG_FLOAT:
-					switch (right.type) {
-					case RegType::REG_FLOAT: return left.n.f < right.n.f;
-					default: return false;
-					}
+					l = left.n.f; break;
 				case RegType::REG_STR:
-					switch (right.type) {
-					case RegType::REG_STR: return h(left.s) < h(right.s);
-					default: return false;
-					}
+					l = (float) h(left.s); break;
 				case RegType::REG_CODE:
-					switch (right.type) {
-					case RegType::REG_CODE: return h(left.s) < h(right.s);
-					default: return false;
-					}
+					l = (float) h(left.s); break;
 				case RegType::REG_MAP:
 					return false;
 				default:
 					return false;
 				}
+				switch (right.type) {
+				case RegType::REG_INT:
+					r = (float) right.n.i; break;
+				case RegType::REG_CHAR:
+					r = (float) right.n.c; break;
+				case RegType::REG_FLOAT:
+					r = right.n.f; break;
+				case RegType::REG_STR:
+					r = (float) h(right.s); break;
+				case RegType::REG_CODE:
+					r = (float) h(right.s); break;
+				case RegType::REG_MAP:
+					return false;
+				default:
+					return false;
+				}
+				return l < r;
 			}
 
 		public:

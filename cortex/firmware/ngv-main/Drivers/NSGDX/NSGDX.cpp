@@ -5,8 +5,6 @@
 #include "../NGV/Include/lcd.h"
 extern LCD* lcd;
 
-//#define NSGDX_IS_EMU
-
 #include <algorithm>
 
 #include <map>
@@ -53,11 +51,20 @@ static uint8_t memoryex[MEMEX_MAXSIZE] = { 0 }; // Virtual addr: 0x008000 - 0x80
 
 #endif
 
+uint8_t* __getmem(uint32_t addr) {
+    if (addr < MEM_MAXSIZE) return memory + addr;
+    if (addr < MEM_MAXSIZE + MEMEX_MAXSIZE)
+        return memoryex - MEM_MAXSIZE + addr;
+    return (uint8_t*) -1;
+}
+
 namespace NSGDX {
 
     void NSGDX::dispose() { }
 
     void NSGDX::gdxFunc() {
+        loadNSGAL();
+
         funcList["pmq"] = $OP_{
             if (dst != nullptr) return Result::RES_ERR;
             if (src != nullptr) return Result::RES_ERR;

@@ -4,6 +4,8 @@
 
 #include "../NSASM/NSASM.h"
 
+#define NSGDX_IS_EMU
+
 namespace NSGDX {
 
     using namespace NSASM;
@@ -20,6 +22,8 @@ namespace NSGDX {
 
         Register _back, _icon, _char;
         Register _font;
+
+        Register _defback, _deffore;
 
         Register _sceneName, _scene;
         Register _icons, _texts;

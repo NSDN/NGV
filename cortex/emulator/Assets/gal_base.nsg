@@ -4,6 +4,9 @@
         var w = r1
         var h = r2
 
+        cmp addr, 0
+        jl [FILL]
+
         mov r0, 0
         mov r1, 0
         mov r2, w
@@ -22,6 +25,12 @@
         cmp r1, 480
         jg [END]
         jmp [HEAD]
+
+    [FILL]
+        mov r0, 0
+        sub r0, addr
+        back r0
+        cls
 
     [END]
         ret 0

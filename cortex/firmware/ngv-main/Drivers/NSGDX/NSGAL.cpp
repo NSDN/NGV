@@ -416,7 +416,7 @@ namespace NSGDX {
                             if (checkKeyUp(LPAD_DOWN)) ptrPos += 1;
                             if (ptrPos > textCnt - 1) ptrPos = textCnt - 1;
                             if (ptrPos < 0) ptrPos = 0;
-
+                            
                             if (checkKeyUp(RPAD_UP)) {
                                 tmp.n.i = ptrPos;
                                 reg.s = "textJump";

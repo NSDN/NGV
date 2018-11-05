@@ -2,21 +2,14 @@ cls
 var fnt = 0x008000
 mld fnt, "gb2312_song.bin"
 var siz = r0
-add siz, fnt
-var backWall = siz
-mld backWall, "back_wall.bin"
-add siz, r0
-var hinaHead = siz
-mld hinaHead, "hina_head.bin"
-add siz, r0
 
 ld "gal_base.nsg"
 call <galBase>
 
 gal.init
 
-rem "gal.default.back 0x000000"
-rem "gal.default.fore 0xFFFFFF"
+gal.default.back 0xFFFFFF
+gal.default.fore 0x000000
 
 gal.render.back drawBack
 gal.render.icon drawIcon
@@ -30,22 +23,6 @@ gal.scene.begin "title"
     mov r3, 0
     sub r3, r2
     gal.scene.back r3
-
-    gal.scene.icon.begin
-
-        gal.scene.icon.new
-            gal.scene.icon.addr hinaHead
-            gal.scene.icon.pos 128, 320
-            gal.scene.icon.size 64, 64
-        gal.scene.icon.put
-
-        gal.scene.icon.new
-            gal.scene.icon.addr hinaHead
-            gal.scene.icon.pos 640, 320
-            gal.scene.icon.size 64, 64
-        gal.scene.icon.put
-
-    gal.scene.icon.end
 
     gal.scene.text.begin
         gal.scene.text.pos 128, 128
@@ -121,6 +98,4 @@ key "RU"
 
 cls
 gal.run "title"
-back 0xFFFFFF
-fore 0x000000
 end
