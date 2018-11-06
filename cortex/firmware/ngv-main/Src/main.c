@@ -56,6 +56,7 @@
 #include "ngv_bios.h"
 #include "ngp_bios.h"
 #include "flash.h"
+#include "dram.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -157,6 +158,7 @@ int main(void)
   MX_FATFS_Init();
   MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
+  SDRAM_Init(&hsdram1);
   flash = FlashInit(&hspi5, SPI5_CS_GPIO_Port, SPI5_CS_Pin, W25Q128);
   ngv_setup();
   /* USER CODE END 2 */
@@ -446,10 +448,10 @@ static void MX_FMC_Init(void)
   hsram2.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
   hsram2.Init.PageSize = FMC_PAGE_SIZE_NONE;
   /* Timing */
-  Timing.AddressSetupTime = 15;
+  Timing.AddressSetupTime = 0;
   Timing.AddressHoldTime = 15;
-  Timing.DataSetupTime = 255;
-  Timing.BusTurnAroundDuration = 15;
+  Timing.DataSetupTime = 1;
+  Timing.BusTurnAroundDuration = 0;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
   Timing.AccessMode = FMC_ACCESS_MODE_A;
@@ -481,10 +483,10 @@ static void MX_FMC_Init(void)
   hsram3.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
   hsram3.Init.PageSize = FMC_PAGE_SIZE_NONE;
   /* Timing */
-  Timing.AddressSetupTime = 15;
+  Timing.AddressSetupTime = 0;
   Timing.AddressHoldTime = 15;
-  Timing.DataSetupTime = 255;
-  Timing.BusTurnAroundDuration = 15;
+  Timing.DataSetupTime = 1;
+  Timing.BusTurnAroundDuration = 0;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
   Timing.AccessMode = FMC_ACCESS_MODE_A;
@@ -516,10 +518,10 @@ static void MX_FMC_Init(void)
   hsram4.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
   hsram4.Init.PageSize = FMC_PAGE_SIZE_NONE;
   /* Timing */
-  Timing.AddressSetupTime = 15;
+  Timing.AddressSetupTime = 0;
   Timing.AddressHoldTime = 15;
-  Timing.DataSetupTime = 255;
-  Timing.BusTurnAroundDuration = 15;
+  Timing.DataSetupTime = 1;
+  Timing.BusTurnAroundDuration = 0;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
   Timing.AccessMode = FMC_ACCESS_MODE_A;
@@ -535,23 +537,23 @@ static void MX_FMC_Init(void)
   hsdram1.Instance = FMC_SDRAM_DEVICE;
   /* hsdram1.Init */
   hsdram1.Init.SDBank = FMC_SDRAM_BANK1;
-  hsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_8;
+  hsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_9;
   hsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_13;
   hsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_16;
   hsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
-  hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_1;
+  hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_2;
   hsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
-  hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_DISABLE;
+  hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_2;
   hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_DISABLE;
-  hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
+  hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
   /* SdramTiming */
-  SdramTiming.LoadToActiveDelay = 16;
-  SdramTiming.ExitSelfRefreshDelay = 16;
-  SdramTiming.SelfRefreshTime = 16;
-  SdramTiming.RowCycleDelay = 16;
-  SdramTiming.WriteRecoveryTime = 16;
-  SdramTiming.RPDelay = 16;
-  SdramTiming.RCDDelay = 16;
+  SdramTiming.LoadToActiveDelay = 2;
+  SdramTiming.ExitSelfRefreshDelay = 7;
+  SdramTiming.SelfRefreshTime = 4;
+  SdramTiming.RowCycleDelay = 7;
+  SdramTiming.WriteRecoveryTime = 3;
+  SdramTiming.RPDelay = 2;
+  SdramTiming.RCDDelay = 2;
 
   if (HAL_SDRAM_Init(&hsdram1, &SdramTiming) != HAL_OK)
   {

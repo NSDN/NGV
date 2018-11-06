@@ -258,6 +258,8 @@ namespace NSGDX {
                                 nowScene = txt.m[tmp].m[reg];
                                 if (nowScene.s == "__exit")
                                     return Result::RES_OK;
+                                else if (nowScene.s == "__this")
+                                    continue;
                                 else break;
                             }
                         }
@@ -423,6 +425,8 @@ namespace NSGDX {
                                 nowScene = txt.m[tmp].m[reg];
                                 if (nowScene.s == "__exit")
                                     return Result::RES_OK;
+                                else if (nowScene.s == "__this")
+                                    continue;
                                 else break;
                             }
                         }

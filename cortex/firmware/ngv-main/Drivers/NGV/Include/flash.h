@@ -46,6 +46,8 @@
 #define FLASH_SECTOR_SIZ	0x1000
 #define FLASH_PAGE_SIZ		0x100
 
+//#define USE_512BYTE_IO
+
 typedef enum {
     custom = -1,
     autoDetect = 0,
@@ -78,7 +80,9 @@ typedef struct {
 	GPIO_TypeDef*       CSPortGroup;
 	uint16_t            CSPortIndex;
     partNumber          partno;
+#ifdef USE_512BYTE_IO
     uint8_t 			buffer[FLASH_SECTOR_SIZ];
+#endif
     uint8_t				check[FLASH_SECTOR_SIZ];
 } pFlashR;
 
@@ -118,9 +122,12 @@ typedef struct {
     //erase a 64k block ( 65536b )
     //addr is 16bit-aligned, 0x00ff0000
     void        (*erase64kBlock)    (pFlashR* p, uint32_t addr);
-
+#ifdef USE_512BYTE_IO
     void		(*read512byte)		(pFlashR* p, uint32_t addr, uint8_t *buf);
     void		(*write512byte)		(pFlashR* p, uint32_t addr, uint8_t *buf);
+#endif
+    void		(*readSector)		(pFlashR* p, uint32_t addr, uint8_t *buf);
+	void		(*writeSector)		(pFlashR* p, uint32_t addr, uint8_t *buf);
 
     //chip erase, return true if successfully started, busy()==false -> erase complete
     void        (*eraseAll)         (pFlashR* p);

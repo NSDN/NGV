@@ -9,6 +9,8 @@
 
 <filestoremove>
     <file>
+    <name>..\Middlewares\Third_Party\FatFs\src\option\cc936.c</name>
+    <name>..\Middlewares\Third_Party\FatFs\src\option\cc936.c</name>
     </file>
 </filestoremove>
 
@@ -24,8 +26,8 @@
   <config>
     <name>ngv-main</name>				
     <device>STM32F429ZGTx</device>		 
-    <heapSize>0x200</heapSize>
-    <stackSize>0x400</stackSize>
+    <heapSize>0x1000</heapSize>
+    <stackSize>0x2000</stackSize>
     
     	<board>custom</board>
 			

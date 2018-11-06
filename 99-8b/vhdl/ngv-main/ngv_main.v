@@ -2,6 +2,12 @@ module ngv_main(
 	rst, clk,
 	
 	fmc_nwe, fmc_noe, fmc_ne, fmc_addr, fmc_data,
+
+	fmc_nbl0, fmc_nbl1, fmc_sdne0, fmc_sdcke0,
+	fmc_sdnwe, fmc_sdclk, fmc_sdnras, fmc_sdncas,
+	
+	dram_dqmh, dram_dqml, dram_cs, dram_cke,
+	dram_nwe, dram_clk, dram_nras, dram_ncas,
 	
 	ctl_blk, ctl_cs, ctl_rs, ctl_rst,
 	usart_tx, usart_rx,
@@ -17,6 +23,11 @@ module ngv_main(
 	
 	input rst, clk;
 	output led_w, led_y;
+	
+	input fmc_nbl0, fmc_nbl1, fmc_sdne0, fmc_sdcke0;
+	input fmc_sdnwe, fmc_sdclk, fmc_sdnras, fmc_sdncas;
+	output dram_dqmh, dram_dqml, dram_cs, dram_cke;
+	output dram_nwe, dram_clk, dram_nras, dram_ncas;
 	
 	input fmc_nwe, fmc_noe;
 	input[3:0] fmc_ne;
@@ -56,6 +67,25 @@ module ngv_main(
 		.o_rd(lcd_rd),
 		.o_rst(lcd_rst),
 		.o_data(lcd_data)
+	);
+	
+	dram_trans dram_conv(
+		.nbl0(fmc_nbl0),
+		.nbl1(fmc_nbl1),
+		.sdne(fmc_sdne0),
+		.sdcke(fmc_sdcke0),
+		.sdnwe(fmc_sdnwe),
+		.sdclk(fmc_sdclk),
+		.sdnras(fmc_sdnras),
+		.sdncas(fmc_sdncas),
+		.dqmh(dram_dqmh),
+		.dqml(dram_dqml),
+		.cs(dram_cs),
+		.cke(dram_cke),
+		.nwe(dram_nwe),
+		.clk(dram_clk),
+		.nras(dram_nras),
+		.ncas(dram_ncas)
 	);
 
 	blink #(

@@ -3,6 +3,7 @@
 #include "fatfs.h"
 
 #include <setjmp.h>
+#include <string.h>
 
 #include "usbd_core.h"
 
@@ -10,12 +11,13 @@
 #include "flash.h"
 #include "nsio.h"
 #include "logo.h"
+#include "dram.h"
 #include "lcd.h"
 #include "key.h"
 
 #include "99_8b.h"
 
-#define NGV_SYS_VERSION "181105"
+#define NGV_SYS_VERSION "181106"
 
 LCD* lcd;
 Flash* flash;
@@ -81,6 +83,13 @@ void ngv_setup() {
 	print("\n");
 	delay(1000);
 
+	print("Test SDRAM chip...\n");
+	__IO uint16_t* ptr = (uint16_t*) SDRAM_ADDR;
+	*(ptr + 0x3232) = 0x3232;
+	print("Output: %x\n", *(ptr + 0x3232));
+	print("\n");
+	delay(1000);
+
 	uint8_t result = 0;
 	print("Init flash...\n");
 	result = flash->begin(flash->p);
@@ -94,8 +103,10 @@ void ngv_setup() {
 	delay(500);
 	if (waitKeyUp(KEY_F8)) {
 		print("Erase flash...\n");
+		flash->setWriteEnable(flash->p, 1);
 		flash->eraseAll(flash->p);
 		while (flash->busy(flash->p));
+		flash->setWriteEnable(flash->p, 0);
 		print("Erase OK\n");
 	}
 	delay(500);
@@ -138,6 +149,11 @@ void ngv_setup() {
 	}
 	delay(500);
 	print("\n");
+
+	print("Test SDRAM chip again...\n");
+	print("Output: %x\n", *(ptr + 0x3232));
+	print("\n");
+	delay(1000);
 
 	print("\n");
 	/* Initialize end */

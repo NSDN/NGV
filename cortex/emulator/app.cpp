@@ -45,16 +45,15 @@ void setup() {
 	print("Version: %s\n\n", NGV_SYS_VERSION);
 	delay(1000);
 
-    print("Init SD card... OK\n");
+    print("Init file system...\n");
 
 	char path[] = "NGV_INFO.TXT";
     uint8_t res = filopen(&file, path, FIL_WRITE);
-    print("Mount SD card... %s\n", (res == FIL_OK) ? "OK" : "ERR");
+    print("Test file system... %s\n", (res == FIL_OK) ? "OK" : "ERR");
     filprint(&file, "NyaGame Vita Factory Edition with NGV-EMU\n");
     filprint(&file, "by NyaSama Developer Network\n");
     filprint(&file, "Firmware Version: %s\n", NGV_SYS_VERSION);
     filclose(&file);
-    print("Test SD card... OK\n");
 
 	print("Loading NSHEL...\n");
 

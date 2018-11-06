@@ -237,8 +237,8 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 {
   /* USER CODE BEGIN 3 */
   if (lun == 0) {
-	  *block_num  = 0x8000;
-	  *block_size = 0x200;
+	  *block_num  = FLASH_SECTOR_NUM;
+	  *block_size = FLASH_SECTOR_SIZ;
   } else {
 	  //*block_num  = cardInfo.BlockNbr;
 	  //*block_size = cardInfo.BlockSize;
@@ -280,9 +280,9 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 {
   /* USER CODE BEGIN 6 */
   if (lun == 0) {
-	if (blk_len == 1) flash->read512byte(flash->p, STORAGE_BLK_SIZ * blk_addr, buf);
+	if (blk_len == 1) flash->readSector(flash->p, FLASH_SECTOR_SIZ * blk_addr, buf);
 	else for (uint16_t i = 0; i < blk_len; i++)
-	  flash->read512byte(flash->p, STORAGE_BLK_SIZ * (blk_addr + i), buf + STORAGE_BLK_SIZ * i);
+	  flash->readSector(flash->p, FLASH_SECTOR_SIZ * (blk_addr + i), buf + FLASH_SECTOR_SIZ * i);
   } else {
 	  //HAL_SD_ReadBlocks(&hsd, buf, blk_addr, blk_len, 1000);
   }
@@ -299,9 +299,9 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 {
   /* USER CODE BEGIN 7 */
   if (lun == 0) {
-	if (blk_len == 1) flash->write512byte(flash->p, STORAGE_BLK_SIZ * blk_addr, buf);
+	if (blk_len == 1) flash->writeSector(flash->p, FLASH_SECTOR_SIZ * blk_addr, buf);
 	else for (uint16_t i = 0; i < blk_len; i++)
-	  flash->write512byte(flash->p, STORAGE_BLK_SIZ * (blk_addr + i), buf + STORAGE_BLK_SIZ * i);
+	  flash->writeSector(flash->p, FLASH_SECTOR_SIZ * (blk_addr + i), buf + FLASH_SECTOR_SIZ * i);
   } else {
 	  //HAL_SD_WriteBlocks(&hsd, buf, blk_addr, blk_len, 1000);
   }

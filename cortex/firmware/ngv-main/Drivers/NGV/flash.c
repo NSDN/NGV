@@ -178,11 +178,10 @@ void _flash_end(pFlashR* p) {
 }
 
 uint16_t _flash_read(pFlashR* p, uint32_t addr, uint8_t *buf, uint16_t n) {
-	uint16_t timeout = 0;
-    while (_flash_busy(p)) {
-    	timeout += 1;
-    	if (timeout == 0xFFFF) return 0;
-    }
+    uint32_t time = HAL_GetTick();
+	while (_flash_busy(p))
+		if (HAL_GetTick() - time > 1000)
+			return 0;
 
     _flash_select(p);
     _flash_transfer(p, READ);
@@ -210,11 +209,10 @@ void _flash_writePage(pFlashR* p, uint32_t addr_start, uint8_t *buf) {
         i++;
     } while (i != 0);
     _flash_deselect(p);
-    uint16_t timeout = 0;
-	while (_flash_busy(p)) {
-		timeout += 1;
-		if (timeout == 0xFFFF) break;
-	}
+    uint32_t time = HAL_GetTick();
+	while (_flash_busy(p))
+		if (HAL_GetTick() - time > 1000)
+			break;
 	_flash_setWriteEnable(p, 0);
 }
 
@@ -226,11 +224,10 @@ void _flash_eraseSector(pFlashR* p, uint32_t addr_start) {
     _flash_transfer(p, addr_start >> 8);
     _flash_transfer(p, addr_start);
     _flash_deselect(p);
-    uint16_t timeout = 0;
-    while (_flash_busy(p)) {
-		timeout += 1;
-		if (timeout == 0xFFFF) break;
-	}
+    uint32_t time = HAL_GetTick();
+	while (_flash_busy(p))
+		if (HAL_GetTick() - time > 1000)
+			break;
 	_flash_setWriteEnable(p, 0);
 }
 
@@ -252,10 +249,6 @@ void _flash_erase64kBlock(pFlashR* p, uint32_t addr_start) {
     _flash_deselect(p);
 }
 
-void _flash_read512byte(pFlashR* p, uint32_t addr, uint8_t *buf) {
-	_flash_read(p, addr & 0x00FFFE00, buf, 0x200);
-}
-
 uint8_t __check(uint8_t* a, uint8_t* b, uint16_t len) {
 	uint16_t sum = 0;
 	for (uint16_t i = 0; i < len; i++)
@@ -263,17 +256,39 @@ uint8_t __check(uint8_t* a, uint8_t* b, uint16_t len) {
 	return sum == len;
 }
 
+#ifdef USE_512BYTE_IO
+void _flash_read512byte(pFlashR* p, uint32_t addr, uint8_t *buf) {
+	_flash_read(p, addr & 0x00FFFE00, buf, 0x200);
+}
+
 void _flash_write512byte(pFlashR* p, uint32_t addr, uint8_t *buf) {
 	_flash_read(p, addr & 0x00FFF000, p->buffer, FLASH_SECTOR_SIZ);
 	memcpy(p->buffer + ((addr & 0x00FFFE00) - (addr & 0x00FFF000)), buf, 0x200);
 	memset(p->check, 0x00, FLASH_SECTOR_SIZ);
 	uint8_t cnt = 16;
-	while (!__check(p->buffer, p->check, FLASH_SECTOR_SIZ)) {
+	while (1) {
 		_flash_eraseSector(p, addr & 0x00FFF000);
 		for (uint8_t i = 0; i < FLASH_SECTOR_SIZ / FLASH_PAGE_SIZ; i++)
 			_flash_writePage(p, (addr & 0x00FFF000) + FLASH_PAGE_SIZ * i, p->buffer + FLASH_PAGE_SIZ * i);
 		_flash_read(p, addr & 0x00FFF000, p->check, FLASH_SECTOR_SIZ);
+		if (__check(p->buffer, p->check, FLASH_SECTOR_SIZ)) break;
+		cnt -= 1; if (cnt == 0) break;
+	}
+}
+#endif
 
+void _flash_readSector(pFlashR* p, uint32_t addr, uint8_t *buf) {
+	_flash_read(p, addr & 0x00FFF000, buf, FLASH_SECTOR_SIZ);
+}
+
+void _flash_writeSector(pFlashR* p, uint32_t addr, uint8_t *buf) {
+	uint8_t cnt = 16; memset(p->check, 0x00, FLASH_SECTOR_SIZ);
+	while (1) {
+		_flash_eraseSector(p, addr & 0x00FFF000);
+		for (uint8_t i = 0; i < FLASH_SECTOR_SIZ / FLASH_PAGE_SIZ; i++)
+			_flash_writePage(p, (addr & 0x00FFF000) + FLASH_PAGE_SIZ * i, buf + FLASH_PAGE_SIZ * i);
+		_flash_read(p, addr & 0x00FFF000, p->check, FLASH_SECTOR_SIZ);
+		if (__check(buf, p->check, FLASH_SECTOR_SIZ)) break;
 		cnt -= 1; if (cnt == 0) break;
 	}
 }
@@ -324,8 +339,12 @@ Flash* FlashInit(SPI_HandleTypeDef* hspi, GPIO_TypeDef* CSGroup, uint16_t CSInde
     c->eraseSector = &_flash_eraseSector;
     c->erase32kBlock = &_flash_erase32kBlock;
     c->erase64kBlock = &_flash_erase64kBlock;
+#ifdef USE_512BYTE_IO
     c->read512byte = &_flash_read512byte;
     c->write512byte = &_flash_write512byte;
+#endif
+    c->readSector = &_flash_readSector;
+	c->writeSector = &_flash_writeSector;
     c->eraseAll = &_flash_eraseAll;
     c->eraseSuspend = &_flash_eraseSuspend;
     c->eraseResume = &_flash_eraseResume;

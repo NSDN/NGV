@@ -14,6 +14,7 @@
             <File>al_ip/pll.v</File>
             <File>lcd_trans.v</File>
             <File>blink.v</File>
+            <File>dram_trans.v</File>
         </Verilog>
         <ADC_FILE>ngv-main.adc</ADC_FILE>
         <SDC_FILE>ngv-main.sdc</SDC_FILE>
@@ -25,7 +26,7 @@
         <CREATEINDEX>auto</CREATEINDEX>
     </TOP_MODULE>
     <Project_Settings>
-        <Step_Last_Change>2018-10-23 12:00:05</Step_Last_Change>
+        <Step_Last_Change>2018-11-06 21:39:38</Step_Last_Change>
         <Current_Step>60</Current_Step>
         <Step_Status>true</Step_Status>
     </Project_Settings>

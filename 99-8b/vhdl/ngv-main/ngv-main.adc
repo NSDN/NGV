@@ -86,3 +86,19 @@ set_pin_assignment {beep_l} { LOCATION = P108; IOSTANDARD = LVTTL33; SLEWRATE = 
 set_pin_assignment {usart_tx} { LOCATION = P57; IOSTANDARD = LVTTL33;  }
 set_pin_assignment {beep_r} { LOCATION = P5; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
 set_pin_assignment {usart_rx} { LOCATION = P39; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {dram_cke} { LOCATION = P24; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {dram_clk} { LOCATION = P19; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {dram_cs} { LOCATION = P32; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {dram_dqmh} { LOCATION = P18; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {dram_dqml} { LOCATION = P28; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {dram_ncas} { LOCATION = P30; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {dram_nras} { LOCATION = P31; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {dram_nwe} { LOCATION = P29; IOSTANDARD = LVTTL33; SLEWRATE = FAST;  }
+set_pin_assignment {fmc_nbl0} { LOCATION = P96; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {fmc_nbl1} { LOCATION = P97; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {fmc_sdcke0} { LOCATION = P112; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {fmc_sdclk} { LOCATION = P55; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {fmc_sdncas} { LOCATION = P90; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {fmc_sdne0} { LOCATION = P105; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {fmc_sdnras} { LOCATION = P89; IOSTANDARD = LVTTL33;  }
+set_pin_assignment {fmc_sdnwe} { LOCATION = P106; IOSTANDARD = LVTTL33;  }

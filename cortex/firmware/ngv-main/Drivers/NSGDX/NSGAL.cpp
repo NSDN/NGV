@@ -257,8 +257,10 @@ namespace NSGDX {
                                 reg.s = "textJump";
                                 nowScene = txt.m[tmp].m[reg];
                                 if (nowScene.s == "__exit")
-                                    return Result::RES_OK;
-                                else break;
+									return Result::RES_OK;
+								else if (nowScene.s == "__this")
+									continue;
+								else break;
                             }
                         }
                     }
@@ -422,8 +424,10 @@ namespace NSGDX {
                                 reg.s = "textJump";
                                 nowScene = txt.m[tmp].m[reg];
                                 if (nowScene.s == "__exit")
-                                    return Result::RES_OK;
-                                else break;
+									return Result::RES_OK;
+								else if (nowScene.s == "__this")
+									continue;
+								else break;
                             }
                         }
                     }

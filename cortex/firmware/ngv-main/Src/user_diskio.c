@@ -148,9 +148,9 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
-	if (count == 1) flash->read512byte(flash->p, _MIN_SS * sector, buff);
+	if (count == 1) flash->readSector(flash->p, FLASH_SECTOR_SIZ * sector, buff);
 	else for (UINT i = 0; i < count; i++)
-		flash->read512byte(flash->p, _MIN_SS * (sector + i), buff + _MIN_SS * i);
+		flash->readSector(flash->p, FLASH_SECTOR_SIZ * (sector + i), buff + FLASH_SECTOR_SIZ * i);
     return RES_OK;
   /* USER CODE END READ */
 }
@@ -172,9 +172,9 @@ DRESULT USER_write (
 )
 { 
   /* USER CODE BEGIN WRITE */
-	if (count == 1) flash->write512byte(flash->p, _MIN_SS * sector, buff);
+	if (count == 1) flash->writeSector(flash->p, FLASH_SECTOR_SIZ * sector, buff);
 	else for (UINT i = 0; i < count; i++)
-		flash->write512byte(flash->p, _MIN_SS * (sector + i), buff + _MIN_SS * i);
+		flash->writeSector(flash->p, FLASH_SECTOR_SIZ * (sector + i), buff + FLASH_SECTOR_SIZ * i);
     return RES_OK;
   /* USER CODE END WRITE */
 }
