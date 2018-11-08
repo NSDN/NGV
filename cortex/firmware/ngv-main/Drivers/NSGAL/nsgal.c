@@ -106,7 +106,7 @@ int nsgal(int argc, char** argv) {
 		//Draw text
 		if (nowScene->text.parts != NULL) {
 			GalText* txt = &(nowScene->text);
-			uint32_t posX = 64, posY = 64, textCnt = 0;
+			uint32_t posX = 64, posY = 64; int8_t textCnt = 0;
 
 			posX = txt->posX; posY = txt->posY;
 
@@ -135,7 +135,7 @@ int nsgal(int argc, char** argv) {
 			}
 
 			//Handle input
-			uint8_t* ptrS = txt->ptrS; int ptrPos = 0;
+			uint8_t* ptrS = txt->ptrS; int8_t ptrPos = 0;
 			while (1) {
 				if (checkKey(KEY_F1) && checkKey(KEY_F8))
 					return 0;
@@ -167,7 +167,7 @@ int nsgal(int argc, char** argv) {
 
 				if (checkKeyUp(LPAD_UP)) ptrPos -= 1;
 				if (checkKeyUp(LPAD_DOWN)) ptrPos += 1;
-				if (ptrPos > textCnt - 1) ptrPos = textCnt - 1;
+				if (ptrPos > (textCnt - 1)) ptrPos = textCnt - 1;
 				if (ptrPos < 0) ptrPos = 0;
 
 				if (checkKeyUp(RPAD_UP)) {
