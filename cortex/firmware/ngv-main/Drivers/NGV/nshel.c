@@ -9,6 +9,8 @@
 #include "../NSASM/Include/nsasmpp.h"
 #include "../NSGDX/Include/nsgdxpp.h"
 
+#include "../NSGAL/nsgal.h"
+
 #include <malloc.h>
 #include <string.h>
 #include <setjmp.h>
@@ -55,6 +57,7 @@ static NSHEL_Function NSHEL_funList[] = {
 	{ "nsasm", &_nshel_fun_nsasm },
 	{ "nsasm++", &_nshel_fun_nsasmpp },
 	{ "nsgdx", &_nshel_fun_nsgdx },
+	{ "nsgal", &_nshel_fun_nsgal },
 
 	{ "bmp", &_nshel_fun_bmp },
 
@@ -378,6 +381,9 @@ int _nshel_fun_nsasmpp(int argc, char* argv[]) {
 }
 int _nshel_fun_nsgdx(int argc, char* argv[]) {
 	return nsgdx(argc, argv);
+}
+int _nshel_fun_nsgal(int argc, char* argv[]) {
+	return nsgal(argc, argv);
 }
 
 int _nshel_fun_bmp(int argc, char* argv[]) {

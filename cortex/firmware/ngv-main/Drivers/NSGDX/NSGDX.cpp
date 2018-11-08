@@ -51,11 +51,17 @@ static uint8_t memoryex[MEMEX_MAXSIZE] = { 0 }; // Virtual addr: 0x008000 - 0x80
 
 #endif
 
+extern "C" uint8_t* __getmem_C_(uint32_t addr);
+
 uint8_t* __getmem(uint32_t addr) {
     if (addr < MEM_MAXSIZE) return memory + addr;
     if (addr < MEM_MAXSIZE + MEMEX_MAXSIZE)
         return memoryex - MEM_MAXSIZE + addr;
     return (uint8_t*) -1;
+}
+
+uint8_t* __getmem_C_(uint32_t addr) {
+	return __getmem(addr);
 }
 
 namespace NSGDX {

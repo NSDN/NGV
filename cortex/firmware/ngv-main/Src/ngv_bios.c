@@ -17,7 +17,7 @@
 
 #include "99_8b.h"
 
-#define NGV_SYS_VERSION "181107"
+#define NGV_SYS_VERSION "181108"
 
 LCD* lcd;
 Flash* flash;
