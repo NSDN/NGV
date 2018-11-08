@@ -159,6 +159,7 @@ int main(void)
   MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
   SDRAM_Init(&hsdram1);
+
   flash = FlashInit(&hspi5, SPI5_CS_GPIO_Port, SPI5_CS_Pin, W25Q128);
   ngv_setup();
   /* USER CODE END 2 */
@@ -548,10 +549,10 @@ static void MX_FMC_Init(void)
   hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
   /* SdramTiming */
   SdramTiming.LoadToActiveDelay = 2;
-  SdramTiming.ExitSelfRefreshDelay = 7;
+  SdramTiming.ExitSelfRefreshDelay = 5;
   SdramTiming.SelfRefreshTime = 4;
-  SdramTiming.RowCycleDelay = 7;
-  SdramTiming.WriteRecoveryTime = 3;
+  SdramTiming.RowCycleDelay = 5;
+  SdramTiming.WriteRecoveryTime = 2;
   SdramTiming.RPDelay = 2;
   SdramTiming.RCDDelay = 2;
 

@@ -6,6 +6,7 @@
 #include <fstream>
 using namespace std;
 
+#include <malloc.h>
 #include <string.h>
 #include <time.h>
 
@@ -147,6 +148,7 @@ int nsgdx(int argc, char* argv[]) {
 	NSGDX::Util::I().FileInput = [](string path) -> string {
 		char* buffer = read((char*)path.c_str());
 		string s = buffer;
+		free(buffer);
 		return s;
 	};
     NSASM::Util::I().BinaryInput = [](string path) ->vector<unsigned char> { 

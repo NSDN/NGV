@@ -77,7 +77,9 @@ int nshel(int argc, char* argv[]) {
 		NSHEL_console();
 		return OK;
 	} else {
-		NSHEL_run(read(argv[1]));
+		char* code = read(argv[1]);
+		NSHEL_run(code);
+		free(code);
 		return OK;
 	}
 }

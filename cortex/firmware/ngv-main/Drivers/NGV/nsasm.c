@@ -208,9 +208,12 @@ int nsasm(int argc, char* argv[]) {
 		print("Usage: nsasm [c/r] [FILE]\n\n");
 		return OK;
 	} else {
+		char* code;
 		if (argc == 3) {
 			if (strchr(argv[1], 'r') > 0) {
-				NSASM_run(read(argv[2]));
+				code = read(argv[2]);
+				NSASM_run(code);
+				free(code);
 				return OK;
 			}
 		}
@@ -218,7 +221,9 @@ int nsasm(int argc, char* argv[]) {
 			NSASM_console();
 			return OK;
 		}
-		NSASM_run(read(argv[1]));
+		code = read(argv[1]);
+		NSASM_run(code);
+		free(code);
 		return OK;
 	}
 }

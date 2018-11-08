@@ -23,7 +23,7 @@
 void SDRAM_Init(SDRAM_HandleTypeDef *hsdram);
 
 #define SDRAM_ADDR                               0xC0000000
-#define SDRAM_SIZE								 0x00200000
+#define SDRAM_SIZE								 0x01000000
 
 #ifdef __cplusplus
 }

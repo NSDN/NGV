@@ -17,7 +17,7 @@
 
 #include "99_8b.h"
 
-#define NGV_SYS_VERSION "181106"
+#define NGV_SYS_VERSION "181107"
 
 LCD* lcd;
 Flash* flash;
@@ -41,6 +41,9 @@ void greenScreen(const char* head) {
 	lcd->printfc(lcd->p, 110, "WHAT HAD HAPPENED");
 }
 
+//extern void __DRAM_SET_();
+//extern void __DRAM_RESET_();
+
 extern void tick();
 
 void delay(int t) { HAL_Delay(t); }
@@ -50,6 +53,7 @@ void processEvent() {  }
 void ngv_setup() {
 	lcd = LCDInit();
 	setjmp(rstPos);
+	//__DRAM_RESET_();
 	USBD_Stop(&hUsbDeviceFS);
 	HAL_SRAM_WriteOperation_Enable(&hsram1);
 	_99_8b_reconf();
@@ -85,8 +89,11 @@ void ngv_setup() {
 
 	print("Test SDRAM chip...\n");
 	__IO uint16_t* ptr = (uint16_t*) SDRAM_ADDR;
-	*(ptr + 0x3232) = 0x3232;
-	print("Output: %x\n", *(ptr + 0x3232));
+	uint32_t intOffset = 0x00FFFC32, strOffset = 0x00FFFC64;
+	*(ptr + intOffset) = 0x3232;
+	strcpy((char*) (ptr + strOffset), "Hello, world!\0");
+	print("Output: %x\n", *(ptr + intOffset));
+	print("Output: %s\n", ptr + strOffset);
 	print("\n");
 	delay(1000);
 
@@ -151,7 +158,8 @@ void ngv_setup() {
 	print("\n");
 
 	print("Test SDRAM chip again...\n");
-	print("Output: %x\n", *(ptr + 0x3232));
+	print("Output: %x\n", *(ptr + intOffset));
+	print("Output: %s\n", ptr + strOffset);
 	print("\n");
 	delay(1000);
 
@@ -163,6 +171,9 @@ void ngv_setup() {
 	print("Loading NSHEL...\n");
 
 	print("\n");
+
+	//__DRAM_SET_();
+
 	const char* args[] = { "nshel", "init.d" };
 	nshel(2, (char**) args);
 	print("\n");
