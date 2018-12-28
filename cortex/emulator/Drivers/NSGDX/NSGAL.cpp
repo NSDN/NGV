@@ -53,6 +53,13 @@ NEXT:
 
 #define __GREG_NRO(n) (regGroup[n].readOnly = false)
 
+#ifdef NSGDX_IS_EMU
+extern void loadBGM(std::string path, uint8_t** data, uint32_t* len);
+extern void unloadBGM(uint8_t* data);
+extern void stopBGM();
+extern void playBGM(uint8_t* data, uint32_t len);
+#endif
+
 namespace NSGDX {
 
     void NSGDX::loadNSGAL() {
@@ -89,6 +96,9 @@ namespace NSGDX {
             reg.type = RegType::REG_STR;
             tmp.type = RegType::REG_INT;
         #ifdef NSGDX_IS_EMU
+            uint8_t* bgmData = 0;
+            uint32_t bgmLen = 0;
+
             while (1) {
                 funcList["pmq"](nullptr, nullptr);
                 reg.s = "f1"; funcList["key"](&tmp, &reg);
@@ -110,6 +120,28 @@ namespace NSGDX {
                     regGroup[2] = nowScene.m[reg];
                     __GREG_NRO(0); __GREG_NRO(1); __GREG_NRO(2);
                     funcList["eval"](&nsgal.m[_back], nullptr);
+                }
+
+                //Play BGM
+                reg.s = "bgmPath";
+                if (nowScene.m.count(reg) != 0) {
+                    Register r = nowScene.m[reg];
+                    string path = r.s.substr(r.sp);
+                    stopBGM();
+                    if (bgmData != 0) {
+                        unloadBGM(bgmData);
+                        bgmData = 0;
+                        bgmLen = 0;
+                    }
+                    loadBGM(path, &bgmData, &bgmLen);
+                    playBGM(bgmData, bgmLen);
+                } else {
+                    stopBGM();
+                    if (bgmData != 0) {
+                        unloadBGM(bgmData);
+                        bgmData = 0;
+                        bgmLen = 0;
+                    }
                 }
 
                 //Draw icon
@@ -528,6 +560,17 @@ namespace NSGDX {
             reg.s = "backHeight"; _scene.m[reg] = regGroup[1];
             return Result::RES_OK;
         };
+
+    #ifdef NSGDX_IS_EMU
+        funcList["gal.scene.bgm"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_STR) return Result::RES_ERR;
+            Register reg; reg.type = RegType::REG_STR;
+            reg.s = "bgmPath"; _scene.m[reg] = *dst;
+            return Result::RES_OK;
+        };
+    #endif
 
         funcList["gal.scene.icon.begin"] = $OP_{
             if (dst != nullptr) return Result::RES_ERR;

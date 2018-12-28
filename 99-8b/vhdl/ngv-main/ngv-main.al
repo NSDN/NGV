@@ -15,6 +15,7 @@
             <File>lcd_trans.v</File>
             <File>blink.v</File>
             <File>dram_trans.v</File>
+            <File>al_ip/sdram.v</File>
         </Verilog>
         <ADC_FILE>ngv-main.adc</ADC_FILE>
         <SDC_FILE>ngv-main.sdc</SDC_FILE>
@@ -23,11 +24,11 @@
     <TOP_MODULE>
         <LABEL/>
         <MODULE>ngv_main</MODULE>
-        <CREATEINDEX>auto</CREATEINDEX>
+        <CREATEINDEX>user</CREATEINDEX>
     </TOP_MODULE>
     <Project_Settings>
-        <Step_Last_Change>2018-11-06 21:39:38</Step_Last_Change>
-        <Current_Step>60</Current_Step>
+        <Step_Last_Change>2018-12-04 17:37:30</Step_Last_Change>
+        <Current_Step>0</Current_Step>
         <Step_Status>true</Step_Status>
     </Project_Settings>
 </Project>

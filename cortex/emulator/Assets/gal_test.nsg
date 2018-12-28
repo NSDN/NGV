@@ -62,6 +62,7 @@ gal.scene.begin "sample"
     mov r3, 0
     sub r3, r2
     gal.scene.back r3
+    gal.scene.bgm "Assets/sample.wav"
 
     gal.scene.text.begin
         gal.scene.text.pos 128, 128

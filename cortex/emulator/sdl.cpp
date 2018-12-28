@@ -2,6 +2,8 @@
 
 #include "./Drivers/SDL2/Include/SDL.h"
 
+#include <string>
+
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
@@ -101,13 +103,40 @@ void flash(uint32_t data, uint32_t n) {
     SDL_RenderPresent(renderer);
 }
 
+void loadBGM(std::string path, uint8_t** data, uint32_t* len) {
+    SDL_AudioSpec spec = { 0 };
+    SDL_LoadWAV(path.c_str(), &spec, data, len);
+}
+
+void unloadBGM(uint8_t* data) {
+    SDL_FreeWAV(data);
+}
+
+void stopBGM() {
+    SDL_PauseAudio(1);
+    SDL_ClearQueuedAudio(1);
+}
+
+void playBGM(uint8_t* data, uint32_t len) {
+    SDL_QueueAudio(1, data, len);
+    SDL_PauseAudio(0);
+}
+
 void initSDL() {
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	window = SDL_CreateWindow(
 		"ngv-emu",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		LCD_WIDTH, LCD_HEIGHT, SDL_WINDOW_SHOWN
 	);
+
+    SDL_AudioSpec spec = { 0 };
+    spec.freq = 44100;
+    spec.channels = 2;
+    spec.format = AUDIO_F32SYS;
+    spec.samples = 4096;
+    spec.callback = NULL;
+    SDL_OpenAudio(&spec, NULL);
 
 	surface = SDL_GetWindowSurface(window);
 	icon = SDL_LoadBMP("Assets/logo.bmp");
@@ -120,6 +149,7 @@ void initSDL() {
 void deinitSDL() {
     SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+    SDL_CloseAudio();
 	SDL_Quit();
 }
 
