@@ -13,6 +13,8 @@ SDL_Event event;
 SDL_Renderer* renderer;
 SDL_Rect rect, pixelRect;
 
+static SDL_AudioDeviceID AUDIO_DEV = 1;
+
 SDL_Window* window;
 SDL_Surface* icon;
 SDL_Surface* surface;
@@ -106,6 +108,7 @@ void flash(uint32_t data, uint32_t n) {
 void loadBGM(std::string path, uint8_t** data, uint32_t* len) {
     SDL_AudioSpec spec = { 0 };
     SDL_LoadWAV(path.c_str(), &spec, data, len);
+    printf("Audio addr: %x, Audio size: %x\n", (size_t) (*data), *len);
 }
 
 void unloadBGM(uint8_t* data) {
@@ -114,11 +117,11 @@ void unloadBGM(uint8_t* data) {
 
 void stopBGM() {
     SDL_PauseAudio(1);
-    SDL_ClearQueuedAudio(1);
+    SDL_ClearQueuedAudio(AUDIO_DEV);
 }
 
 void playBGM(uint8_t* data, uint32_t len) {
-    SDL_QueueAudio(1, data, len);
+    SDL_QueueAudio(AUDIO_DEV, data, len);
     SDL_PauseAudio(0);
 }
 
@@ -129,21 +132,21 @@ void initSDL() {
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		LCD_WIDTH, LCD_HEIGHT, SDL_WINDOW_SHOWN
 	);
-
-    SDL_AudioSpec spec = { 0 };
-    spec.freq = 44100;
-    spec.channels = 2;
-    spec.format = AUDIO_F32SYS;
-    spec.samples = 4096;
-    spec.callback = NULL;
-    SDL_OpenAudio(&spec, NULL);
-
+    
 	surface = SDL_GetWindowSurface(window);
 	icon = SDL_LoadBMP("Assets/logo.bmp");
 	if (icon != 0) SDL_SetWindowIcon(window, icon);
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+    SDL_AudioSpec spec = { 0 };
+    spec.freq = 48000;
+    spec.channels = 2;
+    spec.format = AUDIO_F32SYS;
+    spec.samples = 4096;
+    spec.callback = NULL;
+    SDL_OpenAudio(&spec, NULL);
 }
 
 void deinitSDL() {
@@ -212,6 +215,11 @@ void processEvent() {
 		}
 		if (event.type == SDL_KEYUP) {
 			switch (event.key.keysym.sym) {
+                case SDLK_END:
+                    printf("Driver: %s\n", SDL_GetCurrentAudioDriver());
+                    printf("Queued: %x\n", SDL_GetQueuedAudioSize(AUDIO_DEV));
+                    break;
+
                 case SDLK_w:        keyValue &= ~LPAD_UP;    break;
                 case SDLK_s:        keyValue &= ~LPAD_DOWN;  break;
                 case SDLK_a:        keyValue &= ~LPAD_LEFT;  break;

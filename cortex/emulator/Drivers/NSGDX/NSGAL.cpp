@@ -238,7 +238,15 @@ namespace NSGDX {
                             val = tmp.n.i;
                             reg.s = "f8"; funcList["key"](&tmp, &reg);
                             val += tmp.n.i;
-                            if (val > 1) return Result::RES_OK;
+                            if (val > 1) {
+                                stopBGM();
+                                if (bgmData != 0) {
+                                    unloadBGM(bgmData);
+                                    bgmData = 0;
+                                    bgmLen = 0;
+                                }
+                                return Result::RES_OK;
+                            }
 
                             regGroup[0] = nsgal.m[_font];
                             regGroup[1].type = RegType::REG_INT;
@@ -288,9 +296,15 @@ namespace NSGDX {
                                 tmp.n.i = ptrPos;
                                 reg.s = "textJump";
                                 nowScene = txt.m[tmp].m[reg];
-                                if (nowScene.s == "__exit")
+                                if (nowScene.s == "__exit") {
+                                    stopBGM();
+                                    if (bgmData != 0) {
+                                        unloadBGM(bgmData);
+                                        bgmData = 0;
+                                        bgmLen = 0;
+                                    }
                                     return Result::RES_OK;
-                                else if (nowScene.s == "__this")
+                                } else if (nowScene.s == "__this")
                                     continue;
                                 else break;
                             }
