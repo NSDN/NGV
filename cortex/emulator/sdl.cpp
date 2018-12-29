@@ -1,6 +1,7 @@
 #include "sdl.h"
 
 #include "./Drivers/SDL2/Include/SDL.h"
+#include "./Drivers/SDL2/Include/SDL_mixer.h"
 
 #include <string>
 
@@ -12,8 +13,6 @@ void processEvent();
 SDL_Event event;
 SDL_Renderer* renderer;
 SDL_Rect rect, pixelRect;
-
-static SDL_AudioDeviceID AUDIO_DEV = 1;
 
 SDL_Window* window;
 SDL_Surface* icon;
@@ -105,24 +104,20 @@ void flash(uint32_t data, uint32_t n) {
     SDL_RenderPresent(renderer);
 }
 
-void loadBGM(std::string path, uint8_t** data, uint32_t* len) {
-    SDL_AudioSpec spec = { 0 };
-    SDL_LoadWAV(path.c_str(), &spec, data, len);
-    printf("Audio addr: %x, Audio size: %x\n", (size_t) (*data), *len);
+void* loadBGM(std::string path) {
+    return (void*) Mix_LoadMUS(path.c_str());
 }
 
-void unloadBGM(uint8_t* data) {
-    SDL_FreeWAV(data);
+void unloadBGM(void* bgm) {
+    Mix_FreeMusic((Mix_Music*) bgm);
 }
 
 void stopBGM() {
-    SDL_PauseAudio(1);
-    SDL_ClearQueuedAudio(AUDIO_DEV);
+    Mix_PauseMusic();
 }
 
-void playBGM(uint8_t* data, uint32_t len) {
-    SDL_QueueAudio(AUDIO_DEV, data, len);
-    SDL_PauseAudio(0);
+void playBGM(void* bgm) {
+    Mix_PlayMusic((Mix_Music*) bgm, -1);
 }
 
 void initSDL() {
@@ -140,19 +135,18 @@ void initSDL() {
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-    SDL_AudioSpec spec = { 0 };
-    spec.freq = 48000;
-    spec.channels = 2;
-    spec.format = AUDIO_F32SYS;
-    spec.samples = 4096;
-    spec.callback = NULL;
-    SDL_OpenAudio(&spec, NULL);
+    Mix_Init(
+        MIX_INIT_MP3 | MIX_INIT_FLAC | MIX_INIT_MID |
+        MIX_INIT_OGG | MIX_INIT_OPUS | MIX_INIT_MOD
+    );
+    Mix_OpenAudio(44100, AUDIO_F32SYS, 2, 4096);
 }
 
 void deinitSDL() {
     SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
-    SDL_CloseAudio();
+    Mix_CloseAudio();
+    Mix_Quit();
 	SDL_Quit();
 }
 
@@ -215,11 +209,6 @@ void processEvent() {
 		}
 		if (event.type == SDL_KEYUP) {
 			switch (event.key.keysym.sym) {
-                case SDLK_END:
-                    printf("Driver: %s\n", SDL_GetCurrentAudioDriver());
-                    printf("Queued: %x\n", SDL_GetQueuedAudioSize(AUDIO_DEV));
-                    break;
-
                 case SDLK_w:        keyValue &= ~LPAD_UP;    break;
                 case SDLK_s:        keyValue &= ~LPAD_DOWN;  break;
                 case SDLK_a:        keyValue &= ~LPAD_LEFT;  break;

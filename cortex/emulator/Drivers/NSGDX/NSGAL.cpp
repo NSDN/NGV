@@ -54,10 +54,10 @@ NEXT:
 #define __GREG_NRO(n) (regGroup[n].readOnly = false)
 
 #ifdef NSGDX_IS_EMU
-extern void loadBGM(std::string path, uint8_t** data, uint32_t* len);
-extern void unloadBGM(uint8_t* data);
+extern void* loadBGM(std::string path);
+extern void unloadBGM(void* bgm);
 extern void stopBGM();
-extern void playBGM(uint8_t* data, uint32_t len);
+extern playBGM(void* bgm);
 #endif
 
 namespace NSGDX {
@@ -96,8 +96,7 @@ namespace NSGDX {
             reg.type = RegType::REG_STR;
             tmp.type = RegType::REG_INT;
         #ifdef NSGDX_IS_EMU
-            uint8_t* bgmData = 0;
-            uint32_t bgmLen = 0;
+            void* bgm = 0;
 
             while (1) {
                 funcList["pmq"](nullptr, nullptr);
@@ -128,19 +127,17 @@ namespace NSGDX {
                     Register r = nowScene.m[reg];
                     string path = r.s.substr(r.sp);
                     stopBGM();
-                    if (bgmData != 0) {
-                        unloadBGM(bgmData);
-                        bgmData = 0;
-                        bgmLen = 0;
+                    if (bgm != 0) {
+                        unloadBGM(bgm);
+                        bgm = 0;
                     }
-                    loadBGM(path, &bgmData, &bgmLen);
-                    playBGM(bgmData, bgmLen);
+                    bgm = loadBGM(path);
+                    playBGM(bgm);
                 } else {
                     stopBGM();
-                    if (bgmData != 0) {
-                        unloadBGM(bgmData);
-                        bgmData = 0;
-                        bgmLen = 0;
+                    if (bgm != 0) {
+                        unloadBGM(bgm);
+                        bgm = 0;
                     }
                 }
 
@@ -240,10 +237,9 @@ namespace NSGDX {
                             val += tmp.n.i;
                             if (val > 1) {
                                 stopBGM();
-                                if (bgmData != 0) {
-                                    unloadBGM(bgmData);
-                                    bgmData = 0;
-                                    bgmLen = 0;
+                                if (bgm != 0) {
+                                    unloadBGM(bgm);
+                                    bgm = 0;
                                 }
                                 return Result::RES_OK;
                             }
@@ -298,10 +294,9 @@ namespace NSGDX {
                                 nowScene = txt.m[tmp].m[reg];
                                 if (nowScene.s == "__exit") {
                                     stopBGM();
-                                    if (bgmData != 0) {
-                                        unloadBGM(bgmData);
-                                        bgmData = 0;
-                                        bgmLen = 0;
+                                    if (bgm != 0) {
+                                        unloadBGM(bgm);
+                                        bgm = 0;
                                     }
                                     return Result::RES_OK;
                                 } else if (nowScene.s == "__this")
