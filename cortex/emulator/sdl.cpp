@@ -105,7 +105,8 @@ void flash(uint32_t data, uint32_t n) {
 }
 
 void* loadBGM(std::string path) {
-    return (void*) Mix_LoadMUS(path.c_str());
+    std::string url = "Assets/" + path;
+    return (void*) Mix_LoadMUS(url.c_str());
 }
 
 void unloadBGM(void* bgm) {

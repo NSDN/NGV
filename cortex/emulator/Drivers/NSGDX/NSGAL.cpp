@@ -57,7 +57,7 @@ NEXT:
 extern void* loadBGM(std::string path);
 extern void unloadBGM(void* bgm);
 extern void stopBGM();
-extern playBGM(void* bgm);
+extern void playBGM(void* bgm);
 #endif
 
 namespace NSGDX {
@@ -96,7 +96,12 @@ namespace NSGDX {
             reg.type = RegType::REG_STR;
             tmp.type = RegType::REG_INT;
         #ifdef NSGDX_IS_EMU
-            void* bgm = 0;
+            void* bgm = 0; int fontH = 16;
+
+            //Config font height
+            reg.s = "__font_height";
+            if (nsgal.m.count(reg) != 0)
+                fontH = nsgal.m[reg].n.i;
 
             while (1) {
                 funcList["pmq"](nullptr, nullptr);
@@ -197,7 +202,7 @@ namespace NSGDX {
                             regGroup[1].type = RegType::REG_INT;
                             regGroup[1].n.i = posX;
                             regGroup[2].type = RegType::REG_INT;
-                            regGroup[2].n.i = posY + textCnt * 16;
+                            regGroup[2].n.i = posY + textCnt * fontH;
                             reg.s = "textShow";
                             regGroup[3] = it->second.m[reg];
                             __GREG_NRO(0); __GREG_NRO(1);
@@ -246,9 +251,9 @@ namespace NSGDX {
 
                             regGroup[0] = nsgal.m[_font];
                             regGroup[1].type = RegType::REG_INT;
-                            regGroup[1].n.i = posX - 32;
+                            regGroup[1].n.i = posX - fontH * 3 / 2;
                             regGroup[2].type = RegType::REG_INT;
-                            regGroup[2].n.i = posY + ptrPos * 16;
+                            regGroup[2].n.i = posY + ptrPos * fontH;
                             regGroup[3] = ptrS;
                             __GREG_NRO(0); __GREG_NRO(1);
                             __GREG_NRO(2); __GREG_NRO(3);
@@ -269,10 +274,10 @@ namespace NSGDX {
                             reg.s = " ";
                             for (int i = 0; i < ptrS.s.length() - 1; i++)
                                 reg.s += " ";
-                            regGroup[2].n.i = posY + (ptrPos - 1) * 16;
+                            regGroup[2].n.i = posY + (ptrPos - 1) * fontH;
                             regGroup[3] = reg; __GREG_NRO(3);
                             funcList["eval"](&nsgal.m[_char], nullptr);
-                            regGroup[2].n.i = posY + (ptrPos + 1) * 16;
+                            regGroup[2].n.i = posY + (ptrPos + 1) * fontH;
                             funcList["eval"](&nsgal.m[_char], nullptr);
 
                             if (nsgal.m.count(_defback) != 0)
@@ -524,6 +529,14 @@ namespace NSGDX {
             if (src != nullptr) return Result::RES_ERR;
             if (dst->type != RegType::REG_INT) return Result::RES_ERR;
             nsgal.m[_font] = *dst;
+            return Result::RES_OK;
+        };
+        funcList["gal.render.size"] = $OP_{
+            if (dst == nullptr) return Result::RES_ERR;
+            if (src != nullptr) return Result::RES_ERR;
+            if (dst->type != RegType::REG_INT) return Result::RES_ERR;
+            Register reg; reg.type = RegType::REG_STR;
+            reg.s = "__font_height"; nsgal.m[reg] = *dst;
             return Result::RES_OK;
         };
         funcList["gal.default.back"] = $OP_{
